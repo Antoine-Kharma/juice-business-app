@@ -32,6 +32,7 @@ export default function InventoryPage() {
   const [category, setCategory] = useState(itemOptions[0].category);
   const [unit, setUnit] = useState(itemOptions[0].unit);
   const [stock, setStock] = useState(0);
+  const [action, setAction] = useState("add");
   const [items, setItems] = useState<InventoryItem[]>([]);
 
   const fetchInventory = async () => {
@@ -62,8 +63,8 @@ export default function InventoryPage() {
     }
   };
 
-  /*const handleAddItem = async () => {
-    if (stock <= 0) {
+  const handleAddItem = async () => {
+    if (stock === 0) {
       alert("Please enter a stock quantity greater than 0");
       return;
     }
@@ -74,7 +75,10 @@ export default function InventoryPage() {
       const { error } = await supabase
         .from("inventory")
         .update({
-          quantity: existingItem.quantity + stock,
+          quantity:
+            action === "add"
+              ? existingItem.quantity + stock
+              : existingItem.quantity - stock,
           category,
           unit,
         })
@@ -99,7 +103,7 @@ export default function InventoryPage() {
         return;
       }
     }
-*/
+
     setStock(0);
     fetchInventory();
   };
@@ -146,6 +150,18 @@ export default function InventoryPage() {
             <br />
             <input type="number" value={stock} onChange={(e) => setStock(Number(e.target.value))} style={{ width: "100%", padding: "10px", marginTop: "6px" }} />
           </div>
+          <div>
+            <label>Action</label>
+            <br />
+            <select
+              value={action}
+              onChange={(e) => setAction(e.target.value)}
+              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+            >
+              <option value="add">Add Stock</option>
+              <option value="reduce">Reduce Stock</option>
+            </select>
+          </div>          
 
           <button onClick={handleAddItem} style={{ padding: "12px 16px", borderRadius: "10px", border: "none", backgroundColor: "black", color: "white", cursor: "pointer" }}>
             Add Item
