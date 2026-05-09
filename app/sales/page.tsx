@@ -1,23 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 const products = [
   "Orange - 250 ml",
   "Orange - 1 Liter",
+
   "Strawberry Banana - 250 ml",
   "Strawberry Banana - 1 Liter",
+
   "Strawberry Lemonade - 250 ml",
   "Strawberry Lemonade - 1 Liter",
+
   "Lemonade - 250 ml",
   "Lemonade - 1 Liter",
+
+  "Pomegranate - 250 ml",
+  "Pomegranate - 1 Liter",
+
+  "Frozen Pomegranate - 250 ml",
+  "Frozen Pomegranate - 1 Liter",
+
+  "Minted Lemonade - 250 ml",
+  "Minted Lemonade - 1 Liter",
+
+  "Straw Mango - 250 ml",
+  "Straw Mango - 1 Liter",
+
+  "Mango - 250 ml",
+  "Mango - 1 Liter",
+
+  "Carrot - 250 ml",
+  "Carrot - 1 Liter",
 ];
 
 type Sale = {
-  product: string;
+  id?: number;
+  juice_name: string;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
+  unit_price: number;
+  total_price: number;
 };
 
 export default function SalesPage() {
@@ -31,21 +54,48 @@ export default function SalesPage() {
     return quantity * price;
   }, [quantity, unitPrice]);
 
-  const handleAddSale = () => {
+  const fetchSales = async () => {
+    const { data, error } = await supabase
+      .from("sales")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setSales(data || []);
+  };
+
+  useEffect(() => {
+    fetchSales();
+  }, []);
+
+  const handleAddSale = async () => {
     if (!product || quantity <= 0) return;
 
     const parsedUnitPrice = Number(unitPrice) || 0;
 
-    const newSale: Sale = {
-      product,
-      quantity,
-      unitPrice: parsedUnitPrice,
-      totalPrice: quantity * parsedUnitPrice,
-    };
+    const { error } = await supabase.from("sales").insert([
+      {
+        juice_name: product,
+        quantity,
+        unit_price: parsedUnitPrice,
+        total_price: quantity * parsedUnitPrice,
+        quantity_sold: quantity,
+        selling_price: parsedUnitPrice,
+      },
+    ]);
 
-    setSales([newSale, ...sales]);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
     setQuantity(1);
     setUnitPrice("");
+    fetchSales();
   };
 
   return (
@@ -59,6 +109,7 @@ export default function SalesPage() {
     >
       <section style={{ marginBottom: "30px" }}>
         <h1 style={{ margin: 0, fontSize: "32px" }}>Sales</h1>
+
         <p style={{ marginTop: "10px", color: "#666" }}>
           Record each sold juice item.
         </p>
@@ -79,6 +130,7 @@ export default function SalesPage() {
           <div>
             <label>Product</label>
             <br />
+
             <select
               value={product}
               onChange={(e) => setProduct(e.target.value)}
@@ -95,6 +147,7 @@ export default function SalesPage() {
           <div>
             <label>Quantity</label>
             <br />
+
             <input
               type="number"
               value={quantity}
@@ -106,6 +159,7 @@ export default function SalesPage() {
           <div>
             <label>Unit Price</label>
             <br />
+
             <input
               type="number"
               value={unitPrice}
@@ -158,19 +212,42 @@ export default function SalesPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Product</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Quantity</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Unit Price</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Total Price</th>
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Product
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Quantity
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Unit Price
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Total Price
+                </th>
               </tr>
             </thead>
+
             <tbody>
-              {sales.map((sale, index) => (
-                <tr key={index}>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{sale.product}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{sale.quantity}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>${sale.unitPrice.toFixed(2)}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>${sale.totalPrice.toFixed(2)}</td>
+              {sales.map((sale) => (
+                <tr key={sale.id}>
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {sale.juice_name}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {sale.quantity}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    ${sale.unit_price.toFixed(2)}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    ${sale.total_price.toFixed(2)}
+                  </td>
                 </tr>
               ))}
             </tbody>
