@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 type Expense = {
-  title: string;
+  id?: number;
+  item_name: string;
   category: string;
   quantity: number;
   unit: string;
-  amount: number;
-  pricePerUnit: number;
+  paid_amount: number;
+  price_per_unit: number;
 };
 
 const expenseOptions = [
@@ -37,42 +39,76 @@ export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const totalExpenses = useMemo(() => {
-    return expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    return expenses.reduce(
+      (sum, expense) => sum + expense.paid_amount,
+      0
+    );
   }, [expenses]);
 
   const pricePerUnitPreview = useMemo(() => {
     const parsedAmount = Number(amount) || 0;
+
     if (quantity <= 0) return 0;
+
     return parsedAmount / quantity;
   }, [amount, quantity]);
+
+  const fetchExpenses = async () => {
+    const { data, error } = await supabase
+      .from("expenses")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setExpenses(data || []);
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
 
-    const selectedExpense = expenseOptions.find((item) => item.title === value);
+    const selectedExpense = expenseOptions.find(
+      (item) => item.title === value
+    );
+
     if (selectedExpense) {
       setCategory(selectedExpense.category);
       setUnit(selectedExpense.unit);
     }
   };
 
-  const handleAddExpense = () => {
+  const handleAddExpense = async () => {
     const parsedAmount = Number(amount);
 
     if (quantity <= 0 || parsedAmount <= 0) return;
 
-    const newExpense: Expense = {
-      title,
-      category,
-      quantity,
-      unit,
-      amount: parsedAmount,
-      pricePerUnit: parsedAmount / quantity,
-    };
+    const { error } = await supabase.from("expenses").insert([
+      {
+        item_name: title,
+        category,
+        quantity,
+        unit,
+        paid_amount: parsedAmount,
+        price_per_unit: parsedAmount / quantity,
+      },
+    ]);
 
-    setExpenses([newExpense, ...expenses]);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
     setQuantity(1);
     setAmount("");
+
+    fetchExpenses();
   };
 
   return (
@@ -86,6 +122,7 @@ export default function ExpensesPage() {
     >
       <section style={{ marginBottom: "30px" }}>
         <h1 style={{ margin: 0, fontSize: "32px" }}>Expenses</h1>
+
         <p style={{ marginTop: "10px", color: "#666" }}>
           Track purchases and business costs.
         </p>
@@ -106,10 +143,15 @@ export default function ExpensesPage() {
           <div>
             <label>Expense Title</label>
             <br />
+
             <select
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "6px",
+              }}
             >
               {expenseOptions.map((item) => (
                 <option key={item.title} value={item.title}>
@@ -122,6 +164,7 @@ export default function ExpensesPage() {
           <div>
             <label>Category</label>
             <br />
+
             <input
               type="text"
               value={category}
@@ -138,17 +181,23 @@ export default function ExpensesPage() {
           <div>
             <label>Quantity</label>
             <br />
+
             <input
               type="number"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "6px",
+              }}
             />
           </div>
 
           <div>
             <label>Unit</label>
             <br />
+
             <input
               type="text"
               value={unit}
@@ -165,12 +214,17 @@ export default function ExpensesPage() {
           <div>
             <label>Total Amount Paid</label>
             <br />
+
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Enter total amount"
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "6px",
+              }}
             />
           </div>
 
@@ -211,7 +265,14 @@ export default function ExpensesPage() {
         }}
       >
         <h2 style={{ marginTop: 0 }}>Total Expenses</h2>
-        <p style={{ fontSize: "28px", fontWeight: "bold", margin: 0 }}>
+
+        <p
+          style={{
+            fontSize: "28px",
+            fontWeight: "bold",
+            margin: 0,
+          }}
+        >
           ${totalExpenses.toFixed(2)}
         </p>
       </section>
@@ -232,24 +293,57 @@ export default function ExpensesPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Title</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Category</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Quantity</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Unit</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Total Paid</th>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Price / Unit</th>
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Title
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Category
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Quantity
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Unit
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Total Paid
+                </th>
+
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Price / Unit
+                </th>
               </tr>
             </thead>
+
             <tbody>
-              {expenses.map((expense, index) => (
-                <tr key={index}>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{expense.title}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{expense.category}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{expense.quantity}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>{expense.unit}</td>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>${expense.amount.toFixed(2)}</td>
+              {expenses.map((expense) => (
+                <tr key={expense.id}>
                   <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    ${expense.pricePerUnit.toFixed(2)} / {expense.unit}
+                    {expense.item_name}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {expense.category}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {expense.quantity}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {expense.unit}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    ${expense.paid_amount.toFixed(2)}
+                  </td>
+
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    ${expense.price_per_unit.toFixed(2)} / {expense.unit}
                   </td>
                 </tr>
               ))}
@@ -259,4 +353,4 @@ export default function ExpensesPage() {
       </section>
     </main>
   );
-}   
+}
