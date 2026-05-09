@@ -12,18 +12,20 @@ type Expense = {
 };
 
 const expenseOptions = [
-  { title: "Oranges", category: "Fruits", unit: "kg" },
-  { title: "Strawberries", category: "Fruits", unit: "kg" },
-  { title: "Bananas", category: "Fruits", unit: "kg" },
-  { title: "Lemons", category: "Fruits", unit: "kg" },
+  { title: "Orange", category: "Fruits", unit: "kg" },
+  { title: "Strawberry", category: "Fruits", unit: "kg" },
+  { title: "Banana", category: "Fruits", unit: "kg" },
+  { title: "Lemon", category: "Fruits", unit: "kg" },
+  { title: "Pomegranate", category: "Fruits", unit: "kg" },
+  { title: "Mango", category: "Fruits", unit: "kg" },
+  { title: "Carrot", category: "Fruits", unit: "kg" },
+  { title: "Mint", category: "Fruits", unit: "pc" },
   { title: "Sugar", category: "Ingredients", unit: "kg" },
   { title: "Water", category: "Ingredients", unit: "liter" },
   { title: "Bottles 250 ml", category: "Packaging", unit: "piece" },
   { title: "Bottles 1 Liter", category: "Packaging", unit: "piece" },
   { title: "Caps", category: "Packaging", unit: "piece" },
-  { title: "Blender", category: "Equipment", unit: "piece" },
-  { title: "Transport", category: "Transport", unit: "service" },
-  { title: "Other", category: "Other", unit: "item" },
+  { title: "Others", category: "Other", unit: "item" },
 ];
 
 export default function ExpensesPage() {
