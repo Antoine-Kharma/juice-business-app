@@ -32,7 +32,6 @@ export default function InventoryPage() {
   const [category, setCategory] = useState(itemOptions[0].category);
   const [unit, setUnit] = useState(itemOptions[0].unit);
   const [stock, setStock] = useState(0);
-  const [action, setAction] = useState("add");
   const [items, setItems] = useState<InventoryItem[]>([]);
 
   const fetchInventory = async () => {
@@ -65,20 +64,24 @@ export default function InventoryPage() {
 
   const handleAddItem = async () => {
     if (stock === 0) {
-      alert("Please enter a stock quantity greater than 0");
+      alert("Please enter a stock adjustment value");
       return;
     }
 
     const existingItem = items.find((item) => item.item_name === selectedName);
 
     if (existingItem) {
+      const newQuantity = existingItem.quantity + stock;
+
+      if (newQuantity < 0) {
+        alert("Stock cannot be negative");
+        return;
+      }
+
       const { error } = await supabase
         .from("inventory")
         .update({
-          quantity:
-            action === "add"
-              ? existingItem.quantity + stock
-              : existingItem.quantity - stock,
+          quantity: newQuantity,
           category,
           unit,
         })
@@ -89,6 +92,11 @@ export default function InventoryPage() {
         return;
       }
     } else {
+      if (stock < 0) {
+        alert("Cannot create item with negative stock");
+        return;
+      }
+
       const { error } = await supabase.from("inventory").insert([
         {
           item_name: selectedName,
@@ -109,7 +117,14 @@ export default function InventoryPage() {
   };
 
   return (
-    <main style={{ padding: "40px", fontFamily: "Arial, sans-serif", backgroundColor: "#f9fafb", minHeight: "100vh" }}>
+    <main
+      style={{
+        padding: "40px",
+        fontFamily: "Arial, sans-serif",
+        backgroundColor: "#f9fafb",
+        minHeight: "100vh",
+      }}
+    >
       <section style={{ marginBottom: "30px" }}>
         <h1 style={{ margin: 0, fontSize: "32px" }}>Inventory</h1>
         <p style={{ marginTop: "10px", color: "#666" }}>
@@ -117,14 +132,26 @@ export default function InventoryPage() {
         </p>
       </section>
 
-      <section style={{ background: "white", padding: "24px", borderRadius: "16px", boxShadow: "0 4px 14px rgba(0,0,0,0.08)", marginBottom: "24px" }}>
-        <h2 style={{ marginTop: 0 }}>Add Inventory Item</h2>
+      <section
+        style={{
+          background: "white",
+          padding: "24px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+          marginBottom: "24px",
+        }}
+      >
+        <h2 style={{ marginTop: 0 }}>Add / Adjust Inventory Item</h2>
 
         <div style={{ display: "grid", gap: "14px", maxWidth: "500px" }}>
           <div>
             <label>Item Name</label>
             <br />
-            <select value={selectedName} onChange={(e) => handleItemChange(e.target.value)} style={{ width: "100%", padding: "10px", marginTop: "6px" }}>
+            <select
+              value={selectedName}
+              onChange={(e) => handleItemChange(e.target.value)}
+              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+            >
               {itemOptions.map((item) => (
                 <option key={item.name} value={item.name}>
                   {item.name}
@@ -136,40 +163,71 @@ export default function InventoryPage() {
           <div>
             <label>Category</label>
             <br />
-            <input type="text" value={category} readOnly style={{ width: "100%", padding: "10px", marginTop: "6px", backgroundColor: "#f3f4f6" }} />
+            <input
+              type="text"
+              value={category}
+              readOnly
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "6px",
+                backgroundColor: "#f3f4f6",
+              }}
+            />
           </div>
 
           <div>
             <label>Unit</label>
             <br />
-            <input type="text" value={unit} readOnly style={{ width: "100%", padding: "10px", marginTop: "6px", backgroundColor: "#f3f4f6" }} />
+            <input
+              type="text"
+              value={unit}
+              readOnly
+              style={{
+                width: "100%",
+                padding: "10px",
+                marginTop: "6px",
+                backgroundColor: "#f3f4f6",
+              }}
+            />
           </div>
 
           <div>
-            <label>Quantity to Add</label>
+            <label>Stock Adjustment (+ / -)</label>
             <br />
-            <input type="number" value={stock} onChange={(e) => setStock(Number(e.target.value))} style={{ width: "100%", padding: "10px", marginTop: "6px" }} />
-          </div>
-          <div>
-            <label>Action</label>
-            <br />
-            <select
-              value={action}
-              onChange={(e) => setAction(e.target.value)}
+            <input
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(Number(e.target.value))}
+              placeholder="Example: 50 or -20"
               style={{ width: "100%", padding: "10px", marginTop: "6px" }}
-            >
-              <option value="add">Add Stock</option>
-              <option value="reduce">Reduce Stock</option>
-            </select>
-          </div>          
+            />
+          </div>
 
-          <button onClick={handleAddItem} style={{ padding: "12px 16px", borderRadius: "10px", border: "none", backgroundColor: "black", color: "white", cursor: "pointer" }}>
-            Add Item
+          <button
+            onClick={handleAddItem}
+            style={{
+              padding: "12px 16px",
+              borderRadius: "10px",
+              border: "none",
+              backgroundColor: "black",
+              color: "white",
+              cursor: "pointer",
+            }}
+          >
+            Save Adjustment
           </button>
         </div>
       </section>
 
-      <section style={{ background: "white", padding: "24px", borderRadius: "16px", boxShadow: "0 4px 14px rgba(0,0,0,0.08)" }}>
+      <section
+        style={{
+          background: "white",
+          padding: "24px",
+          borderRadius: "16px",
+          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+        }}
+      >
         <h2 style={{ marginTop: 0 }}>Inventory List</h2>
 
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -181,6 +239,7 @@ export default function InventoryPage() {
               <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>Current Stock</th>
             </tr>
           </thead>
+
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
