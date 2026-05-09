@@ -62,7 +62,7 @@ export default function InventoryPage() {
     }
   };
 
-  const handleAddItem = async () => {
+  /*const handleAddItem = async () => {
     if (stock <= 0) {
       alert("Please enter a stock quantity greater than 0");
       return;
@@ -99,7 +99,7 @@ export default function InventoryPage() {
         return;
       }
     }
-
+*/
     setStock(0);
     fetchInventory();
   };
