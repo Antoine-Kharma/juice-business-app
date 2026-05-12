@@ -41,6 +41,7 @@ type Sale = {
   quantity: number;
   unit_price: number;
   total_price: number;
+  created_at?: string;
 };
 
 export default function SalesPage() {
@@ -227,6 +228,9 @@ export default function SalesPage() {
                 <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
                   Total Price
                 </th>
+                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
+                  Date & Time
+                </th>
               </tr>
             </thead>
 
@@ -247,6 +251,11 @@ export default function SalesPage() {
 
                   <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                     ${sale.total_price.toFixed(2)}
+                  </td>
+                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
+                    {sale.created_at
+                    ? new Date(sale.created_at).toLocaleString()
+                    : ""}
                   </td>
                 </tr>
               ))}
