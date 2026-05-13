@@ -1,10 +1,10 @@
 import ProtectedPage from "../components/ProtectedPage";
 
 const stats = [
-  { title: "Today Sales", value: "$0", icon: "💵" },
-  { title: "Cups Sold", value: "0", icon: "🥤" },
-  { title: "Low Stock Items", value: "0", icon: "⚠️" },
-  { title: "Best Seller", value: "-", icon: "🏆" },
+  { title: "Today Sales", value: "$0" },
+  { title: "Cups Sold", value: "0" },
+  { title: "Low Stock Items", value: "0" },
+  { title: "Best Seller", value: "-" },
 ];
 
 export default function DashboardPage() {
@@ -14,40 +14,37 @@ export default function DashboardPage() {
         style={{
           padding: "40px",
           fontFamily: "Arial, sans-serif",
-          background:
-            "linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%)",
+          background: "#f4f4f5",
           minHeight: "100vh",
         }}
       >
         <section
           style={{
-            background: "linear-gradient(135deg, #111827 0%, #000000 100%)",
+            background: "#0b0b0b",
             color: "white",
-            padding: "34px",
-            borderRadius: "24px",
+            padding: "36px",
+            borderRadius: "18px",
             marginBottom: "28px",
-            borderLeft: "6px solid #dc2626",
-            boxShadow: "0 18px 40px rgba(0,0,0,0.18)",
+            borderBottom: "5px solid #dc2626",
+            boxShadow: "0 12px 30px rgba(0,0,0,0.18)",
           }}
         >
           <p
             style={{
               margin: "0 0 10px",
-              color: "#fca5a5",
+              color: "#dc2626",
               fontWeight: 700,
-              letterSpacing: "1px",
+              letterSpacing: "1.5px",
               fontSize: "13px",
             }}
           >
-            ADMIN OVERVIEW
+            ADMIN PANEL
           </p>
 
-          <h1 style={{ margin: 0, fontSize: "38px", letterSpacing: "-1px" }}>
-            Dashboard
-          </h1>
+          <h1 style={{ margin: 0, fontSize: "40px" }}>Dashboard</h1>
 
-          <p style={{ marginTop: "12px", color: "#d1d5db", fontSize: "16px" }}>
-            Monitor your sales, inventory, and daily business activity.
+          <p style={{ marginTop: "12px", color: "#d4d4d8", fontSize: "16px" }}>
+            Business overview, sales activity, and stock status.
           </p>
         </section>
 
@@ -64,37 +61,29 @@ export default function DashboardPage() {
               key={stat.title}
               style={{
                 background: "white",
-                padding: "22px",
-                borderRadius: "20px",
-                boxShadow: "0 12px 28px rgba(15,23,42,0.08)",
-                border: "1px solid #e5e7eb",
+                padding: "24px",
+                borderRadius: "16px",
+                border: "1px solid #e5e5e5",
+                borderTop: "4px solid #dc2626",
+                boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
               }}
             >
-              <div
+              <p
                 style={{
-                  width: "46px",
-                  height: "46px",
-                  borderRadius: "14px",
-                  background: "#fee2e2",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "22px",
-                  marginBottom: "14px",
+                  margin: 0,
+                  color: "#52525b",
+                  fontSize: "14px",
+                  fontWeight: 600,
                 }}
               >
-                {stat.icon}
-              </div>
-
-              <p style={{ margin: 0, color: "#6b7280", fontSize: "14px" }}>
                 {stat.title}
               </p>
 
               <h2
                 style={{
-                  margin: "8px 0 0",
-                  fontSize: "30px",
-                  color: "#111827",
+                  margin: "12px 0 0",
+                  fontSize: "32px",
+                  color: "#0b0b0b",
                 }}
               >
                 {stat.value}
@@ -113,29 +102,38 @@ export default function DashboardPage() {
           <div
             style={{
               background: "white",
-              padding: "26px",
-              borderRadius: "22px",
-              boxShadow: "0 12px 28px rgba(15,23,42,0.08)",
-              border: "1px solid #e5e7eb",
+              padding: "28px",
+              borderRadius: "16px",
+              border: "1px solid #e5e5e5",
+              boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
             }}
           >
-            <h2 style={{ marginTop: 0 }}>Recent Activity</h2>
-            <p style={{ color: "#6b7280" }}>No sales recorded yet.</p>
+            <h2 style={{ marginTop: 0, color: "#0b0b0b" }}>
+              Recent Activity
+            </h2>
+            <p style={{ color: "#71717a" }}>No sales recorded yet.</p>
           </div>
 
           <div
             style={{
-              background: "#111827",
+              background: "#0b0b0b",
               color: "white",
-              padding: "26px",
-              borderRadius: "22px",
-              boxShadow: "0 12px 28px rgba(15,23,42,0.15)",
+              padding: "28px",
+              borderRadius: "16px",
+              border: "1px solid #1f1f1f",
               borderTop: "5px solid #dc2626",
+              boxShadow: "0 8px 20px rgba(0,0,0,0.16)",
             }}
           >
             <h2 style={{ marginTop: 0 }}>Quick Notes</h2>
 
-            <ul style={{ lineHeight: "1.9", paddingLeft: "18px", color: "#d1d5db" }}>
+            <ul
+              style={{
+                lineHeight: "1.9",
+                paddingLeft: "18px",
+                color: "#d4d4d8",
+              }}
+            >
               <li>Add first sale</li>
               <li>Add inventory items</li>
               <li>Set product prices</li>
