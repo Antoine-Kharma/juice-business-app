@@ -57,7 +57,6 @@ export default function Navbar() {
             boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
           }}
         >
-          🍊
         </div>
 
         <div>
@@ -69,7 +68,7 @@ export default function Navbar() {
               fontWeight: 900,
             }}
           >
-            Fresh Juice
+            SPLASH Juice
           </h2>
 
           <p
@@ -115,7 +114,7 @@ export default function Navbar() {
           onClick={handleLogout}
           style={{
             border: "none",
-            background: "rgba(0,0,0,0.18)",
+            background: "rgb(185, 6, 6)",
             color: "white",
             padding: "14px 26px",
             borderRadius: "18px",
