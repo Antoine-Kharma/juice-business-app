@@ -182,11 +182,12 @@ export default function DashboardPage() {
 
           <div
             style={{
-              background: "linear-gradient(135deg,#486c07,#6d990e)",
+              background: "linear-gradient(135deg,#b4df38,#dfff8c)",
               color: "black",
               padding: "36px",
               borderRadius: "34px",
-              boxShadow: "0 24px 60px rgba(75,100,20,0.25)",
+              boxShadow: "0 18px 40px rgba(75,100,20,0.18)",
+              border: "1px solid rgba(255,255,255,0.45)",
               minHeight: "180px",
             }}
           >
