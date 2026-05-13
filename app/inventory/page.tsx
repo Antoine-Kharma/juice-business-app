@@ -26,6 +26,7 @@ const itemOptions = [
   { name: "Bottles 250 ml", category: "Packaging", unit: "piece" },
   { name: "Bottles 1 Liter", category: "Packaging", unit: "piece" },
   { name: "Caps", category: "Packaging", unit: "piece" },
+  { name: "Stickers", category: "Packaging", unit: "piece" },
 ];
 
 export default function InventoryPage() {
