@@ -34,7 +34,7 @@ export default function LoginPage() {
       style={{
         padding: "40px",
         fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f9fafb",
+        backgroundColor: "var(--background)",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
@@ -43,7 +43,7 @@ export default function LoginPage() {
     >
       <section
         style={{
-          background: "white",
+          background: "var(--card)",
           padding: "30px",
           borderRadius: "16px",
           boxShadow: "0 4px 14px rgba(0,0,0,0.08)",

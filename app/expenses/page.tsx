@@ -116,7 +116,7 @@ export default function ExpensesPage() {
       style={{
         padding: "40px",
         fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f9fafb",
+        backgroundColor: "var(--background)",
         minHeight: "100vh",
       }}
     >
@@ -130,7 +130,7 @@ export default function ExpensesPage() {
 
       <section
         style={{
-          background: "white",
+          background: "var(--card)",
           padding: "24px",
           borderRadius: "16px",
           boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
@@ -288,7 +288,7 @@ export default function ExpensesPage() {
         <h2 style={{ marginTop: 0 }}>Recent Expenses</h2>
 
         {expenses.length === 0 ? (
-          <p style={{ color: "#666" }}>No expenses added yet.</p>
+          <p style={{ color: "var(--secondary-text)" }}>No expenses added yet.</p>
         ) : (
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>

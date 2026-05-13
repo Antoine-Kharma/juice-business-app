@@ -11,13 +11,13 @@ export default function DashboardPage() {
       style={{
         padding: "40px",
         fontFamily: "Arial, sans-serif",
-        backgroundColor: "#f9fafb",
+        backgroundColor: "var(--background)",
         minHeight: "100vh",
       }}
     >
       <section style={{ marginBottom: "30px" }}>
         <h1 style={{ margin: 0, fontSize: "32px" }}>Dashboard</h1>
-        <p style={{ marginTop: "10px", color: "#666" }}>
+        <p style={{ marginTop: "10px", color: "var(--secondary-text)" }}>
           Overview of your fresh juice business.
         </p>
       </section>
@@ -68,7 +68,7 @@ export default function DashboardPage() {
 
         <div
           style={{
-            background: "white",
+            background: "var(--card)",
             padding: "24px",
             borderRadius: "16px",
             boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
