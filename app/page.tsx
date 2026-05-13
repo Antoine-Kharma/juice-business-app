@@ -38,7 +38,6 @@ export default function Home() {
               marginBottom: "12px",
             }}
           >
-            100% FRESH & NATURAL
           </p>
 
           <h1
@@ -70,7 +69,7 @@ export default function Home() {
             <Link
               href="/login"
               style={{
-                background: "#dc2626",
+                background: "#139c35",
                 color: "white",
                 padding: "14px 24px",
                 borderRadius: "999px",
@@ -123,7 +122,7 @@ export default function Home() {
       >
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "36px" }}>
-            <p style={{ color: "#dc2626", fontWeight: "bold" }}>
+            <p style={{ color: "#139c35", fontWeight: "bold" }}>
               OUR MENU
             </p>
 
