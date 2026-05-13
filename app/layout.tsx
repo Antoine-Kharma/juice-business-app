@@ -1,20 +1,22 @@
+"use client";
+
 import "./globals.css";
 import Navbar from "./components/Navbar";
-
-export const metadata = {
-  title: "Fresh Juice Business System",
-  description: "Juice sales and inventory management app",
-};
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const pathname = usePathname();
+
+  const hideNavbar = pathname === "/";
+
   return (
     <html lang="en">
       <body>
-        <Navbar />
+        {!hideNavbar && <Navbar />}
         {children}
       </body>
     </html>

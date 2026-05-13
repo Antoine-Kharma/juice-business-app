@@ -40,7 +40,7 @@ export default function DashboardPage() {
               fontSize: "13px",
             }}
           >
-            FRESH JUICE ADMIN
+            FRESH JUICE 
           </p>
 
           <h1
