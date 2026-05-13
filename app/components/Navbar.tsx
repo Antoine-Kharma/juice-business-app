@@ -98,12 +98,12 @@ export default function Navbar() {
             style={{
               textDecoration: "none",
               color: "white",
-              background: "rgba(255,255,255,0.12)",
+              background: "rgba(0,0,0,0.18)",
               padding: "14px 24px",
               borderRadius: "18px",
               fontWeight: 700,
               backdropFilter: "blur(10px)",
-              boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+              boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
               transition: "0.2s",
             }}
           >
