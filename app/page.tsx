@@ -1,88 +1,169 @@
 import Link from "next/link";
 
-const pages = [
-  { name: "Dashboard", href: "/dashboard", description: "View business overview and statistics" },
-  { name: "Sales", href: "/sales", description: "Record sold juices and quantities" },
-  { name: "Inventory", href: "/inventory", description: "Track fruits, bottles, cups, and stock" },
-  { name: "Expenses", href: "/expenses", description: "Track purchases and business costs" },
-  { name: "Reports", href: "/reports", description: "See sales and stock reports" },
-];
-
-const juices = [
-  "Orange",
-  "Strawberry Banana",
-  "Strawberry Lemonade",
+const products = [
+  "Orange Juice",
   "Lemonade",
+  "Minted Lemonade",
+  "Mango Juice",
+  "Carrot Juice",
+  "Pomegranate Juice",
 ];
 
 export default function Home() {
   return (
     <main
       style={{
-        padding: "40px",
         fontFamily: "Arial, sans-serif",
-        backgroundColor: "var(--background)",
         minHeight: "100vh",
+        background: "linear-gradient(180deg, #a3cf3a 0%, #f9fafb 70%)",
       }}
     >
       <section
         style={{
-          background: "var(--card)",
-          padding: "30px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-          marginBottom: "30px",
-        }}
-      >
-        <h1 style={{ margin: 0, fontSize: "32px" }}>Fresh Juice Business System</h1>
-        <p style={{ marginTop: "12px", color: "#555" }}>
-          Manage your juice sales, stock, expenses, and reports in one place.
-        </p>
-      </section>
-
-      <section
-        style={{
+          padding: "80px 40px",
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "16px",
-          marginBottom: "30px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          alignItems: "center",
+          gap: "40px",
+          maxWidth: "1200px",
+          margin: "0 auto",
         }}
       >
-        {pages.map((page) => (
-          <Link
-            key={page.name}
-            href={page.href}
+        <div>
+          <p
             style={{
-              display: "block",
-              textDecoration: "none",
-              color: "black",
-              background: "white",
-              padding: "20px",
-              borderRadius: "14px",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-              border: "1px solid #eee",
+              color: "#dc2626",
+              fontWeight: "bold",
+              letterSpacing: "2px",
+              marginBottom: "12px",
             }}
           >
-            <h3 style={{ marginTop: 0 }}>{page.name}</h3>
-            <p style={{ marginBottom: 0, color: "var(--secondary-text)" }}>{page.description}</p>
-          </Link>
-        ))}
+            100% FRESH & NATURAL
+          </p>
+
+          <h1
+            style={{
+              fontSize: "56px",
+              lineHeight: "1.05",
+              margin: 0,
+              color: "#111827",
+              fontWeight: 800,
+            }}
+          >
+            Fresh Juice <br /> Made Daily
+          </h1>
+
+          <p
+            style={{
+              marginTop: "20px",
+              fontSize: "18px",
+              color: "#374151",
+              maxWidth: "520px",
+              lineHeight: "1.7",
+            }}
+          >
+            Pure fruit juices prepared with fresh ingredients, clean packaging,
+            and natural flavors.
+          </p>
+
+          <div style={{ display: "flex", gap: "14px", marginTop: "30px" }}>
+            <Link
+              href="/login"
+              style={{
+                background: "#dc2626",
+                color: "white",
+                padding: "14px 24px",
+                borderRadius: "999px",
+                textDecoration: "none",
+                fontWeight: "bold",
+                boxShadow: "0 10px 20px rgba(220,38,38,0.3)",
+              }}
+            >
+              Admin Login
+            </Link>
+
+            <a
+              href="#products"
+              style={{
+                background: "white",
+                color: "#111827",
+                padding: "14px 24px",
+                borderRadius: "999px",
+                textDecoration: "none",
+                fontWeight: "bold",
+                border: "1px solid #e5e7eb",
+              }}
+            >
+              View Products
+            </a>
+          </div>
+        </div>
+
+        <div
+          style={{
+            background: "rgba(255,255,255,0.45)",
+            borderRadius: "50%",
+            padding: "40px",
+            textAlign: "center",
+            boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
+          }}
+        >
+          <div style={{ fontSize: "180px" }}>🍊</div>
+        </div>
       </section>
 
       <section
+        id="products"
         style={{
           background: "white",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
+          padding: "60px 40px",
+          borderTopLeftRadius: "40px",
+          borderTopRightRadius: "40px",
         }}
       >
-        <h2>Available juices</h2>
-        <ul style={{ lineHeight: "1.9" }}>
-          {juices.map((juice) => (
-            <li key={juice}>{juice}</li>
-          ))}
-        </ul>
+        <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "36px" }}>
+            <p style={{ color: "#dc2626", fontWeight: "bold" }}>
+              OUR MENU
+            </p>
+
+            <h2 style={{ fontSize: "36px", margin: 0 }}>
+              Featured Products
+            </h2>
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "20px",
+            }}
+          >
+            {products.map((product) => (
+              <div
+                key={product}
+                style={{
+                  padding: "24px",
+                  borderRadius: "24px",
+                  background: "#f9fafb",
+                  textAlign: "center",
+                  boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
+                  border: "1px solid #eee",
+                }}
+              >
+                <div style={{ fontSize: "48px", marginBottom: "14px" }}>
+                  🥤
+                </div>
+
+                <h3 style={{ margin: 0 }}>{product}</h3>
+
+                <p style={{ color: "#6b7280", fontSize: "14px" }}>
+                  250ml / 1 Liter
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </main>
   );
