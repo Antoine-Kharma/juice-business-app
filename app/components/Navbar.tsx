@@ -2,41 +2,44 @@
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
+  const isLoginPage = pathname === "/login";
+
   return (
     <nav
       style={{
         display: "flex",
-        gap: "20px",
+        justifyContent: "space-between",
+        alignItems: "center",
         padding: "20px 40px",
         backgroundColor: "#f3f4f6",
         borderBottom: "1px solid #ddd",
         fontFamily: "Arial, sans-serif",
-        alignItems: "center",
       }}
     >
-      <Link href="/">Home</Link>
+      <Link
+        href="/dashboard"
+        style={{
+          textDecoration: "none",
+          color: "black",
+          fontSize: "24px",
+          fontWeight: "bold",
+        }}
+      >
+        Fresh Juice Business System
+      </Link>
 
-      <Link href="/dashboard">Dashboard</Link>
-
-      <Link href="/sales">Sales</Link>
-
-      <Link href="/inventory">Inventory</Link>
-
-      <Link href="/expenses">Expenses</Link>
-
-      <Link href="/reports">Reports</Link>
-
-      <div style={{ marginLeft: "auto" }}>
+      {!isLoginPage && (
         <button
           onClick={handleLogout}
           style={{
@@ -50,7 +53,7 @@ export default function Navbar() {
         >
           Logout
         </button>
-      </div>
+      )}
     </nav>
   );
 }
