@@ -73,31 +73,86 @@ export default function SalesPage() {
     fetchSales();
   }, []);
 
-  const handleAddSale = async () => {
-    if (!product || quantity <= 0) return;
+const handleAddSale = async () => {
+  if (!product || quantity <= 0) return;
 
-    const parsedUnitPrice = Number(unitPrice) || 0;
+  const parsedUnitPrice = Number(unitPrice) || 0;
 
-    const { error } = await supabase.from("sales").insert([
-      {
-        juice_name: product,
-        quantity,
-        unit_price: parsedUnitPrice,
-        total_price: quantity * parsedUnitPrice,
-        quantity_sold: quantity,
-        selling_price: parsedUnitPrice,
-      },
-    ]);
+  const recipes: Record<string, Record<string, number>> = {
+    "Orange - 250 ml": {
+      Oranges: 0.45,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      Stickers: 1,
+    },
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    setQuantity(1);
-    setUnitPrice("");
-    fetchSales();
+    "Orange - 1 Liter": {
+      Oranges: 1.8,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      Stickers: 1,
+    },
   };
+
+  const recipe = recipes[product];
+
+  if (recipe) {
+    for (const itemName in recipe) {
+      const neededQuantity = recipe[itemName] * quantity;
+
+      const { data: inventoryItem, error: fetchError } = await supabase
+        .from("inventory")
+        .select("*")
+        .eq("item_name", itemName)
+        .single();
+
+      if (fetchError || !inventoryItem) {
+        alert(`${itemName} not found in inventory`);
+        return;
+      }
+
+      const newStock = inventoryItem.quantity - neededQuantity;
+
+      if (newStock < 0) {
+        alert(`Not enough stock for ${itemName}`);
+        return;
+      }
+
+      const { error: updateError } = await supabase
+        .from("inventory")
+        .update({
+          quantity: newStock,
+        })
+        .eq("id", inventoryItem.id);
+
+      if (updateError) {
+        alert(updateError.message);
+        return;
+      }
+    }
+  }
+
+  const { error } = await supabase.from("sales").insert([
+    {
+      juice_name: product,
+      quantity,
+      unit_price: parsedUnitPrice,
+      total_price: quantity * parsedUnitPrice,
+      quantity_sold: quantity,
+      selling_price: parsedUnitPrice,
+    },
+  ]);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setQuantity(1);
+  setUnitPrice("");
+
+  fetchSales();
+};
 
   return (
     <main
