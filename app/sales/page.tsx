@@ -19,9 +19,6 @@ const products = [
   "Pomegranate - 250 ml",
   "Pomegranate - 1 Liter",
 
-  "Frozen Pomegranate - 250 ml",
-  "Frozen Pomegranate - 1 Liter",
-
   "Minted Lemonade - 250 ml",
   "Minted Lemonade - 1 Liter",
 
