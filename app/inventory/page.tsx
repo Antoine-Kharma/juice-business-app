@@ -20,7 +20,7 @@ const itemOptions = [
   { name: "Frozen Pomegranates", category: "Fruit", unit: "kg" },
   { name: "Mangos", category: "Fruit", unit: "kg" },
   { name: "Carrots", category: "Fruit", unit: "kg" },
-  { name: "Mints", category: "Fruit", unit: "pc" },
+  { name: "Mints", category: "Ingredient", unit: "pc" },
   { name: "Sugar", category: "Ingredient", unit: "kg" },
   { name: "Water", category: "Ingredient", unit: "liter" },
   { name: "Bottles 250 ml", category: "Packaging", unit: "piece" },
@@ -29,12 +29,18 @@ const itemOptions = [
   { name: "Stickers", category: "Packaging", unit: "piece" },
 ];
 
+const categories = ["Fruit", "Ingredient", "Packaging"];
+
 export default function InventoryPage() {
-  const [selectedName, setSelectedName] = useState(itemOptions[0].name);
-  const [category, setCategory] = useState(itemOptions[0].category);
-  const [unit, setUnit] = useState(itemOptions[0].unit);
+  const [category, setCategory] = useState(categories[0]);
+  const [selectedName, setSelectedName] = useState("Oranges");
+  const [unit, setUnit] = useState("kg");
   const [stock, setStock] = useState("");
   const [items, setItems] = useState<InventoryItem[]>([]);
+
+  const filteredItems = itemOptions.filter(
+    (item) => item.category === category
+  );
 
   const fetchInventory = async () => {
     const { data, error } = await supabase
@@ -54,13 +60,23 @@ export default function InventoryPage() {
     fetchInventory();
   }, []);
 
+  const handleCategoryChange = (value: string) => {
+    setCategory(value);
+
+    const firstItem = itemOptions.find((item) => item.category === value);
+
+    if (firstItem) {
+      setSelectedName(firstItem.name);
+      setUnit(firstItem.unit);
+    }
+  };
+
   const handleItemChange = (value: string) => {
     setSelectedName(value);
 
     const selectedItem = itemOptions.find((item) => item.name === value);
 
     if (selectedItem) {
-      setCategory(selectedItem.category);
       setUnit(selectedItem.unit);
     }
   };
@@ -153,41 +169,37 @@ export default function InventoryPage() {
 
         <div style={{ display: "grid", gap: "14px", maxWidth: "500px" }}>
           <div>
-            <label>Item Name</label>
+            <label>Category</label>
             <br />
 
             <select
-              value={selectedName}
-              onChange={(e) => handleItemChange(e.target.value)}
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-              }}
+              value={category}
+              onChange={(e) => handleCategoryChange(e.target.value)}
+              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
             >
-              {itemOptions.map((item) => (
-                <option key={item.name} value={item.name}>
-                  {item.name}
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label>Category</label>
+            <label>Item Name</label>
             <br />
 
-            <input
-              type="text"
-              value={category}
-              readOnly
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-                backgroundColor: "#f3f4f6",
-              }}
-            />
+            <select
+              value={selectedName}
+              onChange={(e) => handleItemChange(e.target.value)}
+              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
+            >
+              {filteredItems.map((item) => (
+                <option key={item.name} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -216,11 +228,7 @@ export default function InventoryPage() {
               value={stock}
               onChange={(e) => setStock(e.target.value)}
               placeholder="Example: 50 or -20"
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-              }}
+              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
             />
           </div>
 
@@ -253,43 +261,16 @@ export default function InventoryPage() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr>
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
+              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
                 Item Name
               </th>
-
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
+              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
                 Category
               </th>
-
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
+              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
                 Unit
               </th>
-
-              <th
-                style={{
-                  textAlign: "left",
-                  padding: "10px",
-                  borderBottom: "1px solid #ddd",
-                }}
-              >
+              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
                 Current Stock
               </th>
             </tr>
@@ -298,39 +279,16 @@ export default function InventoryPage() {
           <tbody>
             {items.map((item) => (
               <tr key={item.id}>
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
+                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                   {item.item_name}
                 </td>
-
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
+                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                   {item.category}
                 </td>
-
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
+                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                   {item.unit}
                 </td>
-
-                <td
-                  style={{
-                    padding: "10px",
-                    borderBottom: "1px solid #eee",
-                  }}
-                >
+                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
                   {item.quantity}
                 </td>
               </tr>
