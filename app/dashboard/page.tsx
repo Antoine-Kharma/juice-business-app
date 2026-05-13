@@ -12,20 +12,21 @@ export default function DashboardPage() {
     <ProtectedPage>
       <main
         style={{
-          padding: "40px",
+          padding: "30px",
           fontFamily: "Arial, sans-serif",
-          background: "linear-gradient(135deg, #9acd32 0%, #f7ffe8 100%)",
+          background: "linear-gradient(180deg,#b4d94f 0%, #f4ffe0 100%)",
           minHeight: "100vh",
         }}
       >
+        {/* HERO SECTION */}
+
         <section
           style={{
-            minHeight: "260px",
-            background:
-              "linear-gradient(135deg, rgba(154,205,50,0.95), rgba(210,255,130,0.95))",
-            borderRadius: "34px",
-            padding: "42px",
-            marginBottom: "30px",
+            minHeight: "280px",
+            background: "linear-gradient(135deg,#93c81f,#d6ff6b)",
+            borderRadius: "38px",
+            padding: "50px",
+            marginBottom: "34px",
             position: "relative",
             overflow: "hidden",
             boxShadow: "0 24px 60px rgba(75,100,20,0.25)",
@@ -35,86 +36,91 @@ export default function DashboardPage() {
             style={{
               margin: 0,
               color: "white",
-              fontWeight: 800,
+              fontWeight: 900,
               letterSpacing: "2px",
-              fontSize: "13px",
+              fontSize: "14px",
             }}
           >
-            FRESH JUICE 
+            WELCOME BACK!
           </p>
 
           <h1
             style={{
-              margin: "18px 0 0",
+              margin: "20px 0 0",
               color: "white",
-              fontSize: "54px",
-              lineHeight: "1",
+              fontSize: "64px",
+              lineHeight: "0.95",
               fontWeight: 900,
+              maxWidth: "650px",
             }}
           >
-            Business Dashboard
+            Dashboard Overview
           </h1>
 
           <p
             style={{
-              color: "rgba(255,255,255,0.9)",
-              fontSize: "18px",
-              maxWidth: "520px",
+              color: "white",
+              fontSize: "22px",
+              maxWidth: "620px",
               lineHeight: "1.6",
+              marginTop: "22px",
+              fontWeight: 500,
             }}
           >
-            Track sales, stock, best sellers, and daily business performance in
-            one clean place.
+            Track your sales, inventory, and business performance in one clean
+            place.
           </p>
 
           <div
             style={{
               position: "absolute",
-              right: "70px",
-              top: "35px",
-              width: "190px",
-              height: "190px",
+              right: "60px",
+              top: "20px",
+              width: "250px",
+              height: "250px",
               borderRadius: "50%",
-              background: "rgba(255,255,255,0.35)",
+              background: "rgba(255,255,255,0.22)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "90px",
+              fontSize: "110px",
               boxShadow: "0 20px 50px rgba(0,0,0,0.12)",
             }}
           >
-            🍋
+            🥤
           </div>
         </section>
+
+        {/* STATS */}
 
         <section
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "20px",
-            marginBottom: "30px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+            gap: "24px",
+            marginBottom: "34px",
           }}
         >
           {stats.map((stat) => (
             <div
               key={stat.title}
               style={{
-                background: "rgba(255,255,255,0.75)",
-                backdropFilter: "blur(16px)",
-                padding: "26px",
-                borderRadius: "28px",
-                boxShadow: "0 18px 40px rgba(75,100,20,0.14)",
-                border: "1px solid rgba(255,255,255,0.7)",
+                background: "linear-gradient(135deg,#97cf1d,#8bc814)",
+                color: "white",
+                padding: "34px",
+                borderRadius: "30px",
+                boxShadow: "0 18px 40px rgba(75,100,20,0.18)",
+                border: "1px solid rgba(255,255,255,0.45)",
               }}
             >
               <p
                 style={{
                   margin: 0,
-                  color: "#5f7f18",
-                  fontSize: "14px",
-                  fontWeight: 800,
+                  color: "rgba(255,255,255,0.92)",
+                  fontSize: "15px",
+                  fontWeight: 900,
                   textTransform: "uppercase",
-                  letterSpacing: "0.6px",
+                  letterSpacing: "1px",
                 }}
               >
                 {stat.title}
@@ -122,9 +128,9 @@ export default function DashboardPage() {
 
               <h2
                 style={{
-                  margin: "14px 0 0",
-                  fontSize: "38px",
-                  color: "#263500",
+                  margin: "18px 0 0",
+                  fontSize: "48px",
+                  color: "white",
                   fontWeight: 900,
                 }}
               >
@@ -134,43 +140,72 @@ export default function DashboardPage() {
           ))}
         </section>
 
+        {/* BOTTOM SECTION */}
+
         <section
           style={{
             display: "grid",
             gridTemplateColumns: "2fr 1fr",
-            gap: "20px",
+            gap: "24px",
           }}
         >
           <div
             style={{
-              background: "rgba(255,255,255,0.82)",
-              backdropFilter: "blur(16px)",
-              padding: "30px",
-              borderRadius: "30px",
-              boxShadow: "0 18px 40px rgba(75,100,20,0.14)",
-              border: "1px solid rgba(255,255,255,0.8)",
+              background: "linear-gradient(135deg,#b4df38,#dfff8c)",
+              color: "white",
+              padding: "36px",
+              borderRadius: "34px",
+              boxShadow: "0 18px 40px rgba(75,100,20,0.18)",
+              border: "1px solid rgba(255,255,255,0.45)",
+              minHeight: "180px",
             }}
           >
-            <h2 style={{ marginTop: 0, color: "#263500" }}>Recent Activity</h2>
-            <p style={{ color: "#64702e" }}>No sales recorded yet.</p>
+            <h2
+              style={{
+                marginTop: 0,
+                color: "white",
+                fontSize: "32px",
+              }}
+            >
+              Recent Activity
+            </h2>
+
+            <p
+              style={{
+                color: "rgba(255,255,255,0.95)",
+                fontSize: "20px",
+              }}
+            >
+              No sales recorded yet.
+            </p>
           </div>
 
           <div
             style={{
-              background: "rgba(38,53,0,0.92)",
+              background: "linear-gradient(135deg,#486c07,#6d990e)",
               color: "white",
-              padding: "30px",
-              borderRadius: "30px",
-              boxShadow: "0 18px 40px rgba(75,100,20,0.2)",
+              padding: "36px",
+              borderRadius: "34px",
+              boxShadow: "0 18px 40px rgba(75,100,20,0.22)",
+              minHeight: "180px",
             }}
           >
-            <h2 style={{ marginTop: 0 }}>Quick Notes</h2>
+            <h2
+              style={{
+                marginTop: 0,
+                color: "white",
+                fontSize: "32px",
+              }}
+            >
+              Quick Notes
+            </h2>
 
             <ul
               style={{
-                lineHeight: "1.9",
-                paddingLeft: "18px",
-                color: "#eaffb6",
+                lineHeight: "2.1",
+                paddingLeft: "20px",
+                color: "white",
+                fontSize: "19px",
               }}
             >
               <li>Add first sale</li>

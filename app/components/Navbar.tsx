@@ -2,182 +2,131 @@
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
-  const pathname = usePathname();
-
-  const isLoginPage = pathname === "/login";
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push("/login");
   };
 
+  const links = [
+    { name: "Dashboard", href: "/dashboard" },
+    { name: "Sales", href: "/sales" },
+    { name: "Inventory", href: "/inventory" },
+    { name: "Expenses", href: "/expenses" },
+    { name: "Reports", href: "/reports" },
+  ];
+
   return (
     <nav
       style={{
+        background: "linear-gradient(135deg,#84cc16,#a3e635)",
+        padding: "22px 28px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderRadius: "0 0 28px 28px",
+        boxShadow: "0 10px 30px rgba(120,160,20,0.25)",
         position: "sticky",
         top: 0,
-        zIndex: 100,
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "18px 40px",
-        background: "linear-gradient(90deg, #0f0f0f 0%, #1a1a1a 100%)",
-        borderBottom: "3px solid #dc2626",
-        boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
-        fontFamily: "Arial, sans-serif",
+        zIndex: 1000,
       }}
     >
-      {/* LEFT SIDE */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "40px",
+          gap: "14px",
         }}
       >
-        {/* LOGO */}
-        <Link
-          href="/dashboard"
+        <div
           style={{
-            textDecoration: "none",
+            width: "54px",
+            height: "54px",
+            borderRadius: "18px",
+            background: "rgba(255,255,255,0.18)",
+            backdropFilter: "blur(10px)",
             display: "flex",
             alignItems: "center",
-            gap: "12px",
+            justifyContent: "center",
+            fontSize: "28px",
+            color: "white",
+            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
           }}
         >
-          <div
+          🍊
+        </div>
+
+        <div>
+          <h2
             style={{
-              width: "42px",
-              height: "42px",
-              borderRadius: "12px",
-              background: "#dc2626",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              margin: 0,
               color: "white",
-              fontWeight: "bold",
-              fontSize: "20px",
-              boxShadow: "0 4px 14px rgba(220,38,38,0.45)",
+              fontSize: "32px",
+              fontWeight: 900,
             }}
           >
-            🍊
-          </div>
+            Fresh Juice
+          </h2>
 
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <span
-              style={{
-                color: "white",
-                fontSize: "20px",
-                fontWeight: 700,
-                letterSpacing: "-0.3px",
-              }}
-            >
-              Fresh Juice
-            </span>
-
-            <span
-              style={{
-                color: "#9ca3af",
-                fontSize: "13px",
-                marginTop: "2px",
-              }}
-            >
-              Business Management System
-            </span>
-          </div>
-        </Link>
-
-        {/* NAVIGATION LINKS */}
-        {!isLoginPage && (
-          <div
+          <p
             style={{
-              display: "flex",
-              gap: "24px",
-              alignItems: "center",
+              margin: 0,
+              color: "rgba(255,255,255,0.85)",
+              fontSize: "14px",
             }}
           >
-            <Link
-              href="/dashboard"
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              Dashboard
-            </Link>
-
-            <Link
-              href="/sales"
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              Sales
-            </Link>
-
-            <Link
-              href="/inventory"
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              Inventory
-            </Link>
-
-            <Link
-              href="/expenses"
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              Expenses
-            </Link>
-
-            <Link
-              href="/reports"
-              style={{
-                color: "white",
-                textDecoration: "none",
-                fontWeight: 500,
-              }}
-            >
-              Reports
-            </Link>
-          </div>
-        )}
+            Business Management System
+          </p>
+        </div>
       </div>
 
-      {/* LOGOUT BUTTON */}
-      {!isLoginPage && (
+      <div
+        style={{
+          display: "flex",
+          gap: "16px",
+          alignItems: "center",
+        }}
+      >
+        {links.map((link) => (
+          <Link
+            key={link.name}
+            href={link.href}
+            style={{
+              textDecoration: "none",
+              color: "white",
+              background: "rgba(255,255,255,0.12)",
+              padding: "14px 24px",
+              borderRadius: "18px",
+              fontWeight: 700,
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+              transition: "0.2s",
+            }}
+          >
+            {link.name}
+          </Link>
+        ))}
+
         <button
           onClick={handleLogout}
           style={{
-            padding: "10px 20px",
-            borderRadius: "12px",
             border: "none",
-            background: "#dc2626",
+            background: "rgba(0,0,0,0.18)",
             color: "white",
-            fontWeight: 600,
-            fontSize: "14px",
+            padding: "14px 26px",
+            borderRadius: "18px",
+            fontWeight: 800,
             cursor: "pointer",
-            transition: "0.2s ease",
-            boxShadow: "0 6px 16px rgba(220,38,38,0.35)",
+            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
           }}
         >
           Logout
         </button>
-      )}
+      </div>
     </nav>
   );
 }

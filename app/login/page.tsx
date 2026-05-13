@@ -57,7 +57,6 @@ export default function LoginPage() {
               marginBottom: "12px",
             }}
           >
-            ADMIN ACCESS
           </p>
 
           <h1
