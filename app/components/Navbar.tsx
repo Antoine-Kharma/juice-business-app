@@ -72,7 +72,7 @@ export default function Navbar() {
           <h2
             style={{
               margin: 0,
-              color: "white",
+              color: "black",
               fontSize: "32px",
               fontWeight: 900,
             }}
@@ -83,7 +83,7 @@ export default function Navbar() {
           <p
             style={{
               margin: 0,
-              color: "rgba(255,255,255,0.85)",
+              color: "black",
               fontSize: "14px",
             }}
           >
@@ -105,7 +105,7 @@ export default function Navbar() {
             href={link.href}
             style={{
               textDecoration: "none",
-              color: "white",
+              color: "black",
               background: "rgba(0,0,0,0.18)",
               padding: "14px 24px",
               borderRadius: "18px",
@@ -124,7 +124,7 @@ export default function Navbar() {
           style={{
             border: "none",
             background: "rgb(185, 6, 6)",
-            color: "white",
+            color: "black",
             padding: "14px 26px",
             borderRadius: "18px",
             fontWeight: 800,
