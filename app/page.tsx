@@ -122,7 +122,7 @@ export default function Home() {
       >
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "36px" }}>
-            <p style={{ color: "#139c35", fontWeight: "bold" }}>
+            <p style={{ color: "#000000", fontWeight: "bold" }}>
               OUR MENU
             </p>
 

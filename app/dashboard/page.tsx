@@ -35,7 +35,7 @@ export default function DashboardPage() {
           <p
             style={{
               margin: 0,
-              color: "white",
+              color: "black",
               fontWeight: 900,
               letterSpacing: "2px",
               fontSize: "14px",
@@ -47,7 +47,7 @@ export default function DashboardPage() {
           <h1
             style={{
               margin: "20px 0 0",
-              color: "white",
+              color: "black",
               fontSize: "64px",
               lineHeight: "0.95",
               fontWeight: 900,
@@ -59,7 +59,7 @@ export default function DashboardPage() {
 
           <p
             style={{
-              color: "white",
+              color: "black",
               fontSize: "22px",
               maxWidth: "620px",
               lineHeight: "1.6",
@@ -106,7 +106,7 @@ export default function DashboardPage() {
               key={stat.title}
               style={{
                 background: "linear-gradient(135deg,#97cf1d,#8bc814)",
-                color: "white",
+                color: "black",
                 padding: "34px",
                 borderRadius: "30px",
                 boxShadow: "0 18px 40px rgba(75,100,20,0.18)",
@@ -116,7 +116,7 @@ export default function DashboardPage() {
               <p
                 style={{
                   margin: 0,
-                  color: "rgba(255,255,255,0.92)",
+                  color: "black",
                   fontSize: "15px",
                   fontWeight: 900,
                   textTransform: "uppercase",
@@ -130,7 +130,7 @@ export default function DashboardPage() {
                 style={{
                   margin: "18px 0 0",
                   fontSize: "48px",
-                  color: "white",
+                  color: "black",
                   fontWeight: 900,
                 }}
               >
@@ -152,7 +152,7 @@ export default function DashboardPage() {
           <div
             style={{
               background: "linear-gradient(135deg,#b4df38,#dfff8c)",
-              color: "white",
+              color: "black",
               padding: "36px",
               borderRadius: "34px",
               boxShadow: "0 18px 40px rgba(75,100,20,0.18)",
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             <h2
               style={{
                 marginTop: 0,
-                color: "white",
+                color: "black",
                 fontSize: "32px",
               }}
             >
@@ -172,7 +172,7 @@ export default function DashboardPage() {
 
             <p
               style={{
-                color: "rgba(255,255,255,0.95)",
+                color: "black",
                 fontSize: "20px",
               }}
             >
@@ -183,7 +183,7 @@ export default function DashboardPage() {
           <div
             style={{
               background: "linear-gradient(135deg,#486c07,#6d990e)",
-              color: "white",
+              color: "black",
               padding: "36px",
               borderRadius: "34px",
               boxShadow: "0 18px 40px rgba(75,100,20,0.22)",
@@ -193,7 +193,7 @@ export default function DashboardPage() {
             <h2
               style={{
                 marginTop: 0,
-                color: "white",
+                color: "black",
                 fontSize: "32px",
               }}
             >
@@ -204,7 +204,7 @@ export default function DashboardPage() {
               style={{
                 lineHeight: "2.1",
                 paddingLeft: "20px",
-                color: "white",
+                color: "black",
                 fontSize: "19px",
               }}
             >
