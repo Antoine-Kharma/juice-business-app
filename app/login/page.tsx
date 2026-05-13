@@ -26,7 +26,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    router.push("/dashboard");
   };
 
   return (
@@ -56,6 +56,7 @@ export default function LoginPage() {
         <div style={{ display: "grid", gap: "14px" }}>
           <div>
             <label>Email</label>
+
             <input
               type="email"
               value={email}
@@ -70,6 +71,7 @@ export default function LoginPage() {
 
           <div>
             <label>Password</label>
+
             <input
               type="password"
               value={password}

@@ -1,3 +1,5 @@
+import ProtectedPage from "../components/ProtectedPage";
+
 const stats = [
   { title: "Today Sales", value: "$0" },
   { title: "Cups Sold", value: "0" },
@@ -6,7 +8,8 @@ const stats = [
 ];
 
 export default function DashboardPage() {
-  return (
+return (
+  <ProtectedPage>
     <main
       style={{
         padding: "40px",
@@ -83,5 +86,6 @@ export default function DashboardPage() {
         </div>
       </section>
     </main>
-  );
+  </ProtectedPage>
+);
 }

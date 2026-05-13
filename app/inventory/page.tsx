@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import ProtectedPage from "../components/ProtectedPage";
 
 type InventoryItem = {
   id?: number;
@@ -147,7 +148,8 @@ export default function InventoryPage() {
     fetchInventory();
   };
 
-  return (
+return (
+  <ProtectedPage>
     <main
       style={{
         padding: "40px",
@@ -305,5 +307,6 @@ export default function InventoryPage() {
         </table>
       </section>
     </main>
-  );
+  </ProtectedPage>
+);
 }

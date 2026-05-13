@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import ProtectedPage from "../components/ProtectedPage";
 
 const products = [
   "Orange - 250 ml",
@@ -151,7 +152,8 @@ const handleAddSale = async () => {
   fetchSales();
 };
 
-  return (
+return (
+  <ProtectedPage>
     <main
       style={{
         padding: "40px",
@@ -316,5 +318,6 @@ const handleAddSale = async () => {
         )}
       </section>
     </main>
-  );
+  </ProtectedPage>
+);  
 }

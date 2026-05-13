@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import ProtectedPage from "../components/ProtectedPage";
 
 type Expense = {
   id?: number;
@@ -111,7 +112,8 @@ export default function ExpensesPage() {
     fetchExpenses();
   };
 
-  return (
+return (
+  <ProtectedPage>
     <main
       style={{
         padding: "40px",
@@ -352,5 +354,6 @@ export default function ExpensesPage() {
         )}
       </section>
     </main>
-  );
+  </ProtectedPage>
+);
 }
