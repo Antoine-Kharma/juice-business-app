@@ -31,57 +31,134 @@ export default function Navbar() {
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <Link
-        href="/dashboard"
+      {/* LEFT SIDE */}
+      <div
         style={{
-          textDecoration: "none",
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: "40px",
         }}
       >
-        <div
+        {/* LOGO */}
+        <Link
+          href="/dashboard"
           style={{
-            width: "42px",
-            height: "42px",
-            borderRadius: "12px",
-            background: "#dc2626",
+            textDecoration: "none",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: "20px",
-            boxShadow: "0 4px 14px rgba(220,38,38,0.45)",
+            gap: "12px",
           }}
         >
-          🍊
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <span
+          <div
             style={{
+              width: "42px",
+              height: "42px",
+              borderRadius: "12px",
+              background: "#dc2626",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               color: "white",
+              fontWeight: "bold",
               fontSize: "20px",
-              fontWeight: 700,
-              letterSpacing: "-0.3px",
+              boxShadow: "0 4px 14px rgba(220,38,38,0.45)",
             }}
           >
-            Fresh Juice
-          </span>
+            🍊
+          </div>
 
-          <span
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span
+              style={{
+                color: "white",
+                fontSize: "20px",
+                fontWeight: 700,
+                letterSpacing: "-0.3px",
+              }}
+            >
+              Fresh Juice
+            </span>
+
+            <span
+              style={{
+                color: "#9ca3af",
+                fontSize: "13px",
+                marginTop: "2px",
+              }}
+            >
+              Business Management System
+            </span>
+          </div>
+        </Link>
+
+        {/* NAVIGATION LINKS */}
+        {!isLoginPage && (
+          <div
             style={{
-              color: "#9ca3af",
-              fontSize: "13px",
-              marginTop: "2px",
+              display: "flex",
+              gap: "24px",
+              alignItems: "center",
             }}
           >
-            Business Management System
-          </span>
-        </div>
-      </Link>
+            <Link
+              href="/dashboard"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Dashboard
+            </Link>
 
+            <Link
+              href="/sales"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Sales
+            </Link>
+
+            <Link
+              href="/inventory"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Inventory
+            </Link>
+
+            <Link
+              href="/expenses"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Expenses
+            </Link>
+
+            <Link
+              href="/reports"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                fontWeight: 500,
+              }}
+            >
+              Reports
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* LOGOUT BUTTON */}
       {!isLoginPage && (
         <button
           onClick={handleLogout}
