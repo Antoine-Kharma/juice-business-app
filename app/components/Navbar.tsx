@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Navbar() {
   const router = useRouter();
@@ -42,23 +43,31 @@ export default function Navbar() {
           gap: "14px",
         }}
       >
-        <div
-          style={{
-            width: "54px",
-            height: "54px",
-            borderRadius: "18px",
-            background: "rgba(255,255,255,0.18)",
-            backdropFilter: "blur(10px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "28px",
-            color: "white",
-            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
-          }}
-        >
-        </div>
-
+<div
+  style={{
+    width: "64px",
+    height: "64px",
+    borderRadius: "20px",
+    overflow: "hidden",
+    background: "rgba(255,255,255,0.12)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+  }}
+>
+  <Image
+    src="/logo.png"
+    alt="Splash Juice Logo"
+    width={64}
+    height={64}
+    style={{
+      objectFit: "cover",
+      width: "100%",
+      height: "100%",
+    }}
+  />
+</div>
         <div>
           <h2
             style={{
