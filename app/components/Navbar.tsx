@@ -20,15 +20,14 @@ export default function Navbar() {
       style={{
         position: "sticky",
         top: 0,
-        zIndex: 50,
+        zIndex: 100,
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
         padding: "18px 40px",
-        background: "rgba(255, 255, 255, 0.85)",
-        backdropFilter: "blur(14px)",
-        borderBottom: "1px solid rgba(0,0,0,0.08)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.04)",
+        background: "linear-gradient(90deg, #0f0f0f 0%, #1a1a1a 100%)",
+        borderBottom: "3px solid #dc2626",
+        boxShadow: "0 6px 24px rgba(0,0,0,0.25)",
         fontFamily: "Arial, sans-serif",
       }}
     >
@@ -36,27 +35,67 @@ export default function Navbar() {
         href="/dashboard"
         style={{
           textDecoration: "none",
-          color: "#111827",
-          fontSize: "22px",
-          fontWeight: 700,
-          letterSpacing: "-0.5px",
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
         }}
       >
-        🍊 Fresh Juice Business System
+        <div
+          style={{
+            width: "42px",
+            height: "42px",
+            borderRadius: "12px",
+            background: "#dc2626",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: "20px",
+            boxShadow: "0 4px 14px rgba(220,38,38,0.45)",
+          }}
+        >
+          🍊
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          <span
+            style={{
+              color: "white",
+              fontSize: "20px",
+              fontWeight: 700,
+              letterSpacing: "-0.3px",
+            }}
+          >
+            Fresh Juice
+          </span>
+
+          <span
+            style={{
+              color: "#9ca3af",
+              fontSize: "13px",
+              marginTop: "2px",
+            }}
+          >
+            Business Management System
+          </span>
+        </div>
       </Link>
 
       {!isLoginPage && (
         <button
           onClick={handleLogout}
           style={{
-            padding: "10px 18px",
-            borderRadius: "999px",
-            border: "1px solid #111827",
-            backgroundColor: "#111827",
+            padding: "10px 20px",
+            borderRadius: "12px",
+            border: "none",
+            background: "#dc2626",
             color: "white",
             fontWeight: 600,
+            fontSize: "14px",
             cursor: "pointer",
-            boxShadow: "0 6px 14px rgba(0,0,0,0.12)",
+            transition: "0.2s ease",
+            boxShadow: "0 6px 16px rgba(220,38,38,0.35)",
           }}
         >
           Logout
