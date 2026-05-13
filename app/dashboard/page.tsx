@@ -14,7 +14,7 @@ export default function DashboardPage() {
         style={{
           padding: "40px",
           fontFamily: "Arial, sans-serif",
-          background: "#f4f4f5",
+          background: "#111111",
           minHeight: "100vh",
         }}
       >
@@ -60,10 +60,10 @@ export default function DashboardPage() {
             <div
               key={stat.title}
               style={{
-                background: "white",
+                background: "#0b0b0b",
                 padding: "24px",
                 borderRadius: "16px",
-                border: "1px solid #e5e5e5",
+                border: "1px solid #1f1f1f",
                 borderTop: "4px solid #dc2626",
                 boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
               }}
@@ -71,7 +71,7 @@ export default function DashboardPage() {
               <p
                 style={{
                   margin: 0,
-                  color: "#52525b",
+                  color: "#a1a1aa",
                   fontSize: "14px",
                   fontWeight: 600,
                 }}
@@ -83,7 +83,7 @@ export default function DashboardPage() {
                 style={{
                   margin: "12px 0 0",
                   fontSize: "32px",
-                  color: "#0b0b0b",
+                  color: "white",
                 }}
               >
                 {stat.value}
@@ -101,17 +101,17 @@ export default function DashboardPage() {
         >
           <div
             style={{
-              background: "white",
+              background: "#0b0b0b",
               padding: "28px",
               borderRadius: "16px",
-              border: "1px solid #e5e5e5",
+              border: "1px solid #1f1f1f",
               boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
             }}
           >
             <h2 style={{ marginTop: 0, color: "#0b0b0b" }}>
               Recent Activity
             </h2>
-            <p style={{ color: "#71717a" }}>No sales recorded yet.</p>
+            <p style={{ color: "#a1a1aa" }}>No sales recorded yet.</p>
           </div>
 
           <div
