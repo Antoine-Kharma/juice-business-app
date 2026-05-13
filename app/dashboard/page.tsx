@@ -186,7 +186,7 @@ export default function DashboardPage() {
               color: "black",
               padding: "36px",
               borderRadius: "34px",
-              background: "rgba(255,255,255,0.22)",
+              boxShadow: "0 24px 60px rgba(75,100,20,0.25)",
               minHeight: "180px",
             }}
           >
