@@ -24,27 +24,56 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        background: "rgba(238, 239, 214, 0.85)",
-        backdropFilter: "blur(16px)",
-        padding: "16px 28px",
+        background: "linear-gradient(135deg,#84cc16,#a3e635)",
+        padding: "22px 28px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        borderRadius: "0 0 34px 34px",
-        boxShadow: "0 10px 30px rgba(47, 70, 56, 0.16)",
+        borderRadius: "0 0 28px 28px",
+        boxShadow: "0 10px 30px rgba(120,160,20,0.25)",
         position: "sticky",
         top: 0,
         zIndex: 1000,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "14px",
+        }}
+      >
+<div
+  style={{
+    width: "64px",
+    height: "64px",
+    borderRadius: "20px",
+    overflow: "hidden",
+    background: "rgba(255,255,255,0.12)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+  }}
+>
+  <Image
+    src="/logo.png"
+    alt="Splash Juice Logo"
+    width={64}
+    height={64}
+    style={{
+      objectFit: "cover",
+      width: "100%",
+      height: "100%",
+    }}
+  />
+</div>
         <div>
           <h2
             style={{
               margin: 0,
-              color: "#304638",
-              fontSize: "30px",
+              color: "black",
+              fontSize: "32px",
               fontWeight: 900,
             }}
           >
@@ -54,9 +83,8 @@ export default function Navbar() {
           <p
             style={{
               margin: 0,
-              color: "#435848",
-              fontSize: "13px",
-              fontFamily: "Arial, sans-serif",
+              color: "black",
+              fontSize: "14px",
             }}
           >
             Business Management System
@@ -67,11 +95,8 @@ export default function Navbar() {
       <div
         style={{
           display: "flex",
-          gap: "12px",
+          gap: "16px",
           alignItems: "center",
-          background: "rgba(255,255,255,0.35)",
-          padding: "6px",
-          borderRadius: "999px",
         }}
       >
         {links.map((link) => (
@@ -80,13 +105,14 @@ export default function Navbar() {
             href={link.href}
             style={{
               textDecoration: "none",
-              color: "#304638",
-              background: "rgba(255,255,255,0.45)",
-              padding: "12px 22px",
-              borderRadius: "999px",
-              fontWeight: 800,
-              fontSize: "14px",
-              fontFamily: "Arial, sans-serif",
+              color: "black",
+              background: "rgba(0,0,0,0.18)",
+              padding: "14px 24px",
+              borderRadius: "18px",
+              fontWeight: 700,
+              backdropFilter: "blur(10px)",
+              boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
+              transition: "0.2s",
             }}
           >
             {link.name}
@@ -97,14 +123,13 @@ export default function Navbar() {
           onClick={handleLogout}
           style={{
             border: "none",
-            background: "#304638",
-            color: "white",
-            padding: "12px 24px",
-            borderRadius: "999px",
+            background: "rgb(185, 6, 6)",
+            color: "black",
+            padding: "14px 26px",
+            borderRadius: "18px",
             fontWeight: 800,
-            fontSize: "14px",
             cursor: "pointer",
-            fontFamily: "Arial, sans-serif",
+            boxShadow: "0 8px 20px rgba(0,0,0,0.12)",
           }}
         >
           Logout
