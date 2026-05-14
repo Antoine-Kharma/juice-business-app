@@ -32,132 +32,231 @@ export default function LoginPage() {
   return (
     <main
       style={{
-        fontFamily: "Arial, sans-serif",
+        fontFamily: "'Georgia', serif",
         minHeight: "100vh",
-        background: "linear-gradient(180deg, #a3cf3a 0%, #f9fafb 75%)",
-        padding: "70px 40px",
+        background: "#f6f3e8",
+        overflow: "hidden",
+        position: "relative",
       }}
     >
+      {/* Background Shape */}
+      <div
+        style={{
+          position: "absolute",
+          right: "-180px",
+          top: "-80px",
+          width: "700px",
+          height: "700px",
+          background: "#a8d57a",
+          borderRadius: "50%",
+          filter: "blur(2px)",
+        }}
+      />
+
       <section
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-          alignItems: "center",
-          gap: "50px",
-          maxWidth: "1200px",
-          margin: "0 auto",
+          position: "relative",
+          zIndex: 2,
+          padding: "30px 60px",
         }}
       >
-        <div>
-          <p
-            style={{
-              color: "#009f3c",
-              fontWeight: "bold",
-              letterSpacing: "2px",
-              marginBottom: "12px",
-            }}
-          >
-          </p>
-
-          <h1
-            style={{
-              fontSize: "56px",
-              lineHeight: "1.05",
-              margin: 0,
-              color: "#101828",
-              fontWeight: 900,
-            }}
-          >
-            Fresh Juice <br /> Business Login
-          </h1>
-
-          <p
-            style={{
-              marginTop: "20px",
-              fontSize: "18px",
-              color: "#344054",
-              maxWidth: "520px",
-              lineHeight: "1.7",
-            }}
-          >
-            Enter your account details to manage sales, inventory, expenses,
-            and reports.
-          </p>
-        </div>
-
-        <section
+        {/* Navbar */}
+        <nav
           style={{
-            background: "rgba(255,255,255,0.8)",
-            backdropFilter: "blur(16px)",
-            padding: "34px",
-            borderRadius: "28px",
-            boxShadow: "0 24px 60px rgba(60,90,20,0.22)",
-            width: "100%",
-            maxWidth: "430px",
-            marginLeft: "auto",
-            border: "1px solid rgba(255,255,255,0.8)",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            background: "#ece9d7",
+            padding: "18px 28px",
+            borderRadius: "50px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            maxWidth: "1200px",
+            margin: "0 auto",
           }}
         >
-          <h2 style={{ marginTop: 0, fontSize: "28px", color: "#101828" }}>
-            Login
-          </h2>
+          <h1
+            style={{
+              margin: 0,
+              color: "#2e4732",
+              fontWeight: "bold",
+              fontSize: "38px",
+            }}
+          >
+            SPLASH Juice
+          </h1>
 
-          <div style={{ display: "grid", gap: "18px" }}>
-            <div>
-              <label style={{ fontWeight: 700, color: "#101828" }}>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter email"
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  marginTop: "8px",
-                  borderRadius: "14px",
-                  border: "1px solid #d0d5dd",
-                  outline: "none",
-                }}
-              />
-            </div>
+          <button
+            onClick={() => router.push("/")}
+            style={{
+              border: "none",
+              background: "#9ccc73",
+              color: "#2e4732",
+              padding: "14px 28px",
+              borderRadius: "999px",
+              fontWeight: "bold",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            Back Home
+          </button>
+        </nav>
 
-            <div>
-              <label style={{ fontWeight: 700, color: "#101828" }}>
-                Password
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  marginTop: "8px",
-                  borderRadius: "14px",
-                  border: "1px solid #d0d5dd",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <button
-              onClick={handleLogin}
+        {/* Main Content */}
+        <section
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            alignItems: "center",
+            gap: "40px",
+            maxWidth: "1200px",
+            margin: "80px auto 0",
+          }}
+        >
+          {/* Left Side */}
+          <div>
+            <h1
               style={{
-                marginTop: "8px",
-                padding: "14px",
-                border: "none",
-                borderRadius: "999px",
-                backgroundColor: "#009f3c",
-                color: "white",
-                fontWeight: 800,
-                fontSize: "16px",
-                cursor: "pointer",
-                boxShadow: "0 12px 24px rgba(0,159,60,0.28)",
+                fontSize: "78px",
+                lineHeight: "1",
+                color: "#2e4732",
+                margin: 0,
+                fontWeight: "bold",
               }}
             >
-              Login
-            </button>
+              Welcome
+              <br />
+              Back To
+              <br />
+              <span style={{ color: "#9ccc73" }}>SPLASH.</span>
+            </h1>
+
+            <p
+              style={{
+                marginTop: "30px",
+                fontSize: "22px",
+                color: "#435848",
+                lineHeight: "1.8",
+                maxWidth: "520px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Login to manage your fresh juice business, inventory, sales,
+              expenses and reports with a clean and modern dashboard.
+            </p>
+          </div>
+
+          {/* Login Card */}
+          <div
+            style={{
+              background: "rgba(255,255,255,0.72)",
+              backdropFilter: "blur(14px)",
+              padding: "45px",
+              borderRadius: "35px",
+              width: "100%",
+              maxWidth: "460px",
+              marginLeft: "auto",
+              boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
+              border: "1px solid rgba(255,255,255,0.7)",
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+                marginBottom: "30px",
+                color: "#2e4732",
+                fontSize: "42px",
+              }}
+            >
+              Admin Login
+            </h2>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "22px",
+              }}
+            >
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "10px",
+                    color: "#2e4732",
+                    fontWeight: "bold",
+                    fontFamily: "Arial, sans-serif",
+                  }}
+                >
+                  Email
+                </label>
+
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  style={{
+                    width: "100%",
+                    padding: "16px",
+                    borderRadius: "18px",
+                    border: "1px solid #d6d6d6",
+                    fontSize: "16px",
+                    outline: "none",
+                    background: "rgba(255,255,255,0.85)",
+                  }}
+                />
+              </div>
+
+              <div>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "10px",
+                    color: "#2e4732",
+                    fontWeight: "bold",
+                    fontFamily: "Arial, sans-serif",
+                  }}
+                >
+                  Password
+                </label>
+
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  style={{
+                    width: "100%",
+                    padding: "16px",
+                    borderRadius: "18px",
+                    border: "1px solid #d6d6d6",
+                    fontSize: "16px",
+                    outline: "none",
+                    background: "rgba(255,255,255,0.85)",
+                  }}
+                />
+              </div>
+
+              <button
+                onClick={handleLogin}
+                style={{
+                  marginTop: "10px",
+                  border: "none",
+                  background: "#2e4732",
+                  color: "white",
+                  padding: "18px",
+                  borderRadius: "999px",
+                  fontWeight: "bold",
+                  fontSize: "18px",
+                  cursor: "pointer",
+                  transition: "0.3s",
+                  boxShadow: "0 12px 24px rgba(46,71,50,0.25)",
+                }}
+              >
+                Login
+              </button>
+            </div>
           </div>
         </section>
       </section>
