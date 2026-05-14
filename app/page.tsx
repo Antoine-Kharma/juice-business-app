@@ -9,6 +9,16 @@ const products = [
   "Pomegranate Juice",
 ];
 
+const bottles = [
+  "/bottles/orange.png",
+  "/bottles/strawberry-banana.png",
+  "/bottles/lemonade.png",
+  "/bottles/carrot.png",
+  "/bottles/strawberry-lemonade.png",
+  "/bottles/mango.png",
+  "/bottles/pomegranate.png",
+];
+
 export default function Home() {
   return (
     <main
@@ -126,8 +136,7 @@ export default function Home() {
             <br />
             Your Juice Should Too.
             <br />
-            Choose{" "}
-            <span style={{ color: "#95c979" }}>SPLASH.</span>
+            Choose <span style={{ color: "#95c979" }}>SPLASH.</span>
           </h1>
 
           <p
@@ -180,136 +189,21 @@ export default function Home() {
               View Products
             </a>
           </div>
-
-          <div
-            style={{
-              marginTop: "86px",
-              display: "flex",
-              alignItems: "center",
-              gap: "14px",
-              fontFamily: "Arial, sans-serif",
-            }}
-          >
-            <div style={{ display: "flex" }}>
-              {["🍊", "🍋", "🥭"].map((emoji, index) => (
-                <div
-                  key={emoji}
-                  style={{
-                    width: "42px",
-                    height: "42px",
-                    borderRadius: "50%",
-                    background: "white",
-                    display: "grid",
-                    placeItems: "center",
-                    marginLeft: index === 0 ? 0 : "-12px",
-                    border: "2px solid #eef0df",
-                    boxShadow: "0 6px 14px rgba(0,0,0,0.12)",
-                  }}
-                >
-                  {emoji}
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <strong style={{ fontSize: "14px" }}>Fresh Reviews</strong>
-              <p style={{ margin: 0, fontSize: "12px", color: "#617266" }}>
-                Customers are satisfied
-              </p>
-            </div>
-          </div>
         </div>
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            paddingTop: "80px",
-          }}
-        >
-          <h2
-            style={{
-              position: "absolute",
-              right: "-80px",
-              top: "70px",
-              writingMode: "vertical-rl",
-              fontSize: "86px",
-              lineHeight: 1,
-              color: "transparent",
-              WebkitTextStroke: "1px rgba(48,70,56,0.25)",
-              fontWeight: 900,
-              margin: 0,
-            }}
-          >
-            Fresh Juice
-          </h2>
+        <div className="heroBottleArea">
+          <h2 className="verticalText">Fresh Juice</h2>
 
-          <div
-            style={{
-              width: "250px",
-              height: "470px",
-              borderRadius: "120px 120px 80px 80px",
-              background:
-                "linear-gradient(145deg, #d9efc9 0%, #8fbd6e 45%, #51784c 100%)",
-              transform: "rotate(14deg)",
-              boxShadow: "0 35px 70px rgba(37,62,39,0.35)",
-              position: "relative",
-              animation: "floatBottle 3s ease-in-out infinite",
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "-42px",
-                left: "78px",
-                width: "94px",
-                height: "70px",
-                borderRadius: "18px 18px 8px 8px",
-                background:
-                  "repeating-linear-gradient(90deg, #f4f4ee 0 8px, #deded6 8px 14px)",
-                boxShadow: "0 8px 18px rgba(0,0,0,0.15)",
-              }}
-            />
-
-            <div
-              style={{
-                position: "absolute",
-                top: "110px",
-                left: "42px",
-                width: "165px",
-                height: "190px",
-                borderRadius: "32px",
-                background: "rgba(237,244,207,0.45)",
-                display: "grid",
-                placeItems: "center",
-                color: "#304638",
-                fontSize: "42px",
-                fontWeight: 900,
-              }}
-            >
-              🍊
-            </div>
-
-            <div
-              style={{
-                position: "absolute",
-                right: "-34px",
-                top: "130px",
-                background: "#f5f2df",
-                padding: "10px 12px",
-                borderRadius: "12px",
-                fontWeight: 900,
-                fontSize: "22px",
-                writingMode: "vertical-rl",
-                color: "#304638",
-                boxShadow: "0 10px 20px rgba(0,0,0,0.12)",
-              }}
-            >
-              SPLASH
-            </div>
+          <div className="bottleSlider">
+            {bottles.map((bottle, index) => (
+              <img
+                key={bottle}
+                src={bottle}
+                alt="SPLASH Juice Bottle"
+                className="bottleImage"
+                style={{ animationDelay: `${index * 3}s` }}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -339,13 +233,7 @@ export default function Home() {
               OUR MENU
             </p>
 
-            <h2
-              style={{
-                fontSize: "40px",
-                margin: 0,
-                color: "#304638",
-              }}
-            >
+            <h2 style={{ fontSize: "40px", margin: 0, color: "#304638" }}>
               Featured Products
             </h2>
           </div>
@@ -370,12 +258,8 @@ export default function Home() {
                   fontFamily: "Arial, sans-serif",
                 }}
               >
-                <div style={{ fontSize: "52px", marginBottom: "14px" }}>
-                  🥤
-                </div>
-
+                <div style={{ fontSize: "52px", marginBottom: "14px" }}>🥤</div>
                 <h3 style={{ margin: 0, color: "#304638" }}>{product}</h3>
-
                 <p style={{ color: "#617266", fontSize: "14px" }}>
                   250ml / 1 Liter
                 </p>
@@ -387,12 +271,60 @@ export default function Home() {
 
       <style>
         {`
+          .heroBottleArea {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 80px;
+          }
+
+          .verticalText {
+            position: absolute;
+            right: -80px;
+            top: 70px;
+            writing-mode: vertical-rl;
+            font-size: 86px;
+            line-height: 1;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(48,70,56,0.25);
+            font-weight: 900;
+            margin: 0;
+          }
+
+          .bottleSlider {
+            position: relative;
+            width: 430px;
+            height: 610px;
+            animation: floatBottle 3s ease-in-out infinite;
+          }
+
+          .bottleImage {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            opacity: 0;
+            filter: drop-shadow(0 35px 45px rgba(37,62,39,0.35));
+            animation: bottleFade 21s infinite;
+          }
+
+          @keyframes bottleFade {
+            0% { opacity: 0; transform: translateY(20px) scale(0.96); }
+            5% { opacity: 1; transform: translateY(0) scale(1); }
+            14% { opacity: 1; transform: translateY(0) scale(1); }
+            19% { opacity: 0; transform: translateY(-20px) scale(0.96); }
+            100% { opacity: 0; }
+          }
+
           @keyframes floatBottle {
             0%, 100% {
-              transform: rotate(14deg) translateY(0);
+              transform: translateY(0);
             }
             50% {
-              transform: rotate(14deg) translateY(-18px);
+              transform: translateY(-18px);
             }
           }
 
@@ -411,6 +343,15 @@ export default function Home() {
 
             h1 {
               font-size: 42px !important;
+            }
+
+            .bottleSlider {
+              width: 310px;
+              height: 470px;
+            }
+
+            .verticalText {
+              display: none;
             }
           }
         `}
