@@ -22,123 +22,94 @@ export default function Navbar() {
   ];
 
   return (
-    <div
+    <nav
       style={{
-        width: "100%",
+        background: "rgba(238, 239, 214, 0.85)",
+        backdropFilter: "blur(16px)",
+        padding: "16px 28px",
         display: "flex",
-        justifyContent: "center",
-        paddingTop: "24px",
+        alignItems: "center",
+        justifyContent: "space-between",
+        borderRadius: "0 0 34px 34px",
+        boxShadow: "0 10px 30px rgba(47, 70, 56, 0.16)",
         position: "sticky",
         top: 0,
         zIndex: 1000,
       }}
     >
-      <nav
-        style={{
-          width: "92%",
-          background: "#ECE9D8",
-          borderRadius: "999px",
-          padding: "14px 22px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          boxShadow: "0 10px 30px rgba(48,70,56,0.08)",
-          backdropFilter: "blur(12px)",
-        }}
-      >
-        {/* LEFT SIDE */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "14px",
-          }}
-        >
-          <div
-            style={{
-              width: "58px",
-              height: "58px",
-              borderRadius: "50%",
-              overflow: "hidden",
-              background: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Image
-              src="/logo.png"
-              alt="Splash Juice Logo"
-              width={58}
-              height={58}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
-            />
-          </div>
-
-          <h1
+      <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+        
+        <div>
+          <h2
             style={{
               margin: 0,
               color: "#304638",
-              fontSize: "28px",
+              fontSize: "30px",
               fontWeight: 900,
-              fontFamily: "Georgia, serif",
             }}
           >
             SPLASH Juice
-          </h1>
-        </div>
+          </h2>
 
-        {/* CENTER BUTTONS */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
-          {links.map((link, index) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              style={{
-                textDecoration: "none",
-                background: index === 0 ? "#9ACB6B" : "transparent",
-                color: "#304638",
-                padding: "12px 22px",
-                borderRadius: "999px",
-                fontWeight: 700,
-                fontSize: "16px",
-                transition: "0.2s",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
-              {link.name}
-            </Link>
-          ))}
+          <p
+            style={{
+              margin: 0,
+              color: "#435848",
+              fontSize: "13px",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
+            Business Management System
+          </p>
         </div>
+      </div>
 
-        {/* LOGOUT */}
+      <div
+        style={{
+          display: "flex",
+          gap: "12px",
+          alignItems: "center",
+          background: "rgba(255,255,255,0.35)",
+          padding: "6px",
+          borderRadius: "999px",
+        }}
+      >
+        {links.map((link) => (
+          <Link
+            key={link.name}
+            href={link.href}
+            style={{
+              textDecoration: "none",
+              color: "#304638",
+              background: "rgba(255,255,255,0.45)",
+              padding: "12px 22px",
+              borderRadius: "999px",
+              fontWeight: 800,
+              fontSize: "14px",
+              fontFamily: "Arial, sans-serif",
+            }}
+          >
+            {link.name}
+          </Link>
+        ))}
+
         <button
           onClick={handleLogout}
           style={{
             border: "none",
-            background: "#9ACB6B",
-            color: "#304638",
-            padding: "12px 28px",
+            background: "#304638",
+            color: "white",
+            padding: "12px 24px",
             borderRadius: "999px",
             fontWeight: 800,
-            fontSize: "16px",
+            fontSize: "14px",
             cursor: "pointer",
             fontFamily: "Arial, sans-serif",
           }}
         >
           Logout
         </button>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
