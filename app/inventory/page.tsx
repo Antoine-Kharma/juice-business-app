@@ -43,7 +43,7 @@ const categories = ["Fruit", "Ingredient", "Packaging"];
 export default function InventoryPage() {
   const [category, setCategory] = useState(categories[0]);
   const [selectedName, setSelectedName] = useState("Oranges");
-  const [unit, setUnit] = useState("kg");
+  const [unit, setUnit] = useState("Kg");
   const [stock, setStock] = useState("");
   const [items, setItems] = useState<InventoryItem[]>([]);
 
@@ -148,165 +148,268 @@ export default function InventoryPage() {
     fetchInventory();
   };
 
-return (
-  <ProtectedPage>
-    <main
-      style={{
-        padding: "40px",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "var(--background)",
-        minHeight: "100vh",
-      }}
-    >
-      <section style={{ marginBottom: "30px" }}>
-        <h1 style={{ margin: 0, fontSize: "32px" }}>Inventory</h1>
-
-        <p style={{ marginTop: "10px", color: "var(--secondary-text)" }}>
-          Track fruits, ingredients, and packaging items.
-        </p>
-      </section>
-
-      <section
+  return (
+    <ProtectedPage>
+      <main
         style={{
-          background: "var(--card)",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-          marginBottom: "24px",
+          minHeight: "100vh",
+          background: "#f6f3e8",
+          padding: "30px",
+          fontFamily: "'Georgia', serif",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>Add / Adjust Inventory Item</h2>
+        <div
+          style={{
+            position: "absolute",
+            right: "-180px",
+            top: "-100px",
+            width: "700px",
+            height: "700px",
+            background: "#a8d57a",
+            borderRadius: "50%",
+            zIndex: 0,
+          }}
+        />
 
-        <div style={{ display: "grid", gap: "14px", maxWidth: "500px" }}>
-          <div>
-            <label>Category</label>
-            <br />
-
-            <select
-              value={category}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
-            >
-              {categories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label>Item Name</label>
-            <br />
-
-            <select
-              value={selectedName}
-              onChange={(e) => handleItemChange(e.target.value)}
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
-            >
-              {filteredItems.map((item) => (
-                <option key={item.name} value={item.name}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label>Unit</label>
-            <br />
-
-            <input
-              type="text"
-              value={unit}
-              readOnly
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-                backgroundColor: "#f3f4f6",
-              }}
-            />
-          </div>
-
-          <div>
-            <label>Stock Adjustment (+ / -)</label>
-            <br />
-
-            <input
-              type="text"
-              value={stock}
-              onChange={(e) => setStock(e.target.value)}
-              placeholder="Example: 50 or -20"
-              style={{ width: "100%", padding: "10px", marginTop: "6px" }}
-            />
-          </div>
-
-          <button
-            onClick={handleAddItem}
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <section
             style={{
-              padding: "12px 16px",
-              borderRadius: "10px",
-              border: "none",
-              backgroundColor: "black",
-              color: "white",
-              cursor: "pointer",
+              background: "rgba(255,255,255,0.65)",
+              backdropFilter: "blur(14px)",
+              borderRadius: "40px",
+              padding: "55px",
+              marginBottom: "30px",
+              boxShadow: "0 25px 60px rgba(0,0,0,0.08)",
+              border: "1px solid rgba(255,255,255,0.7)",
             }}
           >
-            Save Adjustment
-          </button>
+            <p
+              style={{
+                margin: 0,
+                color: "#7aa85a",
+                fontWeight: "bold",
+                letterSpacing: "2px",
+                fontSize: "14px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              INVENTORY MANAGEMENT
+            </p>
+
+            <h1
+              style={{
+                margin: "18px 0 0",
+                color: "#2e4732",
+                fontSize: "72px",
+                lineHeight: "1",
+                fontWeight: "bold",
+              }}
+            >
+              Track
+              <br />
+              Fresh Stock
+            </h1>
+
+            <p
+              style={{
+                marginTop: "22px",
+                fontSize: "21px",
+                color: "#435848",
+                lineHeight: "1.8",
+                maxWidth: "620px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              Manage fruits, ingredients, packaging and bottles in one clean
+              inventory system.
+            </p>
+          </section>
+
+          <section
+            style={{
+              background: "rgba(255,255,255,0.72)",
+              backdropFilter: "blur(14px)",
+              padding: "36px",
+              borderRadius: "34px",
+              boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
+              border: "1px solid rgba(255,255,255,0.7)",
+              marginBottom: "28px",
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+                color: "#2e4732",
+                fontSize: "38px",
+              }}
+            >
+              Add / Adjust Inventory
+            </h2>
+
+            <div style={{ display: "grid", gap: "18px", maxWidth: "540px" }}>
+              <div>
+                <label style={labelStyle}>Category</label>
+
+                <select
+                  value={category}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  style={inputStyle}
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={labelStyle}>Item Name</label>
+
+                <select
+                  value={selectedName}
+                  onChange={(e) => handleItemChange(e.target.value)}
+                  style={inputStyle}
+                >
+                  {filteredItems.map((item) => (
+                    <option key={item.name} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={labelStyle}>Unit</label>
+
+                <input
+                  type="text"
+                  value={unit}
+                  readOnly
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <label style={labelStyle}>Stock Adjustment (+ / -)</label>
+
+                <input
+                  type="text"
+                  value={stock}
+                  onChange={(e) => setStock(e.target.value)}
+                  placeholder="Example: 50 or -20"
+                  style={inputStyle}
+                />
+              </div>
+
+              <button
+                onClick={handleAddItem}
+                style={{
+                  padding: "16px",
+                  borderRadius: "999px",
+                  border: "none",
+                  background: "#304638",
+                  color: "white",
+                  cursor: "pointer",
+                  fontWeight: 900,
+                  fontSize: "16px",
+                  fontFamily: "Arial, sans-serif",
+                  boxShadow: "0 12px 24px rgba(48,70,56,0.25)",
+                }}
+              >
+                Save Adjustment
+              </button>
+            </div>
+          </section>
+
+          <section
+            style={{
+              background: "rgba(255,255,255,0.72)",
+              backdropFilter: "blur(14px)",
+              padding: "36px",
+              borderRadius: "34px",
+              boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
+              border: "1px solid rgba(255,255,255,0.7)",
+            }}
+          >
+            <h2
+              style={{
+                marginTop: 0,
+                color: "#2e4732",
+                fontSize: "38px",
+              }}
+            >
+              Inventory List
+            </h2>
+
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              <thead>
+                <tr>
+                  {["Item Name", "Category", "Unit", "Current Stock"].map(
+                    (head) => (
+                      <th
+                        key={head}
+                        style={{
+                          textAlign: "left",
+                          padding: "14px",
+                          borderBottom:
+                            "1px solid rgba(48,70,56,0.18)",
+                          color: "#2e4732",
+                        }}
+                      >
+                        {head}
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td style={tdStyle}>{item.item_name}</td>
+                    <td style={tdStyle}>{item.category}</td>
+                    <td style={tdStyle}>{item.unit}</td>
+                    <td style={tdStyle}>{item.quantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
         </div>
-      </section>
-
-      <section
-        style={{
-          background: "white",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>Inventory List</h2>
-
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                Item Name
-              </th>
-              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                Category
-              </th>
-              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                Unit
-              </th>
-              <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                Current Stock
-              </th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id}>
-                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                  {item.item_name}
-                </td>
-                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                  {item.category}
-                </td>
-                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                  {item.unit}
-                </td>
-                <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                  {item.quantity}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </section>
-    </main>
-  </ProtectedPage>
-);
+      </main>
+    </ProtectedPage>
+  );
 }
+
+const labelStyle = {
+  fontWeight: 800,
+  color: "#2e4732",
+  fontFamily: "Arial, sans-serif",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "15px",
+  marginTop: "8px",
+  borderRadius: "16px",
+  border: "1px solid #d6d6d6",
+  outline: "none",
+  background: "rgba(255,255,255,0.85)",
+  fontSize: "15px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const tdStyle = {
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.1)",
+  color: "#435848",
+};
