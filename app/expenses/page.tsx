@@ -40,17 +40,12 @@ export default function ExpensesPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   const totalExpenses = useMemo(() => {
-    return expenses.reduce(
-      (sum, expense) => sum + expense.paid_amount,
-      0
-    );
+    return expenses.reduce((sum, expense) => sum + expense.paid_amount, 0);
   }, [expenses]);
 
   const pricePerUnitPreview = useMemo(() => {
     const parsedAmount = Number(amount) || 0;
-
     if (quantity <= 0) return 0;
-
     return parsedAmount / quantity;
   }, [amount, quantity]);
 
@@ -75,9 +70,7 @@ export default function ExpensesPage() {
   const handleTitleChange = (value: string) => {
     setTitle(value);
 
-    const selectedExpense = expenseOptions.find(
-      (item) => item.title === value
-    );
+    const selectedExpense = expenseOptions.find((item) => item.title === value);
 
     if (selectedExpense) {
       setCategory(selectedExpense.category);
@@ -108,252 +101,281 @@ export default function ExpensesPage() {
 
     setQuantity(1);
     setAmount("");
-
     fetchExpenses();
   };
 
-return (
-  <ProtectedPage>
-    <main
-      style={{
-        padding: "40px",
-        fontFamily: "Arial, sans-serif",
-        backgroundColor: "var(--background)",
-        minHeight: "100vh",
-      }}
-    >
-      <section style={{ marginBottom: "30px" }}>
-        <h1 style={{ margin: 0, fontSize: "32px" }}>Expenses</h1>
-
-        <p style={{ marginTop: "10px", color: "#666" }}>
-          Track purchases and business costs.
-        </p>
-      </section>
-
-      <section
+  return (
+    <ProtectedPage>
+      <main
         style={{
-          background: "var(--card)",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-          marginBottom: "24px",
+          minHeight: "100vh",
+          background: "#f6f3e8",
+          padding: "30px",
+          fontFamily: "'Georgia', serif",
+          position: "relative",
+          overflow: "hidden",
         }}
       >
-        <h2 style={{ marginTop: 0 }}>Add Expense</h2>
+        <div
+          style={{
+            position: "absolute",
+            right: "-180px",
+            top: "-100px",
+            width: "700px",
+            height: "700px",
+            background: "#a8d57a",
+            borderRadius: "50%",
+            zIndex: 0,
+          }}
+        />
 
-        <div style={{ display: "grid", gap: "14px", maxWidth: "500px" }}>
-          <div>
-            <label>Expense Title</label>
-            <br />
+        <div style={{ position: "relative", zIndex: 2 }}>
+          <section style={heroStyle}>
+            <p style={labelStyle}>EXPENSES MANAGEMENT</p>
 
-            <select
-              value={title}
-              onChange={(e) => handleTitleChange(e.target.value)}
+            <h1 style={titleStyle}>
+              Track
+              <br />
+              Business Costs
+            </h1>
+
+            <p style={descriptionStyle}>
+              Record fruit purchases, packaging costs, ingredients and other
+              expenses with automatic price-per-unit calculation.
+            </p>
+          </section>
+
+          <section style={cardStyle}>
+            <h2 style={sectionTitle}>Add Expense</h2>
+
+            <div style={{ display: "grid", gap: "18px", maxWidth: "540px" }}>
+              <div>
+                <label style={fieldLabel}>Expense Title</label>
+                <select
+                  value={title}
+                  onChange={(e) => handleTitleChange(e.target.value)}
+                  style={inputStyle}
+                >
+                  {expenseOptions.map((item) => (
+                    <option key={item.title} value={item.title}>
+                      {item.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={fieldLabel}>Category</label>
+                <input type="text" value={category} readOnly style={inputStyle} />
+              </div>
+
+              <div>
+                <label style={fieldLabel}>Quantity</label>
+                <input
+                  type="number"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  style={inputStyle}
+                />
+              </div>
+
+              <div>
+                <label style={fieldLabel}>Unit</label>
+                <input type="text" value={unit} readOnly style={inputStyle} />
+              </div>
+
+              <div>
+                <label style={fieldLabel}>Total Amount Paid</label>
+                <input
+                  type="number"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter total amount"
+                  style={inputStyle}
+                />
+              </div>
+
+              <div
+                style={{
+                  padding: "18px",
+                  background: "#eef0df",
+                  borderRadius: "18px",
+                  fontWeight: 900,
+                  color: "#2e4732",
+                  fontFamily: "Arial, sans-serif",
+                }}
+              >
+                Price Per Unit: ${pricePerUnitPreview.toFixed(2)} / {unit}
+              </div>
+
+              <button onClick={handleAddExpense} style={buttonStyle}>
+                Add Expense
+              </button>
+            </div>
+          </section>
+
+          <section style={cardStyle}>
+            <h2 style={sectionTitle}>Total Expenses</h2>
+
+            <p
               style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
+                fontSize: "48px",
+                fontWeight: "bold",
+                margin: 0,
+                color: "#2e4732",
               }}
             >
-              {expenseOptions.map((item) => (
-                <option key={item.title} value={item.title}>
-                  {item.title}
-                </option>
-              ))}
-            </select>
-          </div>
+              ${totalExpenses.toFixed(2)}
+            </p>
+          </section>
 
-          <div>
-            <label>Category</label>
-            <br />
+          <section style={cardStyle}>
+            <h2 style={sectionTitle}>Recent Expenses</h2>
 
-            <input
-              type="text"
-              value={category}
-              readOnly
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-                backgroundColor: "#f3f4f6",
-              }}
-            />
-          </div>
+            {expenses.length === 0 ? (
+              <p style={{ color: "#435848", fontFamily: "Arial, sans-serif" }}>
+                No expenses added yet.
+              </p>
+            ) : (
+              <table
+                style={{
+                  width: "100%",
+                  borderCollapse: "collapse",
+                  fontFamily: "Arial, sans-serif",
+                }}
+              >
+                <thead>
+                  <tr>
+                    {[
+                      "Title",
+                      "Category",
+                      "Quantity",
+                      "Unit",
+                      "Total Paid",
+                      "Price / Unit",
+                    ].map((head) => (
+                      <th key={head} style={thStyle}>
+                        {head}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
 
-          <div>
-            <label>Quantity</label>
-            <br />
-
-            <input
-              type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-              }}
-            />
-          </div>
-
-          <div>
-            <label>Unit</label>
-            <br />
-
-            <input
-              type="text"
-              value={unit}
-              readOnly
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-                backgroundColor: "#f3f4f6",
-              }}
-            />
-          </div>
-
-          <div>
-            <label>Total Amount Paid</label>
-            <br />
-
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="Enter total amount"
-              style={{
-                width: "100%",
-                padding: "10px",
-                marginTop: "6px",
-              }}
-            />
-          </div>
-
-          <div
-            style={{
-              padding: "12px",
-              backgroundColor: "#f3f4f6",
-              borderRadius: "10px",
-              fontWeight: "bold",
-            }}
-          >
-            Price Per Unit: ${pricePerUnitPreview.toFixed(2)} / {unit}
-          </div>
-
-          <button
-            onClick={handleAddExpense}
-            style={{
-              padding: "12px 16px",
-              borderRadius: "10px",
-              border: "none",
-              backgroundColor: "black",
-              color: "white",
-              cursor: "pointer",
-            }}
-          >
-            Add Expense
-          </button>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.id}>
+                      <td style={tdStyle}>{expense.item_name}</td>
+                      <td style={tdStyle}>{expense.category}</td>
+                      <td style={tdStyle}>{expense.quantity}</td>
+                      <td style={tdStyle}>{expense.unit}</td>
+                      <td style={tdStyle}>${expense.paid_amount.toFixed(2)}</td>
+                      <td style={tdStyle}>
+                        ${expense.price_per_unit.toFixed(2)} / {expense.unit}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
         </div>
-      </section>
-
-      <section
-        style={{
-          background: "white",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-          marginBottom: "24px",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>Total Expenses</h2>
-
-        <p
-          style={{
-            fontSize: "28px",
-            fontWeight: "bold",
-            margin: 0,
-          }}
-        >
-          ${totalExpenses.toFixed(2)}
-        </p>
-      </section>
-
-      <section
-        style={{
-          background: "white",
-          padding: "24px",
-          borderRadius: "16px",
-          boxShadow: "0 4px 14px rgba(0,0,0,0.08)",
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>Recent Expenses</h2>
-
-        {expenses.length === 0 ? (
-          <p style={{ color: "var(--secondary-text)" }}>No expenses added yet.</p>
-        ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr>
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Title
-                </th>
-
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Category
-                </th>
-
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Quantity
-                </th>
-
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Unit
-                </th>
-
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Total Paid
-                </th>
-
-                <th style={{ textAlign: "left", padding: "10px", borderBottom: "1px solid #ddd" }}>
-                  Price / Unit
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {expenses.map((expense) => (
-                <tr key={expense.id}>
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    {expense.item_name}
-                  </td>
-
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    {expense.category}
-                  </td>
-
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    {expense.quantity}
-                  </td>
-
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    {expense.unit}
-                  </td>
-
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    ${expense.paid_amount.toFixed(2)}
-                  </td>
-
-                  <td style={{ padding: "10px", borderBottom: "1px solid #eee" }}>
-                    ${expense.price_per_unit.toFixed(2)} / {expense.unit}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </section>
-    </main>
-  </ProtectedPage>
-);
+      </main>
+    </ProtectedPage>
+  );
 }
+
+const heroStyle = {
+  background: "rgba(255,255,255,0.65)",
+  backdropFilter: "blur(14px)",
+  borderRadius: "40px",
+  padding: "55px",
+  marginBottom: "30px",
+  boxShadow: "0 25px 60px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(255,255,255,0.7)",
+};
+
+const labelStyle = {
+  margin: 0,
+  color: "#7aa85a",
+  fontWeight: "bold",
+  letterSpacing: "2px",
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const titleStyle = {
+  margin: "18px 0 0",
+  color: "#2e4732",
+  fontSize: "72px",
+  lineHeight: "1",
+  fontWeight: "bold",
+};
+
+const descriptionStyle = {
+  marginTop: "22px",
+  fontSize: "21px",
+  color: "#435848",
+  lineHeight: "1.8",
+  maxWidth: "620px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.72)",
+  backdropFilter: "blur(14px)",
+  padding: "36px",
+  borderRadius: "34px",
+  boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(255,255,255,0.7)",
+  marginBottom: "28px",
+};
+
+const sectionTitle = {
+  marginTop: 0,
+  color: "#2e4732",
+  fontSize: "38px",
+};
+
+const fieldLabel = {
+  fontWeight: 800,
+  color: "#2e4732",
+  fontFamily: "Arial, sans-serif",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "15px",
+  marginTop: "8px",
+  borderRadius: "16px",
+  border: "1px solid #d6d6d6",
+  outline: "none",
+  background: "rgba(255,255,255,0.85)",
+  fontSize: "15px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const buttonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#304638",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+  boxShadow: "0 12px 24px rgba(48,70,56,0.25)",
+};
+
+const thStyle = {
+  textAlign: "left" as const,
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.18)",
+  color: "#2e4732",
+};
+
+const tdStyle = {
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.1)",
+  color: "#435848",
+};

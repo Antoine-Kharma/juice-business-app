@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -45,27 +46,18 @@ export default function Navbar() {
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* LEFT SIDE */}
-        <div
+        <h1
           style={{
-            display: "flex",
-            alignItems: "center",
+            margin: 0,
+            color: "#304638",
+            fontSize: "28px",
+            fontWeight: 900,
+            fontFamily: "Georgia, serif",
           }}
         >
-          <h1
-            style={{
-              margin: 0,
-              color: "#304638",
-              fontSize: "28px",
-              fontWeight: 900,
-              fontFamily: "Georgia, serif",
-            }}
-          >
-            SPLASH Juice
-          </h1>
-        </div>
+          SPLASH Juice
+        </h1>
 
-        {/* CENTER BUTTONS */}
         <div
           style={{
             display: "flex",
@@ -73,28 +65,31 @@ export default function Navbar() {
             gap: "12px",
           }}
         >
-          {links.map((link, index) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              style={{
-                textDecoration: "none",
-                background: index === 0 ? "#9ACB6B" : "transparent",
-                color: "#304638",
-                padding: "12px 22px",
-                borderRadius: "999px",
-                fontWeight: 700,
-                fontSize: "16px",
-                transition: "0.2s",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
-              {link.name}
-            </Link>
-          ))}
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                style={{
+                  textDecoration: "none",
+                  background: isActive ? "#9ACB6B" : "transparent",
+                  color: "#304638",
+                  padding: "12px 22px",
+                  borderRadius: "999px",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  transition: "0.2s",
+                  fontFamily: "Arial, sans-serif",
+                }}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </div>
 
-        {/* LOGOUT */}
         <button
           onClick={handleLogout}
           style={{
