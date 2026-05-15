@@ -12,6 +12,7 @@ type Expense = {
   unit: string;
   paid_amount: number;
   price_per_unit: number;
+  created_at?: string;
 };
 
 const expenseOptions = [
@@ -248,11 +249,12 @@ export default function ExpensesPage() {
                   <tr>
                     {[
                       "Title",
-                      "Category",
-                      "Quantity",
-                      "Unit",
-                      "Total Paid",
-                      "Price / Unit",
+                        "Category",
+                        "Quantity",
+                        "Unit",
+                        "Total Paid",
+                        "Price / Unit",
+                        "Date & Time",
                     ].map((head) => (
                       <th key={head} style={thStyle}>
                         {head}
@@ -271,6 +273,11 @@ export default function ExpensesPage() {
                       <td style={tdStyle}>${expense.paid_amount.toFixed(2)}</td>
                       <td style={tdStyle}>
                         ${expense.price_per_unit.toFixed(2)} / {expense.unit}
+                      </td>
+                      <td style={tdStyle}>
+                         {expense.created_at
+                            ? new Date(expense.created_at).toLocaleString()
+                            : ""}
                       </td>
                     </tr>
                   ))}
