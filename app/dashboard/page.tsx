@@ -159,11 +159,12 @@ export default function DashboardPage() {
 
           {/* BOTTOM */}
           <section
-            style={{
-              display: "grid",
-              gridTemplateColumns: "2fr 1fr",
-              gap: "24px",
-            }}
+          className="dashboardBottom"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "2fr 1fr",
+            gap: "24px",
+          }}
           >
             {/* Activity */}
             <div
@@ -284,6 +285,15 @@ export default function DashboardPage() {
     }
   `}
 </style>
+      <style>
+        {`
+          @media (max-width: 850px) {
+            .dashboardBottom {
+              grid-template-columns: 1fr !important;
+            }
+          }
+        `}
+      </style>
       </main>
     </ProtectedPage>
   );
