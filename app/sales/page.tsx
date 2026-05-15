@@ -71,22 +71,24 @@ export default function SalesPage() {
     const recipes: Record<string, Record<string, number>> = {
       "Orange - 250 ml": {
         Oranges: 0.45,
-      "Bottles 250 ml": 1,
+        "Bottles 250 ml": 1,
         Caps: 1,
-      "Orange Stickers 250 ml": 1,
+        "Orange Stickers 250 ml": 1,
       },
 
       "Orange - 1 Liter": {
         Oranges: 1.8,
-      "Bottles 1 Liter": 1,
+        "Bottles 1 Liter": 1,
         Caps: 1,
-      "Orange Stickers 1 Liter": 1,
+        "Orange Stickers 1 Liter": 1,
       },
-};
+    };
 
     const recipe = recipes[product];
 
     if (recipe) {
+      const inventoryUpdates = [];
+
       for (const itemName in recipe) {
         const neededQuantity = recipe[itemName] * quantity;
 
@@ -108,10 +110,17 @@ export default function SalesPage() {
           return;
         }
 
+        inventoryUpdates.push({
+          id: inventoryItem.id,
+          quantity: newStock,
+        });
+      }
+
+      for (const update of inventoryUpdates) {
         const { error: updateError } = await supabase
           .from("inventory")
-          .update({ quantity: newStock })
-          .eq("id", inventoryItem.id);
+          .update({ quantity: update.quantity })
+          .eq("id", update.id);
 
         if (updateError) {
           alert(updateError.message);
@@ -376,55 +385,56 @@ export default function SalesPage() {
             )}
           </section>
         </div>
+
         <style>
-  {`
-    @media (max-width: 850px) {
-      main {
-        padding: 20px !important;
-      }
+          {`
+            @media (max-width: 850px) {
+              main {
+                padding: 20px !important;
+              }
 
-      section {
-        padding: 28px !important;
-        border-radius: 28px !important;
-      }
+              section {
+                padding: 28px !important;
+                border-radius: 28px !important;
+              }
 
-      h1 {
-        font-size: 46px !important;
-      }
+              h1 {
+                font-size: 46px !important;
+              }
 
-      h2 {
-        font-size: 30px !important;
-      }
+              h2 {
+                font-size: 30px !important;
+              }
 
-      p {
-        font-size: 17px !important;
-      }
+              p {
+                font-size: 17px !important;
+              }
 
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
+              table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+              }
 
-      input,
-      select,
-      button {
-        width: 100%;
-        box-sizing: border-box;
-      }
-    }
+              input,
+              select,
+              button {
+                width: 100%;
+                box-sizing: border-box;
+              }
+            }
 
-    @media (max-width: 550px) {
-      h1 {
-        font-size: 38px !important;
-      }
+            @media (max-width: 550px) {
+              h1 {
+                font-size: 38px !important;
+              }
 
-      section {
-        padding: 22px !important;
-      }
-    }
-  `}
-</style>
+              section {
+                padding: 22px !important;
+              }
+            }
+          `}
+        </style>
       </main>
     </ProtectedPage>
   );
