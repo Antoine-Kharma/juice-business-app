@@ -36,6 +36,16 @@ const itemOptions = [
   { name: "Carrot Stickers", category: "Packaging", unit: "Pc" },
   { name: "Pomegranate Stickers", category: "Packaging", unit: "Pc" },
   { name: "Straw Mango Stickers", category: "Packaging", unit: "Pc" },
+  { name: "Orange Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Strawberry Banana Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Strawberry Lemonade Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Lemonade Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Minted Lemonade Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Mango Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Carrot Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Pomegranate Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Straw Mango Stickers 1L", category: "Packaging", unit: "Pc" },
+
 ];
 
 const categories = ["Fruit", "Ingredient", "Packaging"];
