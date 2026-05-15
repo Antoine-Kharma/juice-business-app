@@ -147,7 +147,6 @@ export default function Home() {
               lineHeight: "1.8",
               color: "#44584a",
               maxWidth: "520px",
-              fontWeight: 600,
             }}
           >
             
