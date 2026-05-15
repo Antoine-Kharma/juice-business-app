@@ -107,6 +107,22 @@ export default function Navbar() {
           Logout
         </button>
       </nav>
+      <style>
+  {`
+    @media (max-width: 900px) {
+      nav {
+        flex-direction: column;
+        gap: 16px;
+        border-radius: 30px !important;
+      }
+
+      nav div {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  `}
+</style>
     </div>
   );
 } 
