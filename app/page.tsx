@@ -132,9 +132,9 @@ export default function Home() {
               fontWeight: 900,
             }}
           >
-            Life Moves Fast.
+            Real Fruit,
             <br />
-            Your Juice Should Too.
+            No Powder, No Syrup.
             <br />
             Choose <span style={{ color: "#95c979" }}>SPLASH.</span>
           </h1>
@@ -147,9 +147,10 @@ export default function Home() {
               lineHeight: "1.8",
               color: "#44584a",
               maxWidth: "520px",
-              fontWeight: 600,
+              //fontWeight: 600,
             }}
           >
+            
             SPLASH Juice is fresh, simple, and natural. Enjoy clean fruit
             flavors made daily with premium ingredients and smooth packaging.
           </p>
