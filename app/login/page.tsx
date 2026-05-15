@@ -260,6 +260,44 @@ export default function LoginPage() {
           </div>
         </section>
       </section>
+      <section className="loginContent">
+        <h1 className="loginTitle">
+          <section className="loginCard">
+            <style>
+  {`
+    @media (max-width: 850px) {
+      .loginContent {
+        grid-template-columns: 1fr !important;
+        margin-top: 45px !important;
+      }
+
+      .loginTitle {
+        font-size: 48px !important;
+      }
+
+      .loginCard {
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        padding: 28px !important;
+      }
+
+      nav {
+        padding: 14px 18px !important;
+      }
+
+      nav h1 {
+        font-size: 26px !important;
+      }
+
+      main {
+        padding: 20px !important;
+      }
+    }
+  `}
+</style>
+          </section>
+        </h1>
+      </section>
     </main>
   );
 }
