@@ -73,7 +73,7 @@ export default function SalesPage() {
         Oranges: 0.45,
         "Bottles 250 ml": 1,
         Caps: 1,
-        "Orange Stickers 250 ML": 1,
+        "Orange Stickers 250ML": 1,
       },
 
       "Orange - 1 Liter": {
