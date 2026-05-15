@@ -58,13 +58,14 @@ export default function Navbar() {
           SPLASH Juice
         </h1>
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-          }}
-        >
+    <div
+      className="navbarLinks"
+        style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+  }}
+>
           {links.map((link) => {
             const isActive = pathname === link.href;
 
@@ -91,7 +92,8 @@ export default function Navbar() {
         </div>
 
         <button
-          onClick={handleLogout}
+          className="logoutButton"
+            onClick={handleLogout}
           style={{
             border: "none",
             background: "#9ACB6B",
@@ -110,19 +112,48 @@ export default function Navbar() {
       <style>
   {`
     @media (max-width: 900px) {
-      nav {
-        flex-direction: column;
-        gap: 16px;
-        border-radius: 30px !important;
+
+      nav{
+        width:95% !important;
+        padding:18px !important;
+        border-radius:32px !important;
+        gap:18px;
+        flex-direction:column;
       }
 
-      nav div {
-        flex-wrap: wrap;
-        justify-content: center;
+      .navbarLinks{
+        width:100%;
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:10px;
+      }
+
+      .navbarLinks a{
+        padding:10px 18px !important;
+        font-size:14px !important;
+      }
+
+      .logoutButton{
+        width:100%;
+        max-width:220px;
+      }
+    }
+
+    @media (max-width: 550px){
+
+      nav h1{
+        font-size:24px !important;
+      }
+
+      .navbarLinks a{
+        font-size:13px !important;
+        padding:9px 15px !important;
       }
     }
   `}
 </style>
     </div>
+    
   );
 } 
