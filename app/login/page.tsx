@@ -61,69 +61,22 @@ export default function LoginPage() {
         }}
       >
         {/* Navbar */}
-        <nav
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            background: "#ece9d7",
-            padding: "18px 28px",
-            borderRadius: "50px",
-            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-            maxWidth: "1200px",
-            margin: "0 auto",
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              color: "#2e4732",
-              fontWeight: "bold",
-              fontSize: "38px",
-            }}
-          >
-            SPLASH Juice
-          </h1>
+        <nav className="loginNavbar">
+          <h1 className="logoTitle">SPLASH Juice</h1>
 
           <button
             onClick={() => router.push("/")}
-            style={{
-              border: "none",
-              background: "#9ccc73",
-              color: "#2e4732",
-              padding: "14px 28px",
-              borderRadius: "999px",
-              fontWeight: "bold",
-              fontSize: "16px",
-              cursor: "pointer",
-            }}
+            className="homeButton"
           >
             Back Home
           </button>
         </nav>
 
         {/* Main Content */}
-        <section
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            alignItems: "center",
-            gap: "40px",
-            maxWidth: "1200px",
-            margin: "80px auto 0",
-          }}
-        >
+        <section className="loginContent">
           {/* Left Side */}
           <div>
-            <h1
-              style={{
-                fontSize: "78px",
-                lineHeight: "1",
-                color: "#2e4732",
-                margin: 0,
-                fontWeight: "bold",
-              }}
-            >
+            <h1 className="loginTitle">
               Welcome
               <br />
               Back To
@@ -131,35 +84,14 @@ export default function LoginPage() {
               <span style={{ color: "#9ccc73" }}>SPLASH.</span>
             </h1>
 
-            <p
-              style={{
-                marginTop: "30px",
-                fontSize: "22px",
-                color: "#435848",
-                lineHeight: "1.8",
-                maxWidth: "520px",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
+            <p className="loginText">
               Login to manage your fresh juice business, inventory, sales,
               expenses and reports with a clean and modern dashboard.
             </p>
           </div>
 
           {/* Login Card */}
-          <div
-            style={{
-              background: "rgba(255,255,255,0.72)",
-              backdropFilter: "blur(14px)",
-              padding: "45px",
-              borderRadius: "35px",
-              width: "100%",
-              maxWidth: "460px",
-              marginLeft: "auto",
-              boxShadow: "0 25px 60px rgba(0,0,0,0.12)",
-              border: "1px solid rgba(255,255,255,0.7)",
-            }}
-          >
+          <div className="loginCard">
             <h2
               style={{
                 marginTop: 0,
@@ -179,80 +111,32 @@ export default function LoginPage() {
               }}
             >
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "10px",
-                    color: "#2e4732",
-                    fontWeight: "bold",
-                    fontFamily: "Arial, sans-serif",
-                  }}
-                >
-                  Email
-                </label>
+                <label className="inputLabel">Email</label>
 
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  style={{
-                    width: "100%",
-                    padding: "16px",
-                    borderRadius: "18px",
-                    border: "1px solid #d6d6d6",
-                    fontSize: "16px",
-                    outline: "none",
-                    background: "rgba(255,255,255,0.85)",
-                  }}
+                  className="loginInput"
                 />
               </div>
 
               <div>
-                <label
-                  style={{
-                    display: "block",
-                    marginBottom: "10px",
-                    color: "#2e4732",
-                    fontWeight: "bold",
-                    fontFamily: "Arial, sans-serif",
-                  }}
-                >
-                  Password
-                </label>
+                <label className="inputLabel">Password</label>
 
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  style={{
-                    width: "100%",
-                    padding: "16px",
-                    borderRadius: "18px",
-                    border: "1px solid #d6d6d6",
-                    fontSize: "16px",
-                    outline: "none",
-                    background: "rgba(255,255,255,0.85)",
-                  }}
+                  className="loginInput"
                 />
               </div>
 
               <button
                 onClick={handleLogin}
-                style={{
-                  marginTop: "10px",
-                  border: "none",
-                  background: "#2e4732",
-                  color: "white",
-                  padding: "18px",
-                  borderRadius: "999px",
-                  fontWeight: "bold",
-                  fontSize: "18px",
-                  cursor: "pointer",
-                  transition: "0.3s",
-                  boxShadow: "0 12px 24px rgba(46,71,50,0.25)",
-                }}
+                className="loginButton"
               >
                 Login
               </button>
@@ -260,44 +144,175 @@ export default function LoginPage() {
           </div>
         </section>
       </section>
-      <section className="loginContent">
-        <h1 className="loginTitle">
-          <section className="loginCard">
-            <style>
-  {`
-    @media (max-width: 850px) {
-      .loginContent {
-        grid-template-columns: 1fr !important;
-        margin-top: 45px !important;
-      }
 
-      .loginTitle {
-        font-size: 48px !important;
-      }
+      {/* RESPONSIVE STYLE */}
+      <style>
+        {`
+          .loginNavbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            background:#ece9d7;
+            padding:18px 28px;
+            border-radius:50px;
+            box-shadow:0 10px 30px rgba(0,0,0,0.08);
+            max-width:1200px;
+            margin:0 auto;
+          }
 
-      .loginCard {
-        max-width: 100% !important;
-        margin-left: 0 !important;
-        padding: 28px !important;
-      }
+          .logoTitle{
+            margin:0;
+            color:#2e4732;
+            font-weight:bold;
+            font-size:38px;
+          }
 
-      nav {
-        padding: 14px 18px !important;
-      }
+          .homeButton{
+            border:none;
+            background:#9ccc73;
+            color:#2e4732;
+            padding:14px 28px;
+            border-radius:999px;
+            font-weight:bold;
+            font-size:16px;
+            cursor:pointer;
+          }
 
-      nav h1 {
-        font-size: 26px !important;
-      }
+          .loginContent{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            align-items:center;
+            gap:40px;
+            max-width:1200px;
+            margin:80px auto 0;
+          }
 
-      main {
-        padding: 20px !important;
-      }
-    }
-  `}
-</style>
-          </section>
-        </h1>
-      </section>
+          .loginTitle{
+            font-size:78px;
+            line-height:1;
+            color:#2e4732;
+            margin:0;
+            font-weight:bold;
+          }
+
+          .loginText{
+            margin-top:30px;
+            font-size:22px;
+            color:#435848;
+            line-height:1.8;
+            max-width:520px;
+            font-family:Arial, sans-serif;
+          }
+
+          .loginCard{
+            background:rgba(255,255,255,0.72);
+            backdrop-filter:blur(14px);
+            padding:45px;
+            border-radius:35px;
+            width:100%;
+            max-width:460px;
+            margin-left:auto;
+            box-shadow:0 25px 60px rgba(0,0,0,0.12);
+            border:1px solid rgba(255,255,255,0.7);
+          }
+
+          .inputLabel{
+            display:block;
+            margin-bottom:10px;
+            color:#2e4732;
+            font-weight:bold;
+            font-family:Arial, sans-serif;
+          }
+
+          .loginInput{
+            width:100%;
+            padding:16px;
+            border-radius:18px;
+            border:1px solid #d6d6d6;
+            font-size:16px;
+            outline:none;
+            background:rgba(255,255,255,0.85);
+            box-sizing:border-box;
+          }
+
+          .loginButton{
+            margin-top:10px;
+            border:none;
+            background:#2e4732;
+            color:white;
+            padding:18px;
+            border-radius:999px;
+            font-weight:bold;
+            font-size:18px;
+            cursor:pointer;
+            transition:0.3s;
+            box-shadow:0 12px 24px rgba(46,71,50,0.25);
+          }
+
+          @media (max-width: 850px){
+
+            .loginContent{
+              grid-template-columns:1fr;
+              margin-top:45px;
+            }
+
+            .loginTitle{
+              font-size:52px;
+              text-align:center;
+            }
+
+            .loginText{
+              font-size:18px;
+              text-align:center;
+              max-width:100%;
+            }
+
+            .loginCard{
+              max-width:100%;
+              margin-left:0;
+              padding:28px;
+            }
+
+            .loginNavbar{
+              padding:14px 18px;
+            }
+
+            .logoTitle{
+              font-size:26px;
+            }
+
+            .homeButton{
+              padding:12px 20px;
+              font-size:14px;
+            }
+
+            main{
+              padding:20px;
+            }
+          }
+
+          @media (max-width: 550px){
+
+            .loginNavbar{
+              flex-direction:column;
+              gap:14px;
+              border-radius:30px;
+            }
+
+            .loginTitle{
+              font-size:42px;
+            }
+
+            .loginCard{
+              padding:22px;
+            }
+
+            .logoTitle{
+              font-size:24px;
+            }
+          }
+        `}
+      </style>
     </main>
   );
 }
