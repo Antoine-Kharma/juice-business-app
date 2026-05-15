@@ -71,17 +71,18 @@ export default function SalesPage() {
     const recipes: Record<string, Record<string, number>> = {
       "Orange - 250 ml": {
         Oranges: 0.45,
-        "Bottles 250 ml": 1,
+      "Bottles 250 ml": 1,
         Caps: 1,
-        Stickers: 1,
+      "Orange Stickers 250 ml": 1,
       },
+
       "Orange - 1 Liter": {
         Oranges: 1.8,
-        "Bottles 1 Liter": 1,
+      "Bottles 1 Liter": 1,
         Caps: 1,
-        Stickers: 1,
+      "Orange Stickers 1 Liter": 1,
       },
-    };
+};
 
     const recipe = recipes[product];
 
