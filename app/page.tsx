@@ -7,16 +7,21 @@ const products = [
   "Mango Juice",
   "Carrot Juice",
   "Pomegranate Juice",
+  "Strawberry Lemonade",
+  "Strawberry Banana",
+  "Straw Mango",
 ];
 
 const bottles = [
   "/bottles/orange.png",
-  "/bottles/strawberry-banana.png",
   "/bottles/lemonade.png",
-  "/bottles/carrot.png",
-  "/bottles/strawberry-lemonade.png",
+  "/bottles/minted-lemonade.png",
   "/bottles/mango.png",
+  "/bottles/carrot.png",
   "/bottles/pomegranate.png",
+  "/bottles/strawberry-lemonade.png",
+  "/bottles/strawberry-banana.png",
+  "/bottles/straw-mango.png",
 ];
 
 export default function Home() {
@@ -247,7 +252,7 @@ export default function Home() {
               gap: "20px",
             }}
           >
-            {products.map((product) => (
+            {products.map((product, index) => (
               <div
                 key={product}
                 style={{
@@ -260,7 +265,16 @@ export default function Home() {
                   fontFamily: "Arial, sans-serif",
                 }}
               >
-                <div style={{ fontSize: "52px", marginBottom: "14px" }}>🥤</div>
+                <img
+                    src={bottles[index]}
+                    alt={product}
+                    style={{
+                      width: "90px",
+                      height: "90px",
+                      objectFit: "contain",
+                      marginBottom: "14px",
+                    }}
+                  />
                 <h3 style={{ margin: 0, color: "#304638" }}>{product}</h3>
                 <p style={{ color: "#617266", fontSize: "14px" }}>
                   250ml / 1 Liter
