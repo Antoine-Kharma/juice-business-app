@@ -137,7 +137,7 @@ export default function DashboardPage() {
     { title: "Today Sales", value: `$${todaySales.toFixed(2)}` },
     { title: "Monthly Revenue", value: `$${monthlyRevenue.toFixed(2)}` },
     { title: "Cups Sold", value: cupsSold },
-    { title: "Low Stock Items", value: lowStockItems },
+    { title: "Low Stock Items <5", value: lowStockItems },
     { title: "Inventory Value", value: `$${inventoryValue.toFixed(2)}` },
     { title: "Best Seller", value: bestSeller },
     { title: "Today Expenses", value: `$${todayExpenses.toFixed(2)}` },
