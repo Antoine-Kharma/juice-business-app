@@ -136,8 +136,8 @@ export default function DashboardPage() {
   const stats = [
     { title: "Today Sales", value: `$${todaySales.toFixed(2)}` },
     { title: "Monthly Revenue", value: `$${monthlyRevenue.toFixed(2)}` },
-    { title: "Cups Sold", value: cupsSold },
-    { title: "Low Stock Items <5", value: lowStockItems },
+    { title: "Today Cups Sold", value: cupsSold },
+    { title: "Low Stock Items", value: lowStockItems },
     { title: "Inventory Value", value: `$${inventoryValue.toFixed(2)}` },
     { title: "Best Seller", value: bestSeller },
     { title: "Today Expenses", value: `$${todayExpenses.toFixed(2)}` },
@@ -188,7 +188,7 @@ export default function DashboardPage() {
           </section>
 
           <section style={{ ...cardStyle, marginBottom: "34px" }}>
-            <h2 style={sectionTitleStyle}>Monthly Sales Chart</h2>
+            <h2 style={sectionTitleStyle}>Weekly Sales Chart</h2>
 
             <div style={chartWrapperStyle}>
               {weeklySales.map((value, index) => {
