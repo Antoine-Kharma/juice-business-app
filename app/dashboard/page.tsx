@@ -8,61 +8,104 @@ export default function DashboardPage() {
   const [todaySales, setTodaySales] = useState(0);
   const [cupsSold, setCupsSold] = useState(0);
   const [bestSeller, setBestSeller] = useState("-");
+  const [lowStockItems, setLowStockItems] = useState(0);
+  const [todayExpenses, setTodayExpenses] = useState(0);
+  const [netProfit, setNetProfit] = useState(0);
   const [recentSales, setRecentSales] = useState<any[]>([]);
+  const [recentExpenses, setRecentExpenses] = useState<any[]>([]);
 
-  const fetchDashboardData = async () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+const fetchDashboardData = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const { data, error } = await supabase
-      .from("sales")
-      .select("*")
-      .gte("created_at", today.toISOString())
-      .order("created_at", { ascending: false });
+  const todayISO = today.toISOString();
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+  const { data: salesData, error: salesError } = await supabase
+    .from("sales")
+    .select("*")
+    .gte("created_at", todayISO)
+    .order("created_at", { ascending: false });
 
-    const sales = data || [];
+  if (salesError) {
+    alert(salesError.message);
+    return;
+  }
 
-    const totalSales = sales.reduce(
-      (sum, sale) => sum + Number(sale.total_price || 0),
-      0
-    );
+  const { data: inventoryData, error: inventoryError } = await supabase
+    .from("inventory")
+    .select("*");
 
-    const totalCups = sales.reduce(
-      (sum, sale) => sum + Number(sale.quantity || 0),
-      0
-    );
+  if (inventoryError) {
+    alert(inventoryError.message);
+    return;
+  }
 
-    const productCounts: Record<string, number> = {};
+  const { data: expensesData, error: expensesError } = await supabase
+    .from("expenses")
+    .select("*")
+    .gte("created_at", todayISO)
+    .order("created_at", { ascending: false });
 
-    sales.forEach((sale) => {
-      productCounts[sale.juice_name] =
-        (productCounts[sale.juice_name] || 0) + Number(sale.quantity || 0);
-    });
+  if (expensesError) {
+    alert(expensesError.message);
+    return;
+  }
 
-    const best =
-      Object.entries(productCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+  const sales = salesData || [];
+  const inventory = inventoryData || [];
+  const expenses = expensesData || [];
 
-    setTodaySales(totalSales);
-    setCupsSold(totalCups);
-    setBestSeller(best);
-    setRecentSales(sales.slice(0, 5));
-  };
+  const totalSales = sales.reduce(
+    (sum, sale) => sum + Number(sale.total_price || 0),
+    0
+  );
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const totalCups = sales.reduce(
+    (sum, sale) => sum + Number(sale.quantity || 0),
+    0
+  );
 
-  const stats = [
-    { title: "Today Sales", value: `$${todaySales.toFixed(2)}` },
-    { title: "Cups Sold", value: cupsSold },
-    { title: "Low Stock Items", value: "0" },
-    { title: "Best Seller", value: bestSeller },
-  ];
+  const totalExpenses = expenses.reduce(
+    (sum, expense) => sum + Number(expense.paid_amount || 0),
+    0
+  );
+
+  const productCounts: Record<string, number> = {};
+
+  sales.forEach((sale) => {
+    productCounts[sale.juice_name] =
+      (productCounts[sale.juice_name] || 0) + Number(sale.quantity || 0);
+  });
+
+  const best =
+    Object.entries(productCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+
+  const lowStock = inventory.filter(
+    (item) => Number(item.quantity || 0) <= 5
+  ).length;
+
+  setTodaySales(totalSales);
+  setCupsSold(totalCups);
+  setTodayExpenses(totalExpenses);
+  setNetProfit(totalSales - totalExpenses);
+  setBestSeller(best);
+  setLowStockItems(lowStock);
+  setRecentSales(sales.slice(0, 5));
+  setRecentExpenses(expenses.slice(0, 5));
+};
+
+useEffect(() => {
+  fetchDashboardData();
+}, []);
+
+const stats = [
+  { title: "Today Sales", value: `$${todaySales.toFixed(2)}` },
+  { title: "Cups Sold", value: cupsSold },
+  { title: "Low Stock Items", value: lowStockItems },
+  { title: "Best Seller", value: bestSeller },
+  { title: "Today Expenses", value: `$${todayExpenses.toFixed(2)}` },
+  { title: "Net Profit", value: `$${netProfit.toFixed(2)}` },
+];
 
   return (
     <ProtectedPage>
@@ -161,55 +204,83 @@ export default function DashboardPage() {
           </section>
 
           <section
-            className="dashboardBottom"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "2fr 1fr",
-              gap: "24px",
-            }}
-          >
-            <div style={cardStyle}>
-              <h2 style={sectionTitleStyle}>Recent Activity</h2>
+          className="dashboardBottom"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr",
+            gap: "24px",
+          }}
+        >
+          {/* Recent Sales */}
+          <div style={cardStyle}>
+            <h2 style={sectionTitleStyle}>Recent Sales</h2>
 
-              <div
-                style={{
-                  color: "#435848",
-                  fontSize: "18px",
-                  lineHeight: "1.8",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                {recentSales.length === 0 ? (
-                  <p>No sales recorded yet.</p>
-                ) : (
-                  recentSales.map((sale) => (
-                    <p key={sale.id}>
-                      {sale.quantity}x {sale.juice_name} — $
-                      {Number(sale.total_price || 0).toFixed(2)}
-                    </p>
-                  ))
-                )}
-              </div>
+            <div
+              style={{  
+                color: "#435848",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              {recentSales.length === 0 ? (
+                <p>No sales recorded yet.</p>
+              ) : (
+                recentSales.map((sale) => (
+                  <p key={sale.id}>
+                    {sale.quantity}x {sale.juice_name} — $
+                    {Number(sale.total_price || 0).toFixed(2)}
+                  </p>
+                ))
+              )}
             </div>
+          </div>
 
-            <div style={cardStyle}>
-              <h2 style={sectionTitleStyle}>Quick Notes</h2>
+          {/* Recent Expenses */}
+          <div style={cardStyle}>
+            <h2 style={sectionTitleStyle}>Recent Expenses</h2>
 
-              <ul
-                style={{
-                  lineHeight: "2.2",
-                  paddingLeft: "20px",
-                  color: "#435848",
-                  fontSize: "19px",
-                  fontFamily: "Arial, sans-serif",
-                }}
-              >
-                <li>Review daily sales</li>
-                <li>Check low stock items</li>
-                <li>Update inventory regularly</li>
-              </ul>
+            <div
+              style={{
+                color: "#435848",
+                fontSize: "18px",
+                lineHeight: "1.8",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              {recentExpenses.length === 0 ? (
+                <p>No expenses recorded yet.</p>
+              ) : (
+                recentExpenses.map((expense) => (
+                  <p key={expense.id}>
+                    {expense.item_name} — $
+                    {Number(expense.paid_amount || 0).toFixed(2)}
+                  </p>
+                ))
+              )}
             </div>
-          </section>
+          </div>
+
+          {/* Quick Notes */}
+          <div style={cardStyle}>
+            <h2 style={sectionTitleStyle}>Quick Notes</h2>
+
+            <ul
+              style={{
+                lineHeight: "2.2",
+                paddingLeft: "20px",
+                color: "#435848",
+                fontSize: "19px",
+                fontFamily: "Arial, sans-serif",
+              }}
+            >
+              <li>Review daily sales</li>
+              <li>Check low stock items</li>
+              <li>Update inventory regularly</li>
+              <li>Monitor daily profit</li>
+            </ul>
+          </div>
+        </section>
         </div>
 
         <style>
@@ -235,7 +306,11 @@ export default function DashboardPage() {
               p {
                 font-size: 17px !important;
               }
-
+            @media (max-width: 1200px) {
+              .dashboardBottom {
+                grid-template-columns: 1fr 1fr !important;
+              }
+            }
               .dashboardBottom {
                 grid-template-columns: 1fr !important;
               }
