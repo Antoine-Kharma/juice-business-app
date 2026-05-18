@@ -1,13 +1,69 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
 import ProtectedPage from "../components/ProtectedPage";
 
-const stats = [
-  { title: "Today Sales", value: "$0" },
-  { title: "Cups Sold", value: "0" },
-  { title: "Low Stock Items", value: "0" },
-  { title: "Best Seller", value: "-" },
-];
-
 export default function DashboardPage() {
+  const [todaySales, setTodaySales] = useState(0);
+  const [cupsSold, setCupsSold] = useState(0);
+  const [bestSeller, setBestSeller] = useState("-");
+  const [recentSales, setRecentSales] = useState<any[]>([]);
+
+  const fetchDashboardData = async () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const { data, error } = await supabase
+      .from("sales")
+      .select("*")
+      .gte("created_at", today.toISOString())
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const sales = data || [];
+
+    const totalSales = sales.reduce(
+      (sum, sale) => sum + Number(sale.total_price || 0),
+      0
+    );
+
+    const totalCups = sales.reduce(
+      (sum, sale) => sum + Number(sale.quantity || 0),
+      0
+    );
+
+    const productCounts: Record<string, number> = {};
+
+    sales.forEach((sale) => {
+      productCounts[sale.juice_name] =
+        (productCounts[sale.juice_name] || 0) + Number(sale.quantity || 0);
+    });
+
+    const best =
+      Object.entries(productCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "-";
+
+    setTodaySales(totalSales);
+    setCupsSold(totalCups);
+    setBestSeller(best);
+    setRecentSales(sales.slice(0, 5));
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const stats = [
+    { title: "Today Sales", value: `$${todaySales.toFixed(2)}` },
+    { title: "Cups Sold", value: cupsSold },
+    { title: "Low Stock Items", value: "0" },
+    { title: "Best Seller", value: bestSeller },
+  ];
+
   return (
     <ProtectedPage>
       <main
@@ -20,7 +76,6 @@ export default function DashboardPage() {
           overflow: "hidden",
         }}
       >
-        {/* Background Shape */}
         <div
           style={{
             position: "absolute",
@@ -34,13 +89,7 @@ export default function DashboardPage() {
           }}
         />
 
-        <div
-          style={{
-            position: "relative",
-            zIndex: 2,
-          }}
-        >
-          {/* HERO */}
+        <div style={{ position: "relative", zIndex: 2 }}>
           <section
             style={{
               background: "rgba(255,255,255,0.65)",
@@ -54,30 +103,7 @@ export default function DashboardPage() {
               overflow: "hidden",
             }}
           >
-            <div
-              style={{
-                position: "absolute",
-                right: "-60px",
-                top: "-60px",
-                width: "280px",
-                height: "280px",
-                background: "rgba(168,213,122,0.35)",
-                borderRadius: "50%",
-              }}
-            />
-
-            <p
-              style={{
-                margin: 0,
-                color: "#7aa85a",
-                fontWeight: "bold",
-                letterSpacing: "2px",
-                fontSize: "14px",
-                fontFamily: "Arial, sans-serif",
-              }}
-            >
-              WELCOME BACK
-            </p>
+            <p style={smallTitleStyle}>WELCOME BACK</p>
 
             <h1
               style={{
@@ -108,7 +134,6 @@ export default function DashboardPage() {
             </p>
           </section>
 
-          {/* STATS */}
           <section
             style={{
               display: "grid",
@@ -118,30 +143,8 @@ export default function DashboardPage() {
             }}
           >
             {stats.map((stat) => (
-              <div
-                key={stat.title}
-                style={{
-                  background: "rgba(255,255,255,0.72)",
-                  backdropFilter: "blur(14px)",
-                  padding: "34px",
-                  borderRadius: "30px",
-                  boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-                  border: "1px solid rgba(255,255,255,0.7)",
-                }}
-              >
-                <p
-                  style={{
-                    margin: 0,
-                    color: "#7aa85a",
-                    fontSize: "14px",
-                    fontWeight: "bold",
-                    textTransform: "uppercase",
-                    letterSpacing: "1px",
-                    fontFamily: "Arial, sans-serif",
-                  }}
-                >
-                  {stat.title}
-                </p>
+              <div key={stat.title} style={cardStyle}>
+                <p style={smallTitleStyle}>{stat.title}</p>
 
                 <h2
                   style={{
@@ -157,68 +160,40 @@ export default function DashboardPage() {
             ))}
           </section>
 
-          {/* BOTTOM */}
           <section
-          className="dashboardBottom"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "2fr 1fr",
-            gap: "24px",
-          }}
+            className="dashboardBottom"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "2fr 1fr",
+              gap: "24px",
+            }}
           >
-            {/* Activity */}
-            <div
-              style={{
-                background: "rgba(255,255,255,0.72)",
-                backdropFilter: "blur(14px)",
-                padding: "38px",
-                borderRadius: "34px",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-                border: "1px solid rgba(255,255,255,0.7)",
-              }}
-            >
-              <h2
-                style={{
-                  marginTop: 0,
-                  color: "#2e4732",
-                  fontSize: "38px",
-                }}
-              >
-                Recent Activity
-              </h2>
+            <div style={cardStyle}>
+              <h2 style={sectionTitleStyle}>Recent Activity</h2>
 
-              <p
+              <div
                 style={{
                   color: "#435848",
-                  fontSize: "20px",
+                  fontSize: "18px",
                   lineHeight: "1.8",
                   fontFamily: "Arial, sans-serif",
                 }}
               >
-                No sales recorded yet.
-              </p>
+                {recentSales.length === 0 ? (
+                  <p>No sales recorded yet.</p>
+                ) : (
+                  recentSales.map((sale) => (
+                    <p key={sale.id}>
+                      {sale.quantity}x {sale.juice_name} — $
+                      {Number(sale.total_price || 0).toFixed(2)}
+                    </p>
+                  ))
+                )}
+              </div>
             </div>
 
-            {/* Notes */}
-            <div
-              style={{
-                background: "rgba(255,255,255,0.72)",
-                backdropFilter: "blur(14px)",
-                padding: "38px",
-                borderRadius: "34px",
-                boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-                border: "1px solid rgba(255,255,255,0.7)",
-              }}
-            >
-              <h2
-                style={{
-                  marginTop: 0,
-                  color: "#2e4732",
-                  fontSize: "38px",
-                }}
-              >
-                Quick Notes
-              </h2>
+            <div style={cardStyle}>
+              <h2 style={sectionTitleStyle}>Quick Notes</h2>
 
               <ul
                 style={{
@@ -229,72 +204,80 @@ export default function DashboardPage() {
                   fontFamily: "Arial, sans-serif",
                 }}
               >
-                <li>Add first sale</li>
-                <li>Add inventory items</li>
-                <li>Set product prices</li>
+                <li>Review daily sales</li>
+                <li>Check low stock items</li>
+                <li>Update inventory regularly</li>
               </ul>
             </div>
           </section>
         </div>
+
         <style>
-  {`
-    @media (max-width: 850px) {
-      main {
-        padding: 20px !important;
-      }
+          {`
+            @media (max-width: 850px) {
+              main {
+                padding: 20px !important;
+              }
 
-      section {
-        padding: 28px !important;
-        border-radius: 28px !important;
-      }
+              section {
+                padding: 28px !important;
+                border-radius: 28px !important;
+              }
 
-      h1 {
-        font-size: 46px !important;
-      }
+              h1 {
+                font-size: 46px !important;
+              }
 
-      h2 {
-        font-size: 30px !important;
-      }
+              h2 {
+                font-size: 30px !important;
+              }
 
-      p {
-        font-size: 17px !important;
-      }
+              p {
+                font-size: 17px !important;
+              }
 
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      input,
-      select,
-      button {
-        width: 100%;
-        box-sizing: border-box;
-      }
-    }
-
-    @media (max-width: 550px) {
-      h1 {
-        font-size: 38px !important;
-      }
-
-      section {
-        padding: 22px !important;
-      }
-    }
-  `}
-</style>
-      <style>
-        {`
-          @media (max-width: 850px) {
-            .dashboardBottom {
-              grid-template-columns: 1fr !important;
+              .dashboardBottom {
+                grid-template-columns: 1fr !important;
+              }
             }
-          }
-        `}
-      </style>
+
+            @media (max-width: 550px) {
+              h1 {
+                font-size: 38px !important;
+              }
+
+              section {
+                padding: 22px !important;
+              }
+            }
+          `}
+        </style>
       </main>
     </ProtectedPage>
   );
 }
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.72)",
+  backdropFilter: "blur(14px)",
+  padding: "34px",
+  borderRadius: "30px",
+  boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
+  border: "1px solid rgba(255,255,255,0.7)",
+};
+
+const smallTitleStyle = {
+  margin: 0,
+  color: "#7aa85a",
+  fontSize: "14px",
+  fontWeight: "bold",
+  textTransform: "uppercase" as const,
+  letterSpacing: "1px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const sectionTitleStyle = {
+  marginTop: 0,
+  color: "#2e4732",
+  fontSize: "38px",
+};
