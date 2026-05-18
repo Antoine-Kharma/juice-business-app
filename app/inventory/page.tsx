@@ -10,6 +10,7 @@ type InventoryItem = {
   category: string;
   unit: string;
   quantity: number;
+  created_at?: string;
 };
 
 const itemOptions = [
@@ -65,7 +66,7 @@ export default function InventoryPage() {
     const { data, error } = await supabase
       .from("inventory")
       .select("*")
-      .order("id", { ascending: true });
+      .order("created_at", { ascending: false });
 
     if (error) {
       alert(error.message);
@@ -363,7 +364,13 @@ export default function InventoryPage() {
             >
               <thead>
                 <tr>
-                  {["Item Name", "Category", "Unit", "Current Stock"].map(
+                  {[
+                      "Item Name",
+                      "Category",
+                      "Unit",
+                      "Current Stock",
+                      "Date & Time",
+                    ].map(
                     (head) => (
                       <th
                         key={head}
@@ -389,6 +396,12 @@ export default function InventoryPage() {
                     <td style={tdStyle}>{item.category}</td>
                     <td style={tdStyle}>{item.unit}</td>
                     <td style={tdStyle}>{item.quantity}</td>
+
+                    <td style={tdStyle}>
+                      {item.created_at
+                        ? new Date(item.created_at).toLocaleString()
+                        : ""}
+                    </td>
                   </tr>
                 ))}
               </tbody>
