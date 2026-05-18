@@ -192,7 +192,10 @@ const stats = [
                 <h2
                   style={{
                     margin: "18px 0 0",
-                    fontSize: "54px",
+                    fontSize: stat.title === "Best Seller" ? "34px" : "54px",
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
+                    lineHeight: "1.2",
                     color: "#2e4732",
                     fontWeight: "bold",
                   }}
