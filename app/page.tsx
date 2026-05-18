@@ -134,7 +134,8 @@ export default function Home() {
           >
             Real Fruit,
             <br />
-            No Powder, No Syrup.
+            No Powder, 
+            No Syrup.
             <br />
             Choose <span style={{ color: "#95c979" }}>SPLASH.</span>
           </h1>
