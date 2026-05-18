@@ -274,8 +274,8 @@ export default function Home() {
                     src={bottles[index]}
                     alt={product}
                     style={{
-                          width: "150px",
-                          height: "150px",
+                          width: "400",
+                          height: "400px",
                           objectFit: "contain",
                           display: "block",
                           margin: "0 auto 10px auto",
