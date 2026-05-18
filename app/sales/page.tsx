@@ -84,7 +84,7 @@ export default function SalesPage() {
       },
 
       "Pomegranate - 250 ml": {
-        "Frozen Pomegranates": 333.34,
+        "Frozen Pomegranates": 0.333,
         "Bottles 250 ml": 1,
         Caps: 1,
         "Pomegranate Stickers 250ML": 1,
