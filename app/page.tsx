@@ -248,7 +248,7 @@ export default function Home() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
               gap: "20px",
             }}
           >
@@ -263,17 +263,23 @@ export default function Home() {
                   boxShadow: "0 14px 30px rgba(48,70,56,0.1)",
                   border: "1px solid rgba(48,70,56,0.08)",
                   fontFamily: "Arial, sans-serif",
+
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
                 <img
                     src={bottles[index]}
                     alt={product}
                     style={{
-                      width: "90px",
-                      height: "90px",
-                      objectFit: "contain",
-                      marginBottom: "14px",
-                    }}
+                          width: "150px",
+                          height: "150px",
+                          objectFit: "contain",
+                          display: "block",
+                          margin: "0 auto 10px auto",
+                        }}
                   />
                 <h3 style={{ margin: 0, color: "#304638" }}>{product}</h3>
                 <p style={{ color: "#617266", fontSize: "14px" }}>
