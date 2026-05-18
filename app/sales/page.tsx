@@ -68,7 +68,7 @@ export default function SalesPage() {
 
     const parsedUnitPrice = Number(unitPrice) || 0;
 
-    const recipes: Record<string, Record<string, number>> = {
+  const recipes: Record<string, Record<string, number>> = {
       "Orange - 250 ml": {
         Oranges: 0.45,
         "Bottles 250 ml": 1,
@@ -82,8 +82,21 @@ export default function SalesPage() {
         Caps: 1,
         "Orange Stickers 1L": 1,
       },
-    };
 
+      "Pomegranate - 250 ml": {
+        "Frozen Pomegranate": 1 / 3,
+        "Bottles 250 ml": 1,
+        Caps: 1,
+        "Pomegranate Stickers 250ML": 1,
+      },
+
+      "Pomegranate - 1 Liter": {
+        "Frozen Pomegranate": 1.333,
+        "Bottles 1 Liter": 1,
+        Caps: 1,
+        "Pomegranate Stickers 1L": 1,
+      },
+    };
     const recipe = recipes[product];
 
     if (recipe) {
