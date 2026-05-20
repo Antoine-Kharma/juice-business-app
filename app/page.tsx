@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const products = [
   "Orange Juice",
-  "Lemonade",
-  "Minted Lemonade",
-  "Mango Juice",
   "Carrot Juice",
   "Pomegranate Juice",
+  "Mango Juice",
+  "Lemonade",
+  "Minted Lemonade",
   "Strawberry Lemonade",
   "Strawberry Banana",
   "Straw Mango",
@@ -237,7 +237,6 @@ export default function Home() {
                 letterSpacing: "2px",
               }}
             >
-              OUR MENU
             </p>
 
             <h2 style={{ fontSize: "40px", margin: 0, color: "#304638" }}>
