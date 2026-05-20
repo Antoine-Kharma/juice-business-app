@@ -15,10 +15,10 @@ const products = [
 const bottles = [
   "/bottles/orange.png",
   "/bottles/lemonade.png",
+  "/bottles/pomegranate.png",
   "/bottles/minted-lemonade.png",
   "/bottles/mango.png",
   "/bottles/carrot.png",
-  "/bottles/pomegranate.png",
   "/bottles/strawberry-lemonade.png",
   "/bottles/strawberry-banana.png",
   "/bottles/straw-mango.png",
