@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const products = [
   "Orange Juice",
-  "Carrot Juice",
-  "Pomegranate Juice",
-  "Mango Juice",
   "Lemonade",
   "Minted Lemonade",
+  "Mango Juice",
+  "Carrot Juice",
+  "Pomegranate Juice",
   "Strawberry Lemonade",
   "Strawberry Banana",
   "Straw Mango",
@@ -15,10 +15,10 @@ const products = [
 const bottles = [
   "/bottles/orange.png",
   "/bottles/lemonade.png",
-  "/bottles/pomegranate.png",
   "/bottles/minted-lemonade.png",
   "/bottles/mango.png",
   "/bottles/carrot.png",
+  "/bottles/pomegranate.png",
   "/bottles/strawberry-lemonade.png",
   "/bottles/strawberry-banana.png",
   "/bottles/straw-mango.png",
