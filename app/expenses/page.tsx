@@ -34,6 +34,7 @@ const expenseOptions = [
 
 export default function ExpensesPage() {
   const [title, setTitle] = useState(expenseOptions[0].title);
+  const [customExpenseTitle, setCustomExpenseTitle] = useState("");
   const [category, setCategory] = useState(expenseOptions[0].category);
   const [unit, setUnit] = useState(expenseOptions[0].unit);
   const [quantity, setQuantity] = useState(1);
@@ -80,6 +81,13 @@ export default function ExpensesPage() {
   };
 
   const handleAddExpense = async () => {
+    const finalExpenseTitle =
+    title === "Others" ? customExpenseTitle : title;
+
+    if (title === "Others" && customExpenseTitle.trim() === "") {
+      alert("Please enter the expense title");
+      return;
+    }
     const parsedAmount = Number(amount);
 
     if (quantity <= 0 || parsedAmount <= 0) return;
@@ -163,6 +171,15 @@ export default function ExpensesPage() {
                     </option>
                   ))}
                 </select>
+                {title === "Others" && (
+                <input
+                  type="text"
+                  value={customExpenseTitle}
+                  onChange={(e) => setCustomExpenseTitle(e.target.value)}
+                  placeholder="Example: Blender, Cups, Delivery..."
+                  style={inputStyle}
+                />
+              )}
               </div>
 
               <div>
