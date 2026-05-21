@@ -37,7 +37,7 @@ export default function ExpensesPage() {
   const [customExpenseTitle, setCustomExpenseTitle] = useState("");
   const [category, setCategory] = useState(expenseOptions[0].category);
   const [unit, setUnit] = useState(expenseOptions[0].unit);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState("");
   const [amount, setAmount] = useState("");
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
@@ -46,10 +46,13 @@ export default function ExpensesPage() {
   }, [expenses]);
 
   const pricePerUnitPreview = useMemo(() => {
-    const parsedAmount = Number(amount) || 0;
-    if (quantity <= 0) return 0;
-    return parsedAmount / quantity;
-  }, [amount, quantity]);
+  const parsedAmount = Number(amount) || 0;
+  const parsedQuantity = Number(quantity);
+
+  if (parsedQuantity <= 0) return 0;
+
+  return parsedAmount / parsedQuantity;
+}, [amount, quantity]);
 
   const fetchExpenses = async () => {
     const { data, error } = await supabase
@@ -90,7 +93,9 @@ export default function ExpensesPage() {
     }
     const parsedAmount = Number(amount);
 
-    if (quantity <= 0 || parsedAmount <= 0) return;
+    const parsedQuantity = Number(quantity);
+
+    if (parsedQuantity <= 0 || parsedAmount <= 0) return;
 
     const { error } = await supabase.from("expenses").insert([
       {
@@ -99,7 +104,7 @@ export default function ExpensesPage() {
         quantity,
         unit,
         paid_amount: parsedAmount,
-        price_per_unit: parsedAmount / quantity,
+        price_per_unit: parsedAmount / parsedQuantity,
       },
     ]);
 
@@ -108,7 +113,7 @@ export default function ExpensesPage() {
       return;
     }
 
-    setQuantity(1);
+    setQuantity("");
     setAmount("");
     fetchExpenses();
   };
@@ -190,11 +195,11 @@ export default function ExpensesPage() {
               <div>
                 <label style={fieldLabel}>Quantity</label>
                 <input
-                  type="number"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
-                  style={inputStyle}
-                />
+                type="number"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
+                style={inputStyle}
+              />
               </div>
 
               <div>
