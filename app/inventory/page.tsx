@@ -114,7 +114,9 @@ export default function InventoryPage() {
     );
 
     if (existingItem) {
-      const newQuantity = existingItem.quantity + stockNumber;
+      const newQuantity = Number(
+          (existingItem.quantity + stockNumber).toFixed(3)
+        );
 
       if (newQuantity < 0) {
         alert("Stock cannot be negative");
@@ -395,7 +397,7 @@ export default function InventoryPage() {
                     <td style={tdStyle}>{item.item_name}</td>
                     <td style={tdStyle}>{item.category}</td>
                     <td style={tdStyle}>{item.unit}</td>
-                    <td style={tdStyle}>{item.quantity}</td>
+                    <td style={tdStyle}>{Number(item.quantity).toFixed(3)}</td>
 
                     <td style={tdStyle}>
                       {item.created_at

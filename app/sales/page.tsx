@@ -223,7 +223,9 @@ export default function SalesPage() {
           return;
         }
 
-        const newStock = inventoryItem.quantity - neededQuantity;
+        const newStock = Number(
+          (inventoryItem.quantity - neededQuantity).toFixed(3)
+        );
 
         if (newStock < 0) {
           alert(`Not enough stock for ${itemName}`);
