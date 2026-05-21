@@ -37,7 +37,7 @@ export default function ExpensesPage() {
   const [customExpenseTitle, setCustomExpenseTitle] = useState("");
   const [category, setCategory] = useState(expenseOptions[0].category);
   const [unit, setUnit] = useState(expenseOptions[0].unit);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(0);
   const [amount, setAmount] = useState("");
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
