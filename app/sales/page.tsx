@@ -70,17 +70,18 @@ export default function SalesPage() {
 
     const recipes: Record<string, Record<string, number>> = {
     "Pomegranate - 250 ml": {
-      "Frozen_Pomegranates": 0.4,
-      "Bottles 250 ml": 1,
-      Caps: 1,
-      "Pomegranate Stickers 250ML": 1,
-    },
-    "Pomegranate - 1 Liter": {
-      "Frozen_Pomegranates": 1.6,
-      "Bottles 1 Liter": 1,
-      Caps: 1,
-      "Pomegranate Stickers 1L": 1,
-    },
+    "Frozen Pomegranates": 0.4,
+    "Bottles 250 ml": 1,
+    Caps: 1,
+    "Pomegranate Stickers 250ML": 1,
+  },
+
+  "Pomegranate - 1 Liter": {
+    "Frozen Pomegranates": 1.6,
+    "Bottles 1 Liter": 1,
+    Caps: 1,
+    "Pomegranate Stickers 1L": 1,
+  },
 
     "Orange - 250 ml": {
       Oranges: 0.7,

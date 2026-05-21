@@ -19,7 +19,7 @@ const itemOptions = [
   { name: "Bananas", category: "Fruit", unit: "Kg" },
   { name: "Lemons", category: "Fruit", unit: "Kg" },
   { name: "Pomegranates", category: "Fruit", unit: "Kg" },
-  { name: "Frozen_Pomegranates", category: "Fruit", unit: "Kg" },
+  { name: "Frozen Pomegranates", category: "Fruit", unit: "Kg" },
   { name: "Mangos", category: "Fruit", unit: "Kg" },
   { name: "Carrots", category: "Fruit", unit: "Kg" },
   { name: "Mints", category: "Ingredient", unit: "Pc" },
