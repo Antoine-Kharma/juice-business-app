@@ -84,39 +84,46 @@ export default function ExpensesPage() {
   };
 
   const handleAddExpense = async () => {
-    const finalExpenseTitle =
-    title === "Others" ? customExpenseTitle : title;
+  if (title === "Others" && customExpenseTitle.trim() === "") {
+    alert("Please enter the expense title");
+    return;
+  }
 
-    if (title === "Others" && customExpenseTitle.trim() === "") {
-      alert("Please enter the expense title");
-      return;
-    }
-    const parsedAmount = Number(amount);
+  const parsedAmount = Number(amount);
+  const parsedQuantity = Number(quantity);
 
-    const parsedQuantity = Number(quantity);
+  if (parsedQuantity <= 0 || parsedAmount <= 0) {
+    alert("Please enter valid values");
+    return;
+  }
 
-    if (parsedQuantity <= 0 || parsedAmount <= 0) return;
+  const finalExpenseTitle =
+    title === "Others"
+      ? customExpenseTitle.trim()
+      : title;
 
-    const { error } = await supabase.from("expenses").insert([
-      {
-        item_name: title,
-        category,
-        quantity,
-        unit,
-        paid_amount: parsedAmount,
-        price_per_unit: parsedAmount / parsedQuantity,
-      },
-    ]);
+  const { error } = await supabase.from("expenses").insert([
+    {
+      item_name: finalExpenseTitle,
+      category,
+      quantity: parsedQuantity,
+      unit,
+      paid_amount: parsedAmount,
+      price_per_unit: parsedAmount / parsedQuantity,
+    },
+  ]);
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
+  if (error) {
+    alert(error.message);
+    return;
+  }
 
-    setQuantity("");
-    setAmount("");
-    fetchExpenses();
-  };
+  setQuantity("");
+  setAmount("");
+  setCustomExpenseTitle("");
+
+  fetchExpenses();
+};
 
   return (
     <ProtectedPage>
