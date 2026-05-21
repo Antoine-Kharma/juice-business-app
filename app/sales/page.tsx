@@ -68,49 +68,142 @@ export default function SalesPage() {
 
     const parsedUnitPrice = Number(unitPrice) || 0;
 
-  const recipes: Record<string, Record<string, number>> = {
-      "Orange - 250 ml": {
-        Oranges: 0.700,
-        "Bottles 250 ml": 1,
-        Caps: 1,
-        "Orange Stickers 250ML": 1,
-      },
+    const recipes: Record<string, Record<string, number>> = {
+    "Pomegranate - 250 ml": {
+      Frozen_Pomegranates: 0.4,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Pomegranate Stickers 250ML": 1,
+    },
+    "Pomegranate - 1 Liter": {
+      Frozen_Pomegranates: 1.6,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Pomegranate Stickers 1L": 1,
+    },
 
-      "Orange - 1 Liter": {
-        Oranges: 2.8,
-        "Bottles 1 Liter": 1,
-        Caps: 1,
-        "Orange Stickers 1L": 1,
-      },
+    "Orange - 250 ml": {
+      Oranges: 0.7,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Orange Stickers 250ML": 1,
+    },
+    "Orange - 1 Liter": {
+      Oranges: 2.8,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Orange Stickers 1L": 1,
+    },
 
-      "Carrot - 250 ml": {
-        Carrots: 0.700,
-        "Bottles 250 ml": 1,
-        Caps: 1,
-        "Carrot Stickers 250ML": 1,
-      },
+    "Carrot - 250 ml": {
+      Carrots: 0.7,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Carrot Stickers 250ML": 1,
+    },
+    "Carrot - 1 Liter": {
+      Carrots: 2.8,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Carrot Stickers 1L": 1,
+    },
 
-      "Carrot - 1 Liter": {
-        Carrots: 2.8,
-        "Bottles 1 Liter": 1,
-        Caps: 1,
-        "Carrot Stickers 1L": 1,
-      },
+    "Lemonade - 250 ml": {
+      Lemons: 0.33,
+      Sugar: 0.05,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Lemonade Stickers 250ML": 1,
+    },
+    "Lemonade - 1 Liter": {
+      Lemons: 1.32,
+      Sugar: 0.2,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Lemonade Stickers 1L": 1,
+    },
 
-      "Pomegranate - 250 ml": {
-        "Frozen Pomegranates": 0.400,
-        "Bottles 250 ml": 1,
-        Caps: 1,
-        "Pomegranate Stickers 250ML": 1,
-      },
+    "Minted Lemonade - 250 ml": {
+      Lemons: 0.33,
+      Sugar: 0.05,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Minted Lemonade Stickers 250ML": 1,
+    },
+    "Minted Lemonade - 1 Liter": {
+      Lemons: 1.32,
+      Sugar: 0.2,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Minted Lemonade Stickers 1L": 1,
+    },
 
-      "Pomegranate - 1 Liter": {
-        "Frozen Pomegranates": 1.600,
-        "Bottles 1 Liter": 1,
-        Caps: 1,
-        "Pomegranate Stickers 1L": 1,
-      },
-    };
+    "Strawberry Lemonade - 250 ml": {
+      Lemons: 0.25,
+      Strawberries: 0.042,
+      Sugar: 0.043,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Strawberry Lemonade Stickers 250ML": 1,
+    },
+    "Strawberry Lemonade - 1 Liter": {
+      Lemons: 1,
+      Strawberries: 0.17,
+      Sugar: 0.172,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Strawberry Lemonade Stickers 1L": 1,
+    },
+
+    "Strawberry Banana - 250 ml": {
+      Strawberries: 0.17,
+      Bananas: 0.1,
+      Sugar: 0.02,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Strawberry Banana Stickers 250ML": 1,
+    },
+    "Strawberry Banana - 1 Liter": {
+      Strawberries: 0.68,
+      Bananas: 0.4,
+      Sugar: 0.08,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Strawberry Banana Stickers 1L": 1,
+    },
+
+    "Mango - 250 ml": {
+      Mangos: 0.125,
+      Sugar: 0.023,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Mango Stickers 250ML": 1,
+    },
+    "Mango - 1 Liter": {
+      Mangos: 0.5,
+      Sugar: 0.09,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Mango Stickers 1L": 1,
+    },
+
+    "Straw Mango - 250 ml": {
+      Mangos: 0.063,
+      Strawberries: 0.084,
+      Sugar: 0.022,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Straw Mango Stickers 250ML": 1,
+    },
+    "Straw Mango - 1 Liter": {
+      Mangos: 0.25,
+      Strawberries: 0.336,
+      Sugar: 0.088,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Straw Mango Stickers 1L": 1,
+    },
+  };
     const recipe = recipes[product];
 
     if (recipe) {
