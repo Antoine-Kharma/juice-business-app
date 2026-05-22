@@ -18,26 +18,39 @@ export default function ReportsPage() {
     { name: string; quantity: number }[]
   >([]);
 
+  const [startDate, setStartDate] = useState(() => {
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+  return firstDay.toISOString().split("T")[0];
+});
+
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split("T")[0];
+  });
+
   const fetchReportsData = async () => {
     const monthStart = new Date();
     monthStart.setDate(1);
     monthStart.setHours(0, 0, 0, 0);
 
-    const monthStartISO = monthStart.toISOString();
-    const { data: salesData, error: salesError } = await supabase
-    .from("sales")
-    .select("*")
-    .gte("created_at", monthStartISO)
-    .order("created_at", { ascending: false });
+    const start = new Date(startDate);
+    start.setHours(0, 0, 0, 0);
 
-    if (salesError) {
-      alert(salesError.message);
-      return;
-    }
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    const { data: salesData, error: salesError } = await supabase
+      .from("sales")
+      .select("*")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString())
+      .order("created_at", { ascending: false });
 
     const { data: expensesData, error: expensesError } = await supabase
-      .from("expenses")
-      .select("*");
+    .from("expenses")
+    .select("*")
+    .gte("created_at", start.toISOString())
+    .lte("created_at", end.toISOString());
 
     if (expensesError) {
       alert(expensesError.message);
@@ -130,6 +143,79 @@ export default function ReportsPage() {
               performance from one professional reports center.
             </p>
           </section>
+
+          <section
+          style={{
+            ...cardStyle,
+            marginBottom: "34px",
+          }}
+        >
+          <h2 style={sectionTitleStyle}>Filter Reports</h2>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr auto auto",
+              gap: "16px",
+              alignItems: "end",
+            }}
+            className="filterGrid"
+          >
+            <div>
+              <label style={smallTitleStyle}>Start Date</label>
+
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div>
+              <label style={smallTitleStyle}>End Date</label>
+
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <button
+              onClick={fetchReportsData}
+              style={buttonStyle}
+            >
+              Apply Filter
+            </button>
+
+            <button
+              onClick={() => {
+                const today = new Date();
+
+                const firstDay = new Date(
+                  today.getFullYear(),
+                  today.getMonth(),
+                  1
+                );
+
+                setStartDate(firstDay.toISOString().split("T")[0]);
+                setEndDate(today.toISOString().split("T")[0]);
+
+                setTimeout(() => {
+                  fetchReportsData();
+                }, 100);
+              }}
+              style={{
+                ...buttonStyle,
+                background: "#7aa85a",
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </section>
 
           <section style={statsGridStyle}>
             {stats.map((stat) => (
@@ -231,6 +317,9 @@ export default function ReportsPage() {
             }
 
             @media (max-width: 850px) {
+            .filterGrid {
+              grid-template-columns: 1fr !important;
+            }
               main {
                 padding: 20px !important;
               }
@@ -382,4 +471,29 @@ const listTextStyle = {
   fontSize: "18px",
   lineHeight: "1.8",
   fontFamily: "Arial, sans-serif",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "14px",
+  marginTop: "8px",
+  borderRadius: "16px",
+  border: "1px solid #d6d6d6",
+  outline: "none",
+  background: "rgba(255,255,255,0.85)",
+  fontSize: "15px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const buttonStyle = {
+  padding: "15px 24px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#304638",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "15px",
+  fontFamily: "Arial, sans-serif",
+  height: "52px",
 };
