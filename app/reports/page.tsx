@@ -21,6 +21,43 @@ export default function ReportsPage() {
   const [salesReport, setSalesReport] = useState<any[]>([]);
   const [expensesReport, setExpensesReport] = useState<any[]>([]);
 
+  <section
+  style={{
+    ...cardStyle,
+    marginBottom: "34px",
+  }}
+>
+  <h2 style={sectionTitleStyle}>Export Reports</h2>
+
+  <div
+    style={{
+      display: "flex",
+      gap: "16px",
+      flexWrap: "wrap",
+      marginTop: "20px",
+    }}
+  >
+    <button
+      style={buttonStyle}
+      onClick={() => window.print()}
+    >
+      Export PDF
+    </button>
+
+    <button
+      style={{
+        ...buttonStyle,
+        background: "#7aa85a",
+      }}
+      onClick={() => {
+        alert("Excel export will be added next");
+      }}
+    >
+      Export Excel
+    </button>
+  </div>
+</section>
+
   const [startDate, setStartDate] = useState(() => {
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
