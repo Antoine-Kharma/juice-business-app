@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import ProtectedPage from "../components/ProtectedPage";
+import * as XLSX from "xlsx";
 
 type SaleRow = {
   id?: number;
@@ -456,67 +457,106 @@ export default function ReportsPage() {
   };
 
   const exportExcel = () => {
-    const rows = [
-      ["SPLASH Juice Report"],
-      [`From ${startDate} to ${endDate}`],
-      [],
-      ["Summary"],
-      ["Revenue", totalRevenue],
-      ["Expenses", totalExpenses],
-      ["Net Profit", netProfit],
-      ["Orders", totalOrders],
-      ["Best Seller", bestSeller],
-      ["Out of Stock", outOfStock],
-      [],
-      ["Product Sales Breakdown"],
-      ["Product", "Quantity Sold", "Revenue"],
-      ...productBreakdown.map((product) => [
-        product.name,
-        product.quantity,
-        product.revenue,
-      ]),
-      [],
-      ["Sales Report"],
-      ["Product", "Quantity", "Unit Price", "Total", "Date"],
-      ...filteredSalesReport.map((sale) => [
-        sale.juice_name,
-        sale.quantity,
-        sale.unit_price,
-        sale.total_price,
-        sale.created_at ? new Date(sale.created_at).toLocaleString() : "",
-      ]),
-      [],
-      ["Expenses Report"],
-      ["Item", "Category", "Amount", "Date"],
-      ...expensesReport.map((expense) => [
-        expense.item_name,
-        expense.category || "",
-        expense.paid_amount,
-        expense.created_at ? new Date(expense.created_at).toLocaleString() : "",
-      ]),
-    ];
+  const workbook = XLSX.utils.book_new();
 
-    const csvContent = rows
-      .map((row) =>
-        row
-          .map((cell) => `"${String(cell).replace(/"/g, '""')}"`)
-          .join(",")
-      )
-      .join("\n");
+  const summaryData = [
+    ["SPLASH Juice Report"],
+    [`From ${startDate} to ${endDate}`],
+    [],
+    ["Summary"],
+    ["Revenue", totalRevenue],
+    ["Expenses", totalExpenses],
+    ["Net Profit", netProfit],
+    ["Orders", totalOrders],
+    ["Best Seller", bestSeller],
+    ["Out of Stock", outOfStock],
+  ];
 
-    const blob = new Blob([csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
+  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
 
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+  summarySheet["!cols"] = [
+    { wch: 28 },
+    { wch: 22 },
+    { wch: 22 },
+    { wch: 22 },
+  ];
 
-    link.href = url;
-    link.download = `splash-report-${startDate}-to-${endDate}.csv`;
-    link.click();
+  XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
 
-    URL.revokeObjectURL(url);
-  };
+  const productBreakdownData = [
+    ["Product", "Quantity Sold", "Revenue"],
+    ...productBreakdown.map((product) => [
+      product.name,
+      product.quantity,
+      product.revenue,
+    ]),
+  ];
+
+  const productSheet = XLSX.utils.aoa_to_sheet(productBreakdownData);
+
+  productSheet["!cols"] = [
+    { wch: 32 },
+    { wch: 18 },
+    { wch: 18 },
+  ];
+
+  XLSX.utils.book_append_sheet(
+    workbook,
+    productSheet,
+    "Product Breakdown"
+  );
+
+  const salesData = [
+    ["Product", "Quantity", "Unit Price", "Total", "Date"],
+    ...filteredSalesReport.map((sale) => [
+      sale.juice_name,
+      sale.quantity,
+      Number(sale.unit_price || 0),
+      Number(sale.total_price || 0),
+      sale.created_at ? new Date(sale.created_at).toLocaleString() : "",
+    ]),
+  ];
+
+  const salesSheet = XLSX.utils.aoa_to_sheet(salesData);
+
+  salesSheet["!cols"] = [
+    { wch: 32 },
+    { wch: 12 },
+    { wch: 14 },
+    { wch: 14 },
+    { wch: 24 },
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, salesSheet, "Sales Report");
+
+  const expensesData = [
+    ["Item", "Category", "Amount", "Date"],
+    ...expensesReport.map((expense) => [
+      expense.item_name,
+      expense.category || "",
+      Number(expense.paid_amount || 0),
+      expense.created_at
+        ? new Date(expense.created_at).toLocaleString()
+        : "",
+    ]),
+  ];
+
+  const expensesSheet = XLSX.utils.aoa_to_sheet(expensesData);
+
+  expensesSheet["!cols"] = [
+    { wch: 28 },
+    { wch: 18 },
+    { wch: 14 },
+    { wch: 24 },
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, expensesSheet, "Expenses Report");
+
+  XLSX.writeFile(
+    workbook,
+    `splash-report-${startDate}-to-${endDate}.xlsx`
+  );
+};
 
   return (
     <ProtectedPage>
