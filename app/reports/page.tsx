@@ -11,58 +11,16 @@ export default function ReportsPage() {
   const [totalOrders, setTotalOrders] = useState(0);
   const [bestSeller, setBestSeller] = useState("-");
   const [outOfStock, setOutOfStock] = useState(0);
-  const [weeklySales, setWeeklySales] = useState<number[]>([
-    0, 0, 0, 0, 0, 0, 0,
-  ]);
-  const [topProducts, setTopProducts] = useState<
-    { name: string; quantity: number }[]
-  >([]);
-
+  const [weeklySales, setWeeklySales] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+  const [topProducts, setTopProducts] = useState<{ name: string; quantity: number }[]>([]);
   const [salesReport, setSalesReport] = useState<any[]>([]);
   const [expensesReport, setExpensesReport] = useState<any[]>([]);
 
-  <section
-  style={{
-    ...cardStyle,
-    marginBottom: "34px",
-  }}
->
-  <h2 style={sectionTitleStyle}>Export Reports</h2>
-
-  <div
-    style={{
-      display: "flex",
-      gap: "16px",
-      flexWrap: "wrap",
-      marginTop: "20px",
-    }}
-  >
-    <button
-      style={buttonStyle}
-      onClick={() => window.print()}
-    >
-      Export PDF
-    </button>
-
-    <button
-      style={{
-        ...buttonStyle,
-        background: "#7aa85a",
-      }}
-      onClick={() => {
-        alert("Excel export will be added next");
-      }}
-    >
-      Export Excel
-    </button>
-  </div>
-</section>
-
   const [startDate, setStartDate] = useState(() => {
-  const today = new Date();
-  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-  return firstDay.toISOString().split("T")[0];
-});
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    return firstDay.toISOString().split("T")[0];
+  });
 
   const [endDate, setEndDate] = useState(() => {
     return new Date().toISOString().split("T")[0];
@@ -82,16 +40,16 @@ export default function ReportsPage() {
       .lte("created_at", end.toISOString())
       .order("created_at", { ascending: false });
 
-      if (salesError) {
+    if (salesError) {
       alert(salesError.message);
       return;
-}
+    }
 
     const { data: expensesData, error: expensesError } = await supabase
-    .from("expenses")
-    .select("*")
-    .gte("created_at", start.toISOString())
-    .lte("created_at", end.toISOString());
+      .from("expenses")
+      .select("*")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString());
 
     if (expensesError) {
       alert(expensesError.message);
@@ -109,9 +67,10 @@ export default function ReportsPage() {
 
     const sales = salesData || [];
     const expenses = expensesData || [];
+    const inventory = inventoryData || [];
+
     setSalesReport(sales);
     setExpensesReport(expenses);
-    const inventory = inventoryData || [];
 
     const revenue = sales.reduce(
       (sum, sale) => sum + Number(sale.total_price || 0),
@@ -146,9 +105,7 @@ export default function ReportsPage() {
     setNetProfit(revenue - expensesTotal);
     setTotalOrders(sales.length);
     setBestSeller(sortedProducts[0]?.name || "-");
-    setOutOfStock(
-      inventory.filter((item) => Number(item.quantity || 0) <= 0).length
-    );
+    setOutOfStock(inventory.filter((item) => Number(item.quantity || 0) <= 0).length);
     setWeeklySales(salesByDay);
     setTopProducts(sortedProducts.slice(0, 5));
   };
@@ -158,11 +115,11 @@ export default function ReportsPage() {
   }, []);
 
   const stats = [
-    { title: "Monthly Revenue", value: `$${totalRevenue.toFixed(2)}` },
-    { title: "Monthly Expenses", value: `$${totalExpenses.toFixed(2)}` },
-    { title: "Monthly Net Profit", value: `$${netProfit.toFixed(2)}` },
-    { title: "Monthly Orders", value: totalOrders },
-    { title: "Monthly Best Seller", value: bestSeller },
+    { title: "Revenue", value: `$${totalRevenue.toFixed(2)}` },
+    { title: "Expenses", value: `$${totalExpenses.toFixed(2)}` },
+    { title: "Net Profit", value: `$${netProfit.toFixed(2)}` },
+    { title: "Orders", value: totalOrders },
+    { title: "Best Seller", value: bestSeller },
     { title: "Out of Stock", value: outOfStock },
   ];
 
@@ -187,138 +144,108 @@ export default function ReportsPage() {
             </p>
           </section>
 
-          <section
-          style={{
-            ...cardStyle,
-            marginBottom: "34px",
-          }}
-        >
-          <h2 style={sectionTitleStyle}>Filter Reports</h2>
-          <div
-  style={{
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-    marginBottom: "24px",
-  }}
->
-  <button
-    style={quickButtonStyle}
-    onClick={() => {
-      const today = new Date().toISOString().split("T")[0];
-      setStartDate(today);
-      setEndDate(today);
+          <section style={{ ...cardStyle, marginBottom: "34px" }}>
+            <h2 style={sectionTitleStyle}>Filter Reports</h2>
 
-      setTimeout(fetchReportsData, 100);
-    }}
-  >
-    Today
-  </button>
+            <div style={quickFilterStyle}>
+              <button
+                style={quickButtonStyle}
+                onClick={() => {
+                  const today = new Date().toISOString().split("T")[0];
+                  setStartDate(today);
+                  setEndDate(today);
+                  setTimeout(fetchReportsData, 100);
+                }}
+              >
+                Today
+              </button>
 
-  <button
-    style={quickButtonStyle}
-    onClick={() => {
-      const today = new Date();
+              <button
+                style={quickButtonStyle}
+                onClick={() => {
+                  const today = new Date();
+                  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
-      const firstDay = new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-      );
+                  setStartDate(firstDay.toISOString().split("T")[0]);
+                  setEndDate(today.toISOString().split("T")[0]);
+                  setTimeout(fetchReportsData, 100);
+                }}
+              >
+                This Month
+              </button>
 
-      setStartDate(firstDay.toISOString().split("T")[0]);
-      setEndDate(today.toISOString().split("T")[0]);
+              <button
+                style={quickButtonStyle}
+                onClick={() => {
+                  const today = new Date();
+                  const firstDay = new Date(today.getFullYear(), 0, 1);
 
-      setTimeout(fetchReportsData, 100);
-    }}
-  >
-              This Month
-            </button>
-
-            <button
-              style={quickButtonStyle}
-              onClick={() => {
-                const today = new Date();
-
-                const firstDay = new Date(
-                  today.getFullYear(),
-                  0,
-                  1
-                );
-
-                setStartDate(firstDay.toISOString().split("T")[0]);
-                setEndDate(today.toISOString().split("T")[0]);
-
-                setTimeout(fetchReportsData, 100);
-              }}
-            >
-              This Year
-            </button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr auto auto",
-              gap: "16px",
-              alignItems: "end",
-            }}
-            className="filterGrid"
-          >
-            <div>
-              <label style={smallTitleStyle}>Start Date</label>
-
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                style={inputStyle}
-              />
+                  setStartDate(firstDay.toISOString().split("T")[0]);
+                  setEndDate(today.toISOString().split("T")[0]);
+                  setTimeout(fetchReportsData, 100);
+                }}
+              >
+                This Year
+              </button>
             </div>
 
-            <div>
-              <label style={smallTitleStyle}>End Date</label>
+            <div style={filterGridStyle} className="filterGrid">
+              <div>
+                <label style={smallTitleStyle}>Start Date</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
 
-              <input
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                style={inputStyle}
-              />
+              <div>
+                <label style={smallTitleStyle}>End Date</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  style={inputStyle}
+                />
+              </div>
+
+              <button onClick={fetchReportsData} style={buttonStyle}>
+                Apply Filter
+              </button>
+
+              <button
+                onClick={() => {
+                  const today = new Date();
+                  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+                  setStartDate(firstDay.toISOString().split("T")[0]);
+                  setEndDate(today.toISOString().split("T")[0]);
+                  setTimeout(fetchReportsData, 100);
+                }}
+                style={{ ...buttonStyle, background: "#7aa85a" }}
+              >
+                Reset
+              </button>
             </div>
+          </section>
 
-            <button
-              onClick={fetchReportsData}
-              style={buttonStyle}
-            >
-              Apply Filter
-            </button>
+          <section style={{ ...cardStyle, marginBottom: "34px" }}>
+            <h2 style={sectionTitleStyle}>Export Reports</h2>
 
-            <button
-              onClick={() => {
-                const today = new Date();
+            <div style={exportButtonsStyle}>
+              <button style={buttonStyle} onClick={() => window.print()}>
+                Export PDF
+              </button>
 
-                const firstDay = new Date(
-                  today.getFullYear(),
-                  today.getMonth(),
-                  1
-                );
-
-                setStartDate(firstDay.toISOString().split("T")[0]);
-                setEndDate(today.toISOString().split("T")[0]);
-
-                setTimeout(() => {
-                  fetchReportsData();
-                }, 100);
-              }}
-              style={{
-                ...buttonStyle,
-                background: "#7aa85a",
-              }}
-            >
-              Reset
-            </button>
-          </div>
-        </section>
+              <button
+                style={{ ...buttonStyle, background: "#7aa85a" }}
+                onClick={() => alert("Excel export will be added next")}
+              >
+                Export Excel
+              </button>
+            </div>
+          </section>
 
           <section style={statsGridStyle}>
             {stats.map((stat) => (
@@ -384,20 +311,11 @@ export default function ReportsPage() {
                         #{index + 1} {product.name} — {product.quantity} sold
                       </p>
 
-                      <div
-                        style={{
-                          height: "12px",
-                          background: "#eef0df",
-                          borderRadius: "999px",
-                          overflow: "hidden",
-                        }}
-                      >
+                      <div style={progressBackStyle}>
                         <div
                           style={{
                             height: "100%",
-                            width: `${
-                              (product.quantity / topProducts[0].quantity) * 100
-                            }%`,
+                            width: `${(product.quantity / topProducts[0].quantity) * 100}%`,
                             background: "#7aa85a",
                             borderRadius: "999px",
                           }}
@@ -409,92 +327,67 @@ export default function ReportsPage() {
               </div>
             </div>
           </section>
-          <section
-  style={{
-    ...cardStyle,
-    marginTop: "34px",
-    marginBottom: "34px",
-  }}
->
-  <h2 style={sectionTitleStyle}>Sales Report</h2>
 
-  <table
-    style={{
-      width: "100%",
-      borderCollapse: "collapse",
-      fontFamily: "Arial, sans-serif",
-    }}
-  >
-    <thead>
-      <tr>
-        {[
-          "Product",
-          "Quantity",
-          "Unit Price",
-          "Total",
-          "Date",
-        ].map((head) => (
-          <th key={head} style={thStyle}>
-            {head}
-          </th>
-        ))}
-      </tr>
-    </thead>
+          <section style={{ ...cardStyle, marginTop: "34px", marginBottom: "34px" }}>
+            <h2 style={sectionTitleStyle}>Sales Report</h2>
 
-    <tbody>
-      {salesReport.map((sale) => (
-        <tr key={sale.id}>
-          <td style={tdStyle}>{sale.juice_name}</td>
-          <td style={tdStyle}>{sale.quantity}</td>
-          <td style={tdStyle}>${sale.unit_price}</td>
-          <td style={tdStyle}>${sale.total_price}</td>
-          <td style={tdStyle}>
-            {new Date(sale.created_at).toLocaleString()}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</section>
-<section style={cardStyle}>
-  <h2 style={sectionTitleStyle}>Expenses Report</h2>
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  {["Product", "Quantity", "Unit Price", "Total", "Date"].map((head) => (
+                    <th key={head} style={thStyle}>
+                      {head}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
 
-  <table
-    style={{
-      width: "100%",
-      borderCollapse: "collapse",
-      fontFamily: "Arial, sans-serif",
-    }}
-  >
-    <thead>
-      <tr>
-        {[
-          "Item",
-          "Category",
-          "Amount",
-          "Date",
-        ].map((head) => (
-          <th key={head} style={thStyle}>
-            {head}
-          </th>
-        ))}
-      </tr>
-    </thead>
+              <tbody>
+                {salesReport.map((sale) => (
+                  <tr key={sale.id}>
+                    <td style={tdStyle}>{sale.juice_name}</td>
+                    <td style={tdStyle}>{sale.quantity}</td>
+                    <td style={tdStyle}>${Number(sale.unit_price || 0).toFixed(2)}</td>
+                    <td style={tdStyle}>${Number(sale.total_price || 0).toFixed(2)}</td>
+                    <td style={tdStyle}>
+                      {sale.created_at ? new Date(sale.created_at).toLocaleString() : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
 
-    <tbody>
-      {expensesReport.map((expense) => (
-        <tr key={expense.id}>
-          <td style={tdStyle}>{expense.item_name}</td>
-          <td style={tdStyle}>{expense.category}</td>
-          <td style={tdStyle}>${expense.paid_amount}</td>
-          <td style={tdStyle}>
-            {new Date(expense.created_at).toLocaleString()}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</section>
+          <section style={cardStyle}>
+            <h2 style={sectionTitleStyle}>Expenses Report</h2>
+
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  {["Item", "Category", "Amount", "Date"].map((head) => (
+                    <th key={head} style={thStyle}>
+                      {head}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+
+              <tbody>
+                {expensesReport.map((expense) => (
+                  <tr key={expense.id}>
+                    <td style={tdStyle}>{expense.item_name}</td>
+                    <td style={tdStyle}>{expense.category}</td>
+                    <td style={tdStyle}>${Number(expense.paid_amount || 0).toFixed(2)}</td>
+                    <td style={tdStyle}>
+                      {expense.created_at
+                        ? new Date(expense.created_at).toLocaleString()
+                        : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
         </div>
 
         <style>
@@ -506,9 +399,10 @@ export default function ReportsPage() {
             }
 
             @media (max-width: 850px) {
-            .filterGrid {
-              grid-template-columns: 1fr !important;
-            }
+              .filterGrid {
+                grid-template-columns: 1fr !important;
+              }
+
               main {
                 padding: 20px !important;
               }
@@ -528,6 +422,12 @@ export default function ReportsPage() {
 
               p {
                 font-size: 17px !important;
+              }
+
+              table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
               }
             }
 
@@ -632,6 +532,27 @@ const sectionTitleStyle = {
   fontSize: "38px",
 };
 
+const quickFilterStyle = {
+  display: "flex",
+  gap: "12px",
+  flexWrap: "wrap" as const,
+  marginBottom: "24px",
+};
+
+const filterGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr auto auto",
+  gap: "16px",
+  alignItems: "end",
+};
+
+const exportButtonsStyle = {
+  display: "flex",
+  gap: "16px",
+  flexWrap: "wrap" as const,
+  marginTop: "20px",
+};
+
 const chartWrapperStyle = {
   display: "flex",
   alignItems: "flex-end",
@@ -696,6 +617,19 @@ const quickButtonStyle = {
   cursor: "pointer",
   fontWeight: 800,
   fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const progressBackStyle = {
+  height: "12px",
+  background: "#eef0df",
+  borderRadius: "999px",
+  overflow: "hidden",
+};
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse" as const,
   fontFamily: "Arial, sans-serif",
 };
 
