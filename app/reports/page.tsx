@@ -32,10 +32,6 @@ export default function ReportsPage() {
   });
 
   const fetchReportsData = async () => {
-    const monthStart = new Date();
-    monthStart.setDate(1);
-    monthStart.setHours(0, 0, 0, 0);
-
     const start = new Date(startDate);
     start.setHours(0, 0, 0, 0);
 
@@ -48,6 +44,11 @@ export default function ReportsPage() {
       .gte("created_at", start.toISOString())
       .lte("created_at", end.toISOString())
       .order("created_at", { ascending: false });
+
+      if (salesError) {
+      alert(salesError.message);
+      return;
+}
 
     const { data: expensesData, error: expensesError } = await supabase
     .from("expenses")
