@@ -18,6 +18,9 @@ export default function ReportsPage() {
     { name: string; quantity: number }[]
   >([]);
 
+  const [salesReport, setSalesReport] = useState<any[]>([]);
+  const [expensesReport, setExpensesReport] = useState<any[]>([]);
+
   const [startDate, setStartDate] = useState(() => {
   const today = new Date();
   const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -68,6 +71,8 @@ export default function ReportsPage() {
 
     const sales = salesData || [];
     const expenses = expensesData || [];
+    setSalesReport(sales);
+    setExpensesReport(expenses);
     const inventory = inventoryData || [];
 
     const revenue = sales.reduce(
@@ -151,7 +156,67 @@ export default function ReportsPage() {
           }}
         >
           <h2 style={sectionTitleStyle}>Filter Reports</h2>
+          <div
+  style={{
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
+    marginBottom: "24px",
+  }}
+>
+  <button
+    style={quickButtonStyle}
+    onClick={() => {
+      const today = new Date().toISOString().split("T")[0];
+      setStartDate(today);
+      setEndDate(today);
 
+      setTimeout(fetchReportsData, 100);
+    }}
+  >
+    Today
+  </button>
+
+  <button
+    style={quickButtonStyle}
+    onClick={() => {
+      const today = new Date();
+
+      const firstDay = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+
+      setStartDate(firstDay.toISOString().split("T")[0]);
+      setEndDate(today.toISOString().split("T")[0]);
+
+      setTimeout(fetchReportsData, 100);
+    }}
+  >
+              This Month
+            </button>
+
+            <button
+              style={quickButtonStyle}
+              onClick={() => {
+                const today = new Date();
+
+                const firstDay = new Date(
+                  today.getFullYear(),
+                  0,
+                  1
+                );
+
+                setStartDate(firstDay.toISOString().split("T")[0]);
+                setEndDate(today.toISOString().split("T")[0]);
+
+                setTimeout(fetchReportsData, 100);
+              }}
+            >
+              This Year
+            </button>
+          </div>
           <div
             style={{
               display: "grid",
@@ -306,6 +371,92 @@ export default function ReportsPage() {
               </div>
             </div>
           </section>
+          <section
+  style={{
+    ...cardStyle,
+    marginTop: "34px",
+    marginBottom: "34px",
+  }}
+>
+  <h2 style={sectionTitleStyle}>Sales Report</h2>
+
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      fontFamily: "Arial, sans-serif",
+    }}
+  >
+    <thead>
+      <tr>
+        {[
+          "Product",
+          "Quantity",
+          "Unit Price",
+          "Total",
+          "Date",
+        ].map((head) => (
+          <th key={head} style={thStyle}>
+            {head}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    <tbody>
+      {salesReport.map((sale) => (
+        <tr key={sale.id}>
+          <td style={tdStyle}>{sale.juice_name}</td>
+          <td style={tdStyle}>{sale.quantity}</td>
+          <td style={tdStyle}>${sale.unit_price}</td>
+          <td style={tdStyle}>${sale.total_price}</td>
+          <td style={tdStyle}>
+            {new Date(sale.created_at).toLocaleString()}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
+<section style={cardStyle}>
+  <h2 style={sectionTitleStyle}>Expenses Report</h2>
+
+  <table
+    style={{
+      width: "100%",
+      borderCollapse: "collapse",
+      fontFamily: "Arial, sans-serif",
+    }}
+  >
+    <thead>
+      <tr>
+        {[
+          "Item",
+          "Category",
+          "Amount",
+          "Date",
+        ].map((head) => (
+          <th key={head} style={thStyle}>
+            {head}
+          </th>
+        ))}
+      </tr>
+    </thead>
+
+    <tbody>
+      {expensesReport.map((expense) => (
+        <tr key={expense.id}>
+          <td style={tdStyle}>{expense.item_name}</td>
+          <td style={tdStyle}>{expense.category}</td>
+          <td style={tdStyle}>${expense.paid_amount}</td>
+          <td style={tdStyle}>
+            {new Date(expense.created_at).toLocaleString()}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
         </div>
 
         <style>
@@ -496,4 +647,29 @@ const buttonStyle = {
   fontSize: "15px",
   fontFamily: "Arial, sans-serif",
   height: "52px",
+};
+
+const quickButtonStyle = {
+  padding: "12px 20px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#eef0df",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 800,
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const thStyle = {
+  textAlign: "left" as const,
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.18)",
+  color: "#2e4732",
+};
+
+const tdStyle = {
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.1)",
+  color: "#435848",
 };
