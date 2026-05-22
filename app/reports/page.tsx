@@ -19,10 +19,16 @@ export default function ReportsPage() {
   >([]);
 
   const fetchReportsData = async () => {
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+
+    const monthStartISO = monthStart.toISOString();
     const { data: salesData, error: salesError } = await supabase
-      .from("sales")
-      .select("*")
-      .order("created_at", { ascending: false });
+    .from("sales")
+    .select("*")
+    .gte("created_at", monthStartISO)
+    .order("created_at", { ascending: false });
 
     if (salesError) {
       alert(salesError.message);
@@ -96,11 +102,11 @@ export default function ReportsPage() {
   }, []);
 
   const stats = [
-    { title: "Total Revenue", value: `$${totalRevenue.toFixed(2)}` },
-    { title: "Total Expenses", value: `$${totalExpenses.toFixed(2)}` },
-    { title: "Net Profit", value: `$${netProfit.toFixed(2)}` },
-    { title: "Total Orders", value: totalOrders },
-    { title: "Best Seller", value: bestSeller },
+    { title: "Monthly Revenue", value: `$${totalRevenue.toFixed(2)}` },
+    { title: "Monthly Expenses", value: `$${totalExpenses.toFixed(2)}` },
+    { title: "Monthly Net Profit", value: `$${netProfit.toFixed(2)}` },
+    { title: "Monthly Orders", value: totalOrders },
+    { title: "Monthly Best Seller", value: bestSeller },
     { title: "Out of Stock", value: outOfStock },
   ];
 
