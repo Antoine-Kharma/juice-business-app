@@ -85,7 +85,7 @@ export default function Home() {
               borderRadius: "999px",
             }}
           >
-            {["Home", "Products", "About", "Contact"].map((item, index) => (
+            {["Home", "Products"].map((item, index) => (
               <a
                 key={item}
                 href={item === "Products" ? "#products" : "#"}
