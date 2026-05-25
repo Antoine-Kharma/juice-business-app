@@ -1560,3 +1560,8 @@ const thStyle = {
   color: "#2e4732",
 };
 
+const tdStyle = {
+  padding: "14px",
+  borderBottom: "1px solid rgba(48,70,56,0.1)",
+  color: "#435848",
+};
