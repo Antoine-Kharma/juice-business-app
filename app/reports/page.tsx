@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/lib/supabase";
 import ProtectedPage from "../components/ProtectedPage";
 import * as XLSX from "xlsx";
@@ -22,6 +22,16 @@ type ExpenseRow = {
   created_at?: string;
 };
 
+type ReturnRow = {
+  id?: number;
+  store_name: string;
+  juice_name: string;
+  quantity_returned: number;
+  reason?: string;
+  note?: string;
+  created_at?: string;
+};
+
 type ProductBreakdown = {
   name: string;
   quantity: number;
@@ -37,6 +47,27 @@ type SortOption =
 
 type ChartMode = "weekly" | "weeks" | "monthly";
 
+const juiceOptions = [
+  "Orange - 250 ml",
+  "Orange - 1 Liter",
+  "Carrot - 250 ml",
+  "Carrot - 1 Liter",
+  "Pomegranate - 250 ml",
+  "Pomegranate - 1 Liter",
+  "Strawberry Banana - 250 ml",
+  "Strawberry Banana - 1 Liter",
+  "Strawberry Lemonade - 250 ml",
+  "Strawberry Lemonade - 1 Liter",
+  "Lemonade - 250 ml",
+  "Lemonade - 1 Liter",
+  "Minted Lemonade - 250 ml",
+  "Minted Lemonade - 1 Liter",
+  "Mango - 250 ml",
+  "Mango - 1 Liter",
+  "Straw Mango - 250 ml",
+  "Straw Mango - 1 Liter",
+];
+
 export default function ReportsPage() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -44,6 +75,14 @@ export default function ReportsPage() {
   const [totalOrders, setTotalOrders] = useState(0);
   const [bestSeller, setBestSeller] = useState("-");
   const [outOfStock, setOutOfStock] = useState(0);
+
+  const [returns, setReturns] = useState<ReturnRow[]>([]);
+
+  const [returnStoreName, setReturnStoreName] = useState("");
+  const [returnJuiceName, setReturnJuiceName] = useState("");
+  const [returnQuantity, setReturnQuantity] = useState("");
+  const [returnReason, setReturnReason] = useState("");
+  const [returnNote, setReturnNote] = useState("");
 
   const [chartMode, setChartMode] = useState<ChartMode>("weekly");
   const [weeklySales, setWeeklySales] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
@@ -107,6 +146,18 @@ export default function ReportsPage() {
       return;
     }
 
+    const { data: returnsData, error: returnsError } = await supabase
+      .from("returns")
+      .select("*")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString())
+      .order("created_at", { ascending: false });
+
+    if (returnsError) {
+      alert(returnsError.message);
+      return;
+    }
+
     const { data: inventoryData, error: inventoryError } = await supabase
       .from("inventory")
       .select("*");
@@ -118,10 +169,12 @@ export default function ReportsPage() {
 
     const sales = (salesData || []) as SaleRow[];
     const expenses = (expensesData || []) as ExpenseRow[];
+    const returnsDataRows = (returnsData || []) as ReturnRow[];
     const inventory = inventoryData || [];
 
     setSalesReport(sales);
     setExpensesReport(expenses);
+    setReturns(returnsDataRows);
 
     const revenue = sales.reduce(
       (sum, sale) => sum + Number(sale.total_price || 0),
@@ -191,6 +244,46 @@ export default function ReportsPage() {
   useEffect(() => {
     fetchReportsData();
   }, []);
+
+  const handleAddReturn = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!returnStoreName || !returnJuiceName || !returnQuantity) {
+      alert("Please fill store name, juice name, and returned quantity.");
+      return;
+    }
+
+    const quantityNumber = Number(returnQuantity);
+
+    if (quantityNumber <= 0) {
+      alert("Returned quantity must be greater than 0.");
+      return;
+    }
+
+    const { error } = await supabase.from("returns").insert([
+      {
+        store_name: returnStoreName,
+        juice_name: returnJuiceName,
+        quantity_returned: quantityNumber,
+        reason: returnReason,
+        note: returnNote,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error adding return:", error);
+      alert(error.message);
+      return;
+    }
+
+    setReturnStoreName("");
+    setReturnJuiceName("");
+    setReturnQuantity("");
+    setReturnReason("");
+    setReturnNote("");
+
+    fetchReportsData(startDate, endDate);
+  };
 
   const applyQuickFilter = (type: "today" | "month" | "year") => {
     const today = new Date();
@@ -270,6 +363,35 @@ export default function ReportsPage() {
       ? ["Week 1", "Week 2", "Week 3", "Week 4"]
       : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+  const totalReturnedBottles = returns.reduce(
+    (sum, item) => sum + Number(item.quantity_returned || 0),
+    0
+  );
+
+  const returnedByProduct: Record<string, number> = {};
+
+  returns.forEach((item) => {
+    returnedByProduct[item.juice_name] =
+      (returnedByProduct[item.juice_name] || 0) +
+      Number(item.quantity_returned || 0);
+  });
+
+  const mostReturnedProduct =
+    Object.entries(returnedByProduct).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+    "No returns";
+
+  const returnedByStore: Record<string, number> = {};
+
+  returns.forEach((item) => {
+    returnedByStore[item.store_name] =
+      (returnedByStore[item.store_name] || 0) +
+      Number(item.quantity_returned || 0);
+  });
+
+  const storeWithMostReturns =
+    Object.entries(returnedByStore).sort((a, b) => b[1] - a[1])[0]?.[0] ||
+    "No returns";
+
   const stats = [
     { title: "Revenue", value: `$${totalRevenue.toFixed(2)}` },
     { title: "Expenses", value: `$${totalExpenses.toFixed(2)}` },
@@ -277,6 +399,9 @@ export default function ReportsPage() {
     { title: "Orders", value: totalOrders },
     { title: "Best Seller", value: bestSeller },
     { title: "Out of Stock", value: outOfStock },
+    { title: "Returned Bottles", value: totalReturnedBottles },
+    { title: "Most Returned", value: mostReturnedProduct },
+    { title: "Top Return Store", value: storeWithMostReturns },
   ];
 
   const exportPDF = () => {
@@ -328,6 +453,23 @@ export default function ReportsPage() {
               expense.created_at
                 ? new Date(expense.created_at).toLocaleString()
                 : ""
+            }</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    const returnRows = returns
+      .map(
+        (item) => `
+          <tr>
+            <td>${item.store_name}</td>
+            <td>${item.juice_name}</td>
+            <td>${item.quantity_returned}</td>
+            <td>${item.reason || ""}</td>
+            <td>${item.note || ""}</td>
+            <td>${
+              item.created_at ? new Date(item.created_at).toLocaleString() : ""
             }</td>
           </tr>
         `
@@ -403,6 +545,9 @@ export default function ReportsPage() {
             <div class="box"><strong>Orders:</strong><br/>${totalOrders}</div>
             <div class="box"><strong>Best Seller:</strong><br/>${bestSeller}</div>
             <div class="box"><strong>Out of Stock:</strong><br/>${outOfStock}</div>
+            <div class="box"><strong>Returned Bottles:</strong><br/>${totalReturnedBottles}</div>
+            <div class="box"><strong>Most Returned:</strong><br/>${mostReturnedProduct}</div>
+            <div class="box"><strong>Top Return Store:</strong><br/>${storeWithMostReturns}</div>
           </div>
 
           <h2>Product Sales Breakdown</h2>
@@ -429,6 +574,21 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>${salesRows}</tbody>
+          </table>
+
+          <h2>Returns Report</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Store</th>
+                <th>Product</th>
+                <th>Returned Qty</th>
+                <th>Reason</th>
+                <th>Note</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>${returnRows}</tbody>
           </table>
 
           <h2>Expenses Report</h2>
@@ -470,6 +630,9 @@ export default function ReportsPage() {
     ["Orders", totalOrders],
     ["Best Seller", bestSeller],
     ["Out of Stock", outOfStock],
+    ["Returned Bottles", totalReturnedBottles],
+    ["Most Returned", mostReturnedProduct],
+    ["Top Return Store", storeWithMostReturns],
   ];
 
   const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
@@ -528,6 +691,31 @@ export default function ReportsPage() {
   ];
 
   XLSX.utils.book_append_sheet(workbook, salesSheet, "Sales Report");
+
+  const returnsData = [
+    ["Store", "Product", "Returned Quantity", "Reason", "Note", "Date"],
+    ...returns.map((item) => [
+      item.store_name,
+      item.juice_name,
+      Number(item.quantity_returned || 0),
+      item.reason || "",
+      item.note || "",
+      item.created_at ? new Date(item.created_at).toLocaleString() : "",
+    ]),
+  ];
+
+  const returnsSheet = XLSX.utils.aoa_to_sheet(returnsData);
+
+  returnsSheet["!cols"] = [
+    { wch: 28 },
+    { wch: 32 },
+    { wch: 20 },
+    { wch: 18 },
+    { wch: 45 },
+    { wch: 24 },
+  ];
+
+  XLSX.utils.book_append_sheet(workbook, returnsSheet, "Returns Report");
 
   const expensesData = [
     ["Item", "Category", "Amount", "Date"],
@@ -803,6 +991,127 @@ export default function ReportsPage() {
                       <td style={tdStyle}>{product.name}</td>
                       <td style={tdStyle}>{product.quantity}</td>
                       <td style={tdStyle}>${product.revenue.toFixed(2)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </section>
+
+          <section style={{ ...cardStyle, marginBottom: "34px" }}>
+            <h2 style={sectionTitleStyle}>Returned Bottles</h2>
+
+            <form onSubmit={handleAddReturn}>
+              <div style={returnFormGridStyle} className="filterGrid">
+                <div>
+                  <label style={smallTitleStyle}>Store Name</label>
+                  <input
+                    type="text"
+                    value={returnStoreName}
+                    onChange={(e) => setReturnStoreName(e.target.value)}
+                    placeholder="Example: Mini Market Hamra"
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={smallTitleStyle}>Juice Name</label>
+                  <select
+                    value={returnJuiceName}
+                    onChange={(e) => setReturnJuiceName(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="">Select juice</option>
+                    {juiceOptions.map((juice) => (
+                      <option key={juice} value={juice}>
+                        {juice}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label style={smallTitleStyle}>Returned Quantity</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={returnQuantity}
+                    onChange={(e) => setReturnQuantity(e.target.value)}
+                    placeholder="Example: 5"
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={smallTitleStyle}>Reason</label>
+                  <select
+                    value={returnReason}
+                    onChange={(e) => setReturnReason(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="">Select reason</option>
+                    <option value="Not sold">Not sold</option>
+                    <option value="Expired">Expired</option>
+                    <option value="Damaged">Damaged</option>
+                    <option value="Wrong order">Wrong order</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div style={{ gridColumn: "span 2" }}>
+                  <label style={smallTitleStyle}>Note</label>
+                  <input
+                    type="text"
+                    value={returnNote}
+                    onChange={(e) => setReturnNote(e.target.value)}
+                    placeholder="Example: Returned from Hamra branch, bottles still sealed"
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <button type="submit" style={{ ...buttonStyle, marginTop: "20px" }}>
+                Add Return
+              </button>
+            </form>
+          </section>
+
+          <section style={{ ...cardStyle, marginBottom: "34px" }}>
+            <h2 style={sectionTitleStyle}>Returns Report</h2>
+
+            <table style={tableStyle}>
+              <thead>
+                <tr>
+                  {["Date", "Store", "Product", "Returned Qty", "Reason", "Note"].map(
+                    (head) => (
+                      <th key={head} style={thStyle}>
+                        {head}
+                      </th>
+                    )
+                  )}
+                </tr>
+              </thead>
+
+              <tbody>
+                {returns.length === 0 ? (
+                  <tr>
+                    <td style={tdStyle} colSpan={6}>
+                      No returned bottles in this period.
+                    </td>
+                  </tr>
+                ) : (
+                  returns.map((item) => (
+                    <tr key={item.id}>
+                      <td style={tdStyle}>
+                        {item.created_at
+                          ? new Date(item.created_at).toLocaleString()
+                          : ""}
+                      </td>
+                      <td style={tdStyle}>{item.store_name}</td>
+                      <td style={tdStyle}>{item.juice_name}</td>
+                      <td style={tdStyle}>{item.quantity_returned}</td>
+                      <td style={tdStyle}>{item.reason || "-"}</td>
+                      <td style={tdStyle}>{item.note || "-"}</td>
                     </tr>
                   ))
                 )}
@@ -1091,6 +1400,13 @@ const reportFilterGridStyle = {
   gridTemplateColumns: "1fr 1fr",
   gap: "16px",
   marginBottom: "24px",
+};
+
+const returnFormGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr 1fr",
+  gap: "16px",
+  alignItems: "end",
 };
 
 const compactExportStyle = {
