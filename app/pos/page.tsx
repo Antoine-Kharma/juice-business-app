@@ -252,20 +252,19 @@ export default function POSPage() {
 
   const paidAmountNumber = Number(paidAmount) || 0;
 
-    const changeUSD = paidAmountNumber > cartTotal ? paidAmountNumber - cartTotal : 0;
+  const changeUSD =
+    paidAmountNumber > cartTotal ? paidAmountNumber - cartTotal : 0;
 
-    const remainingUSD =
+  const remainingUSD =
     paidAmountNumber < cartTotal ? cartTotal - paidAmountNumber : 0;
 
-    const changeLBP =
+  const changeLBP =
     changeUSD > 0
-        ? Math.round((changeUSD * USD_TO_LBP_RATE) / 10000) * 10000
-        : 0;
+      ? Math.round((changeUSD * USD_TO_LBP_RATE) / 10000) * 10000
+      : 0;
 
-    const remainingLBP =
-    remainingUSD > 0
-        ? Math.round(remainingUSD * USD_TO_LBP_RATE)
-        : 0;
+  const remainingLBP =
+    remainingUSD > 0 ? Math.round(remainingUSD * USD_TO_LBP_RATE) : 0;
 
   const todaySalesTotal = useMemo(() => {
     const today = new Date().toDateString();
@@ -380,7 +379,7 @@ export default function POSPage() {
     alert("Order is on hold.");
   };
 
-  const restoreHeldCart = () => {
+  const recallCart = () => {
     if (heldCart.length === 0) {
       alert("No held order.");
       return;
@@ -600,11 +599,11 @@ export default function POSPage() {
                 <div style={cartCountStyle}>{totalBottles} bottles</div>
               </div>
 
-              {cart.length === 0 ? (
-                <p style={emptyTextStyle}>No products added yet.</p>
-              ) : (
-                <div style={{ display: "grid", gap: "14px" }}>
-                  {cart.map((item) => (
+              <div style={{ display: "grid", gap: "14px" }}>
+                {cart.length === 0 ? (
+                  <p style={emptyTextStyle}>No products added yet.</p>
+                ) : (
+                  cart.map((item) => (
                     <div key={item.juice_name} style={cartItemStyle}>
                       <div>
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
@@ -643,32 +642,36 @@ export default function POSPage() {
                         </button>
                       </div>
                     </div>
-                  ))}
+                  ))
+                )}
 
-                  <div style={totalBoxStyle}>
-                    <span>Grand Total</span>
-                    <strong>${cartTotal.toFixed(2)}</strong>
-                  </div>
-
-                  <div style={posActionGridStyle}>
-                    <button onClick={holdCart} style={holdButtonStyle}>
-                        Hold
-                    </button>
-
-                    <button onClick={restoreHeldCart} style={recallButtonStyle}>
-                        Recall
-                    </button>
-
-                    <button onClick={cleanCart} style={clearButtonStyle}>
-                        Clean
-                    </button>
-                    </div>
-
-                    <button onClick={openPaymentPopup} style={confirmButtonStyle}>
-                    Confirm Sale
-                    </button>
+                <div style={totalBoxStyle}>
+                  <span>Grand Total</span>
+                  <strong>${cartTotal.toFixed(2)}</strong>
                 </div>
-              )}
+
+                <div style={posActionGridStyle}>
+                  <button onClick={holdCart} style={holdButtonStyle}>
+                    Hold
+                  </button>
+
+                  <button onClick={recallCart} style={recallButtonStyle}>
+                    Recall
+                  </button>
+
+                  <button onClick={cleanCart} style={clearButtonStyle}>
+                    Clean
+                  </button>
+                </div>
+
+                {heldCart.length > 0 && (
+                  <p style={heldOrderTextStyle}>You have 1 order on hold.</p>
+                )}
+
+                <button onClick={openPaymentPopup} style={confirmButtonStyle}>
+                  Confirm Sale
+                </button>
+              </div>
             </div>
           </section>
 
@@ -717,17 +720,20 @@ export default function POSPage() {
                       </td>
                       <td style={tdStyle}>{sale.payment_method || "-"}</td>
                       <td style={tdStyle}>
-                        {sale.paid_amount !== undefined && sale.paid_amount !== null
+                        {sale.paid_amount !== undefined &&
+                        sale.paid_amount !== null
                           ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
                           : "-"}
                       </td>
                       <td style={tdStyle}>
-                        {sale.change_usd !== undefined && sale.change_usd !== null
+                        {sale.change_usd !== undefined &&
+                        sale.change_usd !== null
                           ? `$${Number(sale.change_usd || 0).toFixed(2)}`
                           : "-"}
                       </td>
                       <td style={tdStyle}>
-                        {sale.change_lbp !== undefined && sale.change_lbp !== null
+                        {sale.change_lbp !== undefined &&
+                        sale.change_lbp !== null
                           ? `${Number(sale.change_lbp || 0).toLocaleString()} LBP`
                           : "-"}
                       </td>
@@ -782,30 +788,32 @@ export default function POSPage() {
 
               <div style={changeBoxStyle}>
                 {paidAmountNumber >= cartTotal ? (
-                    <>
+                  <>
                     <p style={changeTextStyle}>
-                        Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
+                      Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
                     </p>
 
                     <p style={changeTextStyle}>
-                        Change in LBP: <strong>{changeLBP.toLocaleString()} LBP</strong>
+                      Change in LBP:{" "}
+                      <strong>{changeLBP.toLocaleString()} LBP</strong>
                     </p>
-                    </>
+                  </>
                 ) : (
-                    <>
+                  <>
                     <p style={errorTextStyle}>
-                        Remaining in USD: <strong>${remainingUSD.toFixed(2)}</strong>
+                      Remaining in USD:{" "}
+                      <strong>${remainingUSD.toFixed(2)}</strong>
                     </p>
 
                     <p style={errorTextStyle}>
-                        Remaining in LBP:{" "}
-                        <strong>{remainingLBP.toLocaleString()} LBP</strong>
+                      Remaining in LBP:{" "}
+                      <strong>{remainingLBP.toLocaleString()} LBP</strong>
                     </p>
-                    </>
+                  </>
                 )}
 
                 <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
-                </div>
+              </div>
 
               <div style={popupButtonsStyle}>
                 <button
@@ -1191,7 +1199,19 @@ const holdButtonStyle = {
   fontFamily: "Arial, sans-serif",
 };
 
-const restoreButtonStyle = {
+const recallButtonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#dfe8cf",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const clearButtonStyle = {
   padding: "16px",
   borderRadius: "999px",
   border: "none",
@@ -1201,6 +1221,14 @@ const restoreButtonStyle = {
   fontWeight: 900,
   fontSize: "16px",
   fontFamily: "Arial, sans-serif",
+};
+
+const heldOrderTextStyle = {
+  margin: 0,
+  color: "#7aa85a",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
+  textAlign: "center" as const,
 };
 
 const confirmButtonStyle = {
@@ -1214,18 +1242,6 @@ const confirmButtonStyle = {
   fontSize: "16px",
   fontFamily: "Arial, sans-serif",
   boxShadow: "0 12px 24px rgba(48,70,56,0.25)",
-};
-
-const clearButtonStyle = {
-  padding: "16px",
-  borderRadius: "999px",
-  border: "none",
-  background: "#eef0df",
-  color: "#2e4732",
-  cursor: "pointer",
-  fontWeight: 900,
-  fontSize: "16px",
-  fontFamily: "Arial, sans-serif",
 };
 
 const popupOverlayStyle = {
@@ -1324,16 +1340,4 @@ const tdStyle = {
   padding: "14px",
   borderBottom: "1px solid rgba(48,70,56,0.1)",
   color: "#435848",
-};
-
-const recallButtonStyle = {
-  padding: "16px",
-  borderRadius: "999px",
-  border: "none",
-  background: "#dfe8cf",
-  color: "#2e4732",
-  cursor: "pointer",
-  fontWeight: 900,
-  fontSize: "16px",
-  fontFamily: "Arial, sans-serif",
 };
