@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import ProtectedPage from "../components/ProtectedPage";
 
+const USD_TO_LBP_RATE = 89500;
+
 const products = [
   "Orange - 250 ml",
   "Orange - 1 Liter",
@@ -25,6 +27,7 @@ const products = [
   "Carrot - 1 Liter",
 ];
 
+// Add your fixed festival prices here before starting the event.
 const productPrices: Record<string, number> = {
   "Orange - 250 ml": 0,
   "Orange - 1 Liter": 0,
@@ -205,9 +208,10 @@ type Sale = {
   unit_price: number;
   total_price: number;
   payment_method?: string;
-  event_name?: string;
-  note?: string;
   sale_type?: string;
+  paid_amount?: number;
+  change_usd?: number;
+  change_lbp?: number;
   created_at?: string;
 };
 
@@ -215,16 +219,20 @@ type CategoryFilter = "All" | "250 ml" | "1 Liter";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [heldCart, setHeldCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
-  const [paymentMethod, setPaymentMethod] = useState("Cash");
-  const [eventName, setEventName] = useState("");
-  const [note, setNote] = useState("");
+
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
   const [searchText, setSearchText] = useState("");
 
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("Cash");
+  const [paidAmount, setPaidAmount] = useState("");
+
   const filteredProducts = products.filter((item) => {
     const matchesCategory =
-      categoryFilter === "All" || item.toLowerCase().includes(categoryFilter.toLowerCase());
+      categoryFilter === "All" ||
+      item.toLowerCase().includes(categoryFilter.toLowerCase());
 
     const matchesSearch = item.toLowerCase().includes(searchText.toLowerCase());
 
@@ -241,6 +249,15 @@ export default function POSPage() {
   const totalBottles = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
+
+  const paidAmountNumber = Number(paidAmount) || 0;
+  const changeUSD = paidAmountNumber - cartTotal;
+  const roundedChangeUSD = changeUSD > 0 ? changeUSD : 0;
+
+  const changeLBP =
+    roundedChangeUSD > 0
+      ? Math.round((roundedChangeUSD * USD_TO_LBP_RATE) / 10000) * 10000
+      : 0;
 
   const todaySalesTotal = useMemo(() => {
     const today = new Date().toDateString();
@@ -338,26 +355,51 @@ export default function POSPage() {
     );
   };
 
-  const updateCartPrice = (productName: string, value: string) => {
-    const price = Number(value) || 0;
-
-    setCart((currentCart) =>
-      currentCart.map((item) =>
-        item.juice_name === productName
-          ? { ...item, unit_price: price }
-          : item
-      )
-    );
-  };
-
-  const clearCart = () => {
+  const cleanCart = () => {
     setCart([]);
-    setNote("");
+    setPaidAmount("");
   };
 
-  const handleConfirmSale = async () => {
+  const holdCart = () => {
     if (cart.length === 0) {
       alert("Cart is empty.");
+      return;
+    }
+
+    setHeldCart(cart);
+    setCart([]);
+    setPaidAmount("");
+    alert("Order is on hold.");
+  };
+
+  const restoreHeldCart = () => {
+    if (heldCart.length === 0) {
+      alert("No held order.");
+      return;
+    }
+
+    setCart(heldCart);
+    setHeldCart([]);
+  };
+
+  const openPaymentPopup = () => {
+    if (cart.length === 0) {
+      alert("Cart is empty.");
+      return;
+    }
+
+    setPaidAmount(cartTotal.toFixed(2));
+    setShowPaymentPopup(true);
+  };
+
+  const completeSale = async () => {
+    if (cart.length === 0) {
+      alert("Cart is empty.");
+      return;
+    }
+
+    if (paidAmountNumber < cartTotal) {
+      alert("Paid amount is less than the total amount.");
       return;
     }
 
@@ -429,9 +471,10 @@ export default function POSPage() {
       quantity_sold: item.quantity,
       selling_price: item.unit_price,
       payment_method: paymentMethod,
-      event_name: eventName,
-      note,
       sale_type: "POS",
+      paid_amount: paidAmountNumber,
+      change_usd: roundedChangeUSD,
+      change_lbp: changeLBP,
     }));
 
     const { error } = await supabase.from("sales").insert(salesRows);
@@ -444,7 +487,8 @@ export default function POSPage() {
     alert("POS sale added successfully.");
 
     setCart([]);
-    setNote("");
+    setPaidAmount("");
+    setShowPaymentPopup(false);
     fetchSales();
   };
 
@@ -479,47 +523,6 @@ export default function POSPage() {
               <div style={smallInfoCardStyle}>
                 <p style={smallTitleStyle}>Bottles Sold</p>
                 <h3 style={infoValueStyle}>{todayBottlesSold}</h3>
-              </div>
-            </div>
-          </section>
-
-          <section style={eventCardStyle}>
-            <div style={eventGridStyle} className="posGrid">
-              <div>
-                <label style={labelStyle}>Event Name</label>
-                <input
-                  type="text"
-                  value={eventName}
-                  onChange={(e) => setEventName(e.target.value)}
-                  placeholder="Example: Broummana Street Festival"
-                  style={inputStyle}
-                />
-              </div>
-
-              <div>
-                <label style={labelStyle}>Payment Method</label>
-                <select
-                  value={paymentMethod}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  style={inputStyle}
-                >
-                  <option value="Cash">Cash</option>
-                  <option value="Whish">Whish</option>
-                  <option value="Card">Card</option>
-                  <option value="OMT">OMT</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={labelStyle}>Note</label>
-                <input
-                  type="text"
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  placeholder="Optional note"
-                  style={inputStyle}
-                />
               </div>
             </div>
           </section>
@@ -598,18 +601,9 @@ export default function POSPage() {
                       <div>
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
-                        <div style={priceEditRowStyle}>
-                          <span style={smallTextStyle}>Price:</span>
-
-                          <input
-                            type="number"
-                            value={item.unit_price}
-                            onChange={(e) =>
-                              updateCartPrice(item.juice_name, e.target.value)
-                            }
-                            style={miniInputStyle}
-                          />
-                        </div>
+                        <p style={smallTextStyle}>
+                          Price: ${Number(item.unit_price || 0).toFixed(2)}
+                        </p>
 
                         <p style={smallTextStyle}>
                           Total: ${(item.quantity * item.unit_price).toFixed(2)}
@@ -648,12 +642,24 @@ export default function POSPage() {
                     <strong>${cartTotal.toFixed(2)}</strong>
                   </div>
 
-                  <button onClick={handleConfirmSale} style={confirmButtonStyle}>
-                    Confirm Sale
-                  </button>
+                  <div style={posActionGridStyle}>
+                    <button onClick={holdCart} style={holdButtonStyle}>
+                      Hold
+                    </button>
 
-                  <button onClick={clearCart} style={clearButtonStyle}>
-                    Clear Cart
+                    <button onClick={cleanCart} style={clearButtonStyle}>
+                      Clean
+                    </button>
+                  </div>
+
+                  {heldCart.length > 0 && (
+                    <button onClick={restoreHeldCart} style={restoreButtonStyle}>
+                      Restore Held Order
+                    </button>
+                  )}
+
+                  <button onClick={openPaymentPopup} style={confirmButtonStyle}>
+                    Confirm Sale
                   </button>
                 </div>
               )}
@@ -680,7 +686,9 @@ export default function POSPage() {
                       "Unit Price",
                       "Total",
                       "Payment",
-                      "Event",
+                      "Paid",
+                      "Change USD",
+                      "Change LBP",
                       "Date & Time",
                     ].map((head) => (
                       <th key={head} style={thStyle}>
@@ -702,7 +710,21 @@ export default function POSPage() {
                         ${Number(sale.total_price || 0).toFixed(2)}
                       </td>
                       <td style={tdStyle}>{sale.payment_method || "-"}</td>
-                      <td style={tdStyle}>{sale.event_name || "-"}</td>
+                      <td style={tdStyle}>
+                        {sale.paid_amount !== undefined && sale.paid_amount !== null
+                          ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
+                          : "-"}
+                      </td>
+                      <td style={tdStyle}>
+                        {sale.change_usd !== undefined && sale.change_usd !== null
+                          ? `$${Number(sale.change_usd || 0).toFixed(2)}`
+                          : "-"}
+                      </td>
+                      <td style={tdStyle}>
+                        {sale.change_lbp !== undefined && sale.change_lbp !== null
+                          ? `${Number(sale.change_lbp || 0).toLocaleString()} LBP`
+                          : "-"}
+                      </td>
                       <td style={tdStyle}>
                         {sale.created_at
                           ? new Date(sale.created_at).toLocaleString()
@@ -715,6 +737,89 @@ export default function POSPage() {
             )}
           </section>
         </div>
+
+        {showPaymentPopup && (
+          <div style={popupOverlayStyle}>
+            <div style={popupCardStyle}>
+              <h2 style={popupTitleStyle}>Confirm Payment</h2>
+
+              <div style={paymentSummaryStyle}>
+                <span>Total Amount</span>
+                <strong>${cartTotal.toFixed(2)}</strong>
+              </div>
+
+              <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Payment Method</label>
+                <select
+                  value={paymentMethod}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="Cash">Cash</option>
+                  <option value="Whish">Whish</option>
+                  <option value="Card">Card</option>
+                  <option value="OMT">OMT</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Paid Amount</label>
+                <input
+                  type="number"
+                  value={paidAmount}
+                  onChange={(e) => setPaidAmount(e.target.value)}
+                  placeholder="Example: 20"
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={changeBoxStyle}>
+                <p style={changeTextStyle}>
+                  Change in USD:{" "}
+                  <strong>${roundedChangeUSD.toFixed(2)}</strong>
+                </p>
+
+                <p style={changeTextStyle}>
+                  Change in LBP:{" "}
+                  <strong>{changeLBP.toLocaleString()} LBP</strong>
+                </p>
+
+                <p style={smallTextStyle}>
+                  Rate used: 1 USD = 89,500 LBP
+                </p>
+              </div>
+
+              {paidAmountNumber < cartTotal && (
+                <p style={errorTextStyle}>
+                  Paid amount is less than the total amount.
+                </p>
+              )}
+
+              <div style={popupButtonsStyle}>
+                <button
+                  onClick={() => setShowPaymentPopup(false)}
+                  style={cancelPopupButtonStyle}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={completeSale}
+                  disabled={paidAmountNumber < cartTotal}
+                  style={{
+                    ...confirmButtonStyle,
+                    opacity: paidAmountNumber < cartTotal ? 0.5 : 1,
+                    cursor:
+                      paidAmountNumber < cartTotal ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Complete Sale
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <style>
           {`
@@ -740,10 +845,6 @@ export default function POSPage() {
 
               h2 {
                 font-size: 30px !important;
-              }
-
-              .posGrid {
-                grid-template-columns: 1fr !important;
               }
 
               table {
@@ -851,22 +952,6 @@ const infoValueStyle = {
   color: "#2e4732",
   fontSize: "30px",
   fontFamily: "Arial, sans-serif",
-};
-
-const eventCardStyle = {
-  background: "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(14px)",
-  padding: "28px",
-  borderRadius: "30px",
-  boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
-  border: "1px solid rgba(255,255,255,0.7)",
-  marginBottom: "28px",
-};
-
-const eventGridStyle = {
-  display: "grid",
-  gridTemplateColumns: "1.2fr 0.8fr 1.2fr",
-  gap: "18px",
 };
 
 const posLayoutStyle = {
@@ -1022,25 +1107,10 @@ const cartItemTitleStyle = {
   fontFamily: "Arial, sans-serif",
 };
 
-const priceEditRowStyle = {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  marginTop: "10px",
-};
-
 const smallTextStyle = {
   margin: "8px 0 0",
   color: "#435848",
   fontSize: "14px",
-  fontFamily: "Arial, sans-serif",
-};
-
-const miniInputStyle = {
-  width: "90px",
-  padding: "8px",
-  borderRadius: "12px",
-  border: "1px solid #d6d6d6",
   fontFamily: "Arial, sans-serif",
 };
 
@@ -1092,6 +1162,36 @@ const totalBoxStyle = {
   fontFamily: "Arial, sans-serif",
 };
 
+const posActionGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "12px",
+};
+
+const holdButtonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#d9c88f",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const restoreButtonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#eef0df",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+};
+
 const confirmButtonStyle = {
   padding: "16px",
   borderRadius: "999px",
@@ -1106,6 +1206,85 @@ const confirmButtonStyle = {
 };
 
 const clearButtonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#eef0df",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const popupOverlayStyle = {
+  position: "fixed" as const,
+  inset: 0,
+  background: "rgba(0,0,0,0.45)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 999,
+  padding: "20px",
+};
+
+const popupCardStyle = {
+  width: "100%",
+  maxWidth: "520px",
+  background: "#f6f3e8",
+  borderRadius: "34px",
+  padding: "34px",
+  boxShadow: "0 30px 80px rgba(0,0,0,0.25)",
+  border: "1px solid rgba(255,255,255,0.7)",
+};
+
+const popupTitleStyle = {
+  marginTop: 0,
+  color: "#2e4732",
+  fontSize: "38px",
+};
+
+const paymentSummaryStyle = {
+  background: "#eef0df",
+  padding: "18px",
+  borderRadius: "20px",
+  display: "flex",
+  justifyContent: "space-between",
+  color: "#2e4732",
+  fontWeight: 900,
+  fontSize: "20px",
+  fontFamily: "Arial, sans-serif",
+  marginBottom: "18px",
+};
+
+const changeBoxStyle = {
+  background: "rgba(255,255,255,0.75)",
+  border: "1px solid rgba(48,70,56,0.1)",
+  borderRadius: "22px",
+  padding: "18px",
+  marginBottom: "18px",
+};
+
+const changeTextStyle = {
+  margin: "0 0 10px",
+  color: "#2e4732",
+  fontSize: "18px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const errorTextStyle = {
+  color: "#a33",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
+};
+
+const popupButtonsStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: "12px",
+};
+
+const cancelPopupButtonStyle = {
   padding: "16px",
   borderRadius: "999px",
   border: "none",
