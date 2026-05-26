@@ -15,6 +15,7 @@ export default function Navbar() {
 
   const links = [
     { name: "Dashboard", href: "/dashboard" },
+    { name: "POS", href: "/pos" },
     { name: "Sales", href: "/sales" },
     { name: "Inventory", href: "/inventory" },
     { name: "Expenses", href: "/expenses" },
