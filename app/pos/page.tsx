@@ -29,8 +29,8 @@ const products = [
 
 // Add your fixed festival prices here before starting the event.
 const productPrices: Record<string, number> = {
-  "Orange - 250 ml": 0,
-  "Orange - 1 Liter": 0,
+  "Orange - 250 ml": 5,
+  "Orange - 1 Liter": 10,
   "Strawberry Banana - 250 ml": 0,
   "Strawberry Banana - 1 Liter": 0,
   "Strawberry Lemonade - 250 ml": 0,
