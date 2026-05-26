@@ -521,7 +521,7 @@ export default function POSPage() {
               </p>
             </div>
 
-            <div style={summaryGridStyle}>
+            <div style={summaryGridStyle} className="summaryGridMobile">
               <div style={smallInfoCardStyle}>
                 <p style={smallTitleStyle}>Today Sales</p>
                 <h3 style={infoValueStyle}>${todaySalesTotal.toFixed(2)}</h3>
@@ -548,6 +548,7 @@ export default function POSPage() {
                   onChange={(e) => setSearchText(e.target.value)}
                   placeholder="Search product..."
                   style={searchInputStyle}
+                  className="searchMobile"
                 />
               </div>
 
@@ -569,14 +570,17 @@ export default function POSPage() {
                 )}
               </div>
 
-              <div style={productsGridStyle}>
+              <div style={productsGridStyle} className="productsGridMobile">
                 {filteredProducts.map((productName) => (
                   <button
                     key={productName}
                     onClick={() => addToCart(productName)}
                     style={productCardStyle}
+                    className="productCardMobile"
                   >
-                    <div style={bottleIconStyle}>🍹</div>
+                    <div style={bottleIconStyle} className="bottleIconMobile">
+  🍹
+                </div>
 
                     <div style={{ textAlign: "left" }}>
                       <h3 style={productNameStyle}>{productName}</h3>
@@ -604,7 +608,7 @@ export default function POSPage() {
                   <p style={emptyTextStyle}>No products added yet.</p>
                 ) : (
                   cart.map((item) => (
-                    <div key={item.juice_name} style={cartItemStyle}>
+                    <div key={item.juice_name} style={cartItemStyle} className="cartItemMobile">
                       <div>
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
@@ -617,7 +621,7 @@ export default function POSPage() {
                         </p>
                       </div>
 
-                      <div style={quantityControlStyle}>
+                     <div style={quantityControlStyle} className="quantityMobile">
                         <button
                           onClick={() => decreaseQuantity(item.juice_name)}
                           style={qtyButtonStyle}
@@ -650,7 +654,7 @@ export default function POSPage() {
                   <strong>${cartTotal.toFixed(2)}</strong>
                 </div>
 
-                <div style={posActionGridStyle}>
+                <div style={posActionGridStyle} className="posActionsMobile">
                   <button onClick={holdCart} style={holdButtonStyle}>
                     Hold
                   </button>
@@ -841,51 +845,134 @@ export default function POSPage() {
         )}
 
         <style>
-          {`
-            @media (max-width: 1100px) {
-              .mainPOSGrid {
-                grid-template-columns: 1fr !important;
-              }
-            }
+  {`
+    @media (max-width: 1100px) {
+      .mainPOSGrid {
+        grid-template-columns: 1fr !important;
+      }
+    }
 
-            @media (max-width: 850px) {
-              main {
-                padding: 20px !important;
-              }
+    @media (max-width: 850px) {
+      main {
+        padding: 14px !important;
+      }
 
-              section {
-                padding: 24px !important;
-                border-radius: 28px !important;
-              }
+      section {
+        padding: 20px !important;
+        border-radius: 24px !important;
+      }
 
-              h1 {
-                font-size: 46px !important;
-              }
+      h1 {
+        font-size: 42px !important;
+      }
 
-              h2 {
-                font-size: 30px !important;
-              }
+      h2 {
+        font-size: 28px !important;
+      }
 
-              table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-              }
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
 
-              input,
-              select,
-              button {
-                box-sizing: border-box;
-              }
-            }
+      input,
+      select,
+      button {
+        box-sizing: border-box;
+      }
+    }
 
-            @media (max-width: 550px) {
-              h1 {
-                font-size: 38px !important;
-              }
-            }
-          `}
-        </style>
+    @media (max-width: 600px) {
+      main {
+        padding: 10px !important;
+      }
+
+      section {
+        padding: 16px !important;
+        border-radius: 22px !important;
+      }
+
+      h1 {
+        font-size: 34px !important;
+        line-height: 1.05 !important;
+      }
+
+      h2 {
+        font-size: 26px !important;
+      }
+
+      .mainPOSGrid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+      }
+
+      .productsGridMobile {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+      }
+
+      .productCardMobile {
+        padding: 12px !important;
+        border-radius: 18px !important;
+        gap: 8px !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+
+      .productCardMobile h3 {
+        font-size: 13px !important;
+        line-height: 1.25 !important;
+      }
+
+      .productCardMobile p {
+        font-size: 13px !important;
+      }
+
+      .bottleIconMobile {
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 22px !important;
+      }
+
+      .cartItemMobile {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+      }
+
+      .quantityMobile {
+        width: 100% !important;
+        justify-content: space-between !important;
+        margin-top: 10px !important;
+      }
+
+      .posActionsMobile {
+        grid-template-columns: 1fr !important;
+      }
+
+      .summaryGridMobile {
+        grid-template-columns: 1fr !important;
+        width: 100% !important;
+      }
+
+      .searchMobile {
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+    }
+
+    @media (max-width: 420px) {
+      h1 {
+        font-size: 30px !important;
+      }
+
+      .productsGridMobile {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  `}
+</style>
       </main>
     </ProtectedPage>
   );
