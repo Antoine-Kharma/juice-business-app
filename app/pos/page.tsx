@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import ProtectedPage from "../components/ProtectedPage";
 
-const USD_TO_LBP_RATE = 89500;
+const USD_TO_LBP_RATE = 90000;
 
 const products = [
   "Orange - 250 ml",
@@ -251,13 +251,21 @@ export default function POSPage() {
   }, [cart]);
 
   const paidAmountNumber = Number(paidAmount) || 0;
-  const changeUSD = paidAmountNumber - cartTotal;
-  const roundedChangeUSD = changeUSD > 0 ? changeUSD : 0;
 
-  const changeLBP =
-    roundedChangeUSD > 0
-      ? Math.round((roundedChangeUSD * USD_TO_LBP_RATE) / 10000) * 10000
-      : 0;
+    const changeUSD = paidAmountNumber > cartTotal ? paidAmountNumber - cartTotal : 0;
+
+    const remainingUSD =
+    paidAmountNumber < cartTotal ? cartTotal - paidAmountNumber : 0;
+
+    const changeLBP =
+    changeUSD > 0
+        ? Math.round((changeUSD * USD_TO_LBP_RATE) / 10000) * 10000
+        : 0;
+
+    const remainingLBP =
+    remainingUSD > 0
+        ? Math.round(remainingUSD * USD_TO_LBP_RATE)
+        : 0;
 
   const todaySalesTotal = useMemo(() => {
     const today = new Date().toDateString();
@@ -473,7 +481,7 @@ export default function POSPage() {
       payment_method: paymentMethod,
       sale_type: "POS",
       paid_amount: paidAmountNumber,
-      change_usd: roundedChangeUSD,
+      change_usd: changeUSD,
       change_lbp: changeLBP,
     }));
 
@@ -644,23 +652,21 @@ export default function POSPage() {
 
                   <div style={posActionGridStyle}>
                     <button onClick={holdCart} style={holdButtonStyle}>
-                      Hold
+                        Hold
+                    </button>
+
+                    <button onClick={restoreHeldCart} style={recallButtonStyle}>
+                        Recall
                     </button>
 
                     <button onClick={cleanCart} style={clearButtonStyle}>
-                      Clean
+                        Clean
                     </button>
-                  </div>
+                    </div>
 
-                  {heldCart.length > 0 && (
-                    <button onClick={restoreHeldCart} style={restoreButtonStyle}>
-                      Restore Held Order
-                    </button>
-                  )}
-
-                  <button onClick={openPaymentPopup} style={confirmButtonStyle}>
+                    <button onClick={openPaymentPopup} style={confirmButtonStyle}>
                     Confirm Sale
-                  </button>
+                    </button>
                 </div>
               )}
             </div>
@@ -775,26 +781,31 @@ export default function POSPage() {
               </div>
 
               <div style={changeBoxStyle}>
-                <p style={changeTextStyle}>
-                  Change in USD:{" "}
-                  <strong>${roundedChangeUSD.toFixed(2)}</strong>
-                </p>
+                {paidAmountNumber >= cartTotal ? (
+                    <>
+                    <p style={changeTextStyle}>
+                        Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
+                    </p>
 
-                <p style={changeTextStyle}>
-                  Change in LBP:{" "}
-                  <strong>{changeLBP.toLocaleString()} LBP</strong>
-                </p>
+                    <p style={changeTextStyle}>
+                        Change in LBP: <strong>{changeLBP.toLocaleString()} LBP</strong>
+                    </p>
+                    </>
+                ) : (
+                    <>
+                    <p style={errorTextStyle}>
+                        Remaining in USD: <strong>${remainingUSD.toFixed(2)}</strong>
+                    </p>
 
-                <p style={smallTextStyle}>
-                  Rate used: 1 USD = 89,500 LBP
-                </p>
-              </div>
+                    <p style={errorTextStyle}>
+                        Remaining in LBP:{" "}
+                        <strong>{remainingLBP.toLocaleString()} LBP</strong>
+                    </p>
+                    </>
+                )}
 
-              {paidAmountNumber < cartTotal && (
-                <p style={errorTextStyle}>
-                  Paid amount is less than the total amount.
-                </p>
-              )}
+                <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
+                </div>
 
               <div style={popupButtonsStyle}>
                 <button
@@ -1164,7 +1175,7 @@ const totalBoxStyle = {
 
 const posActionGridStyle = {
   display: "grid",
-  gridTemplateColumns: "1fr 1fr",
+  gridTemplateColumns: "1fr 1fr 1fr",
   gap: "12px",
 };
 
@@ -1313,4 +1324,16 @@ const tdStyle = {
   padding: "14px",
   borderBottom: "1px solid rgba(48,70,56,0.1)",
   color: "#435848",
+};
+
+const recallButtonStyle = {
+  padding: "16px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#dfe8cf",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
 };
