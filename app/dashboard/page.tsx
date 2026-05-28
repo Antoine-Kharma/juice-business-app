@@ -250,7 +250,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="quickNotesMobileFull" style={cardStyle}>
+            <div style={cardStyle}>
               <h2 style={sectionTitleStyle}>Quick Notes</h2>
 
               <ul style={notesStyle}>
@@ -387,7 +387,7 @@ const cardStyle = {
   background: "rgba(255,255,255,0.72)",
   backdropFilter: "blur(14px)",
   padding: "34px",
-  borderRadius: "60px",
+  borderRadius: "30px",
   boxShadow: "0 18px 40px rgba(0,0,0,0.08)",
   border: "1px solid rgba(255,255,255,0.7)",
 };
