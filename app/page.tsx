@@ -36,6 +36,7 @@ export default function Home() {
       }}
     >
       <section
+        className="heroSection"
         style={{
           minHeight: "100vh",
           position: "relative",
@@ -44,6 +45,7 @@ export default function Home() {
         }}
       >
         <div
+          className="heroBackground"
           style={{
             position: "absolute",
             inset: 0,
@@ -121,6 +123,7 @@ export default function Home() {
         </nav>
 
         <div
+          className="heroContent"
           style={{
             position: "relative",
             zIndex: 2,
@@ -129,6 +132,7 @@ export default function Home() {
           }}
         >
           <h1
+            className="heroTitle"
             style={{
               fontSize: "54px",
               lineHeight: "1.08",
@@ -147,6 +151,7 @@ export default function Home() {
           </h1>
 
           <p
+            className="heroText"
             style={{
               marginTop: "22px",
               fontFamily: "Arial, sans-serif",
@@ -156,12 +161,14 @@ export default function Home() {
               maxWidth: "520px",
             }}
           >
-            
             SPLASH Juice is fresh, simple, and natural. Enjoy clean fruit
             flavors made daily with premium ingredients and smooth packaging.
           </p>
 
-          <div style={{ display: "flex", gap: "14px", marginTop: "32px" }}>
+          <div
+            className="heroButtons"
+            style={{ display: "flex", gap: "14px", marginTop: "32px" }}
+          >
             <Link
               href="/login"
               style={{
@@ -217,6 +224,7 @@ export default function Home() {
 
       <section
         id="products"
+        className="productsSection"
         style={{
           background: "#fffdf0",
           padding: "70px 40px",
@@ -229,22 +237,16 @@ export default function Home() {
       >
         <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
           <div style={{ textAlign: "center", marginBottom: "36px" }}>
-            <p
-              style={{
-                color: "#95c979",
-                fontFamily: "Arial, sans-serif",
-                fontWeight: 900,
-                letterSpacing: "2px",
-              }}
+            <h2
+              className="productsTitle"
+              style={{ fontSize: "40px", margin: 0, color: "#304638" }}
             >
-            </p>
-
-            <h2 style={{ fontSize: "40px", margin: 0, color: "#304638" }}>
               Featured Products
             </h2>
           </div>
 
           <div
+            className="productsGrid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(230px, 1fr))",
@@ -262,7 +264,6 @@ export default function Home() {
                   boxShadow: "0 14px 30px rgba(48,70,56,0.1)",
                   border: "1px solid rgba(48,70,56,0.08)",
                   fontFamily: "Arial, sans-serif",
-
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -270,17 +271,20 @@ export default function Home() {
                 }}
               >
                 <img
-                    src={bottles[index]}
-                    alt={product}
-                    style={{
-                          width: "400",
-                          height: "400px",
-                          objectFit: "contain",
-                          display: "block",
-                          margin: "0 auto 10px auto",
-                        }}
-                  />
+                  src={bottles[index]}
+                  alt={product}
+                  style={{
+                    width: "100%",
+                    maxWidth: "220px",
+                    height: "260px",
+                    objectFit: "contain",
+                    display: "block",
+                    margin: "0 auto 10px auto",
+                  }}
+                />
+
                 <h3 style={{ margin: 0, color: "#304638" }}>{product}</h3>
+
                 <p style={{ color: "#617266", fontSize: "14px" }}>
                   250ml / 1 Liter
                 </p>
@@ -344,35 +348,159 @@ export default function Home() {
             0%, 100% {
               transform: translateY(0);
             }
+
             50% {
               transform: translateY(-18px);
             }
           }
 
           @media (max-width: 850px) {
-            section {
-              grid-template-columns: 1fr !important;
+            .heroSection {
+              min-height: auto !important;
+              height: auto !important;
+              display: grid !important;
+              grid-template-columns: 1fr 1fr !important;
+            }
+
+            .heroContent {
+              padding: 95px 20px 35px 20px !important;
+              max-width: 100% !important;
+            }
+
+            .heroTitle {
+              font-size: 34px !important;
+              line-height: 1.08 !important;
+            }
+
+            .heroText {
+              font-size: 11px !important;
+              line-height: 1.6 !important;
+              max-width: 260px !important;
+              margin-top: 16px !important;
+            }
+
+            .heroButtons {
+              gap: 8px !important;
+              margin-top: 20px !important;
+              flex-wrap: wrap !important;
+            }
+
+            .heroButtons a {
+              padding: 10px 14px !important;
+              font-size: 11px !important;
+            }
+
+            .heroBottleArea {
+              min-height: 430px !important;
+              height: 430px !important;
+              padding-top: 80px !important;
+            }
+
+            .bottleSlider {
+              width: 210px !important;
+              height: 310px !important;
+            }
+
+            .verticalText {
+              display: none;
             }
 
             nav {
               width: 92% !important;
+              height: 42px !important;
+              padding: 0 10px !important;
+            }
+
+            nav div:first-child {
+              font-size: 12px !important;
             }
 
             nav div:nth-child(2) {
               display: none !important;
             }
 
-            h1 {
-              font-size: 42px !important;
+            nav a {
+              font-size: 11px !important;
+              padding: 8px 12px !important;
+            }
+
+            .productsSection {
+              margin-top: 0 !important;
+              padding: 34px 16px 44px !important;
+              border-top-left-radius: 28px !important;
+              border-top-right-radius: 28px !important;
+            }
+
+            .productsTitle {
+              font-size: 28px !important;
+            }
+
+            .productsGrid {
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 10px !important;
+            }
+
+            .productsGrid > div {
+              padding: 14px 8px !important;
+              border-radius: 18px !important;
+            }
+
+            .productsGrid img {
+              max-width: 90px !important;
+              height: 140px !important;
+            }
+
+            .productsGrid h3 {
+              font-size: 11px !important;
+            }
+
+            .productsGrid p {
+              font-size: 9px !important;
+            }
+          }
+
+          @media (max-width: 430px) {
+            .heroSection {
+              grid-template-columns: 58% 42% !important;
+            }
+
+            .heroContent {
+              padding-top: 90px !important;
+              padding-right: 8px !important;
+            }
+
+            .heroTitle {
+              font-size: 30px !important;
+            }
+
+            .heroText {
+              font-size: 10px !important;
+              max-width: 210px !important;
+            }
+
+            .heroBottleArea {
+              height: 390px !important;
+              min-height: 390px !important;
+              padding-top: 105px !important;
             }
 
             .bottleSlider {
-              width: 310px;
-              height: 470px;
+              width: 170px !important;
+              height: 250px !important;
             }
 
-            .verticalText {
-              display: none;
+            .productsSection {
+              padding-top: 28px !important;
+            }
+
+            .productsGrid {
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 8px !important;
+            }
+
+            .productsGrid img {
+              max-width: 78px !important;
+              height: 120px !important;
             }
           }
         `}
