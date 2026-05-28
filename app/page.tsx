@@ -164,46 +164,8 @@ export default function Home() {
             SPLASH Juice is fresh, simple, and natural. Enjoy clean fruit
             flavors made daily with premium ingredients and smooth packaging.
           </p>
-
-          <div
-            className="heroButtons"
-            style={{ display: "flex", gap: "14px", marginTop: "32px" }}
-          >
-            <Link
-              href="/login"
-              style={{
-                background: "#304638",
-                color: "white",
-                padding: "14px 24px",
-                borderRadius: "999px",
-                textDecoration: "none",
-                fontFamily: "Arial, sans-serif",
-                fontWeight: 800,
-                fontSize: "14px",
-                boxShadow: "0 12px 24px rgba(48,70,56,0.25)",
-              }}
-            >
-              Admin Login
-            </Link>
-
-            <a
-              href="#products"
-              style={{
-                background: "rgba(255,255,255,0.55)",
-                color: "#304638",
-                padding: "14px 24px",
-                borderRadius: "999px",
-                textDecoration: "none",
-                fontFamily: "Arial, sans-serif",
-                fontWeight: 800,
-                fontSize: "14px",
-                border: "1px solid rgba(48,70,56,0.2)",
-              }}
-            >
-              View Products
-            </a>
-          </div>
         </div>
+  
 
         <div className="heroBottleArea">
           <h2 className="verticalText">Fresh Juice</h2>
