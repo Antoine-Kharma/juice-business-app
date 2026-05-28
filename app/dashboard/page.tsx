@@ -250,7 +250,7 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div style={cardStyle}>
+            <div className="quickNotesMobileFull" style={cardStyle}>
               <h2 style={sectionTitleStyle}>Quick Notes</h2>
 
               <ul style={notesStyle}>
@@ -260,6 +260,7 @@ export default function DashboardPage() {
                 <li>Monitor daily profit</li>
               </ul>
             </div>
+              
           </section>
         </div>
 
@@ -272,31 +273,37 @@ export default function DashboardPage() {
             }
 
             @media (max-width: 850px) {
-              main {
-                padding: 20px !important;
-              }
-
-              section {
-                padding: 28px !important;
-                border-radius: 28px !important;
-              }
-
-              h1 {
-                font-size: 46px !important;
-              }
-
-              h2 {
-                font-size: 30px !important;
-              }
-
-              p {
-                font-size: 17px !important;
-              }
-
-              .dashboardBottom {
-                grid-template-columns: 1fr !important;
-              }
+            main {
+              padding: 20px !important;
             }
+
+            section {
+              padding: 28px !important;
+              border-radius: 28px !important;
+            }
+
+            h1 {
+              font-size: 46px !important;
+            }
+
+            h2 {
+              font-size: 30px !important;
+            }
+
+            p {
+              font-size: 17px !important;
+            }
+
+            .dashboardBottom {
+              grid-template-columns: 1fr 1fr !important;
+            }
+
+            .quickNotesMobileFull {
+              grid-column: 1 / -1 !important;
+              width: 100% !important;
+            }
+}
+  }
 
             @media (max-width: 550px) {
               h1 {
