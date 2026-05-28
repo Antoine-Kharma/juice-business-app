@@ -35,15 +35,15 @@ export default function Home() {
         color: "#304638",
       }}
     >
-      <section
-        className="heroSection"
-        style={{
-          minHeight: "100vh",
-          position: "relative",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-        }}
-      >
+              <section
+          className="heroSection"
+          style={{
+            minHeight: "620px",
+            position: "relative",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+          }}
+        >
         <div
           className="heroBackground"
           style={{
@@ -127,7 +127,7 @@ export default function Home() {
           style={{
             position: "relative",
             zIndex: 2,
-            padding: "160px 40px 80px 48px",
+            padding: "130px 40px 50px 48px",
             maxWidth: "620px",
           }}
         >
@@ -302,7 +302,7 @@ export default function Home() {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: 80px;
+            padding-top: 40px;
           }
 
           .verticalText {
@@ -503,6 +503,59 @@ export default function Home() {
               height: 120px !important;
             }
           }
+            @media (max-width: 850px) {
+          .heroSection {
+            min-height: 520px !important;
+            height: 520px !important;
+            grid-template-columns: 58% 42% !important;
+          }
+
+          .heroContent {
+            padding: 85px 10px 20px 20px !important;
+          }
+
+          .heroTitle {
+            font-size: 30px !important;
+            line-height: 1.08 !important;
+          }
+
+          .heroText {
+            font-size: 10px !important;
+            line-height: 1.5 !important;
+            max-width: 210px !important;
+            margin-top: 14px !important;
+          }
+
+          .heroButtons {
+            margin-top: 16px !important;
+            gap: 7px !important;
+          }
+
+          .heroButtons a {
+            padding: 9px 12px !important;
+            font-size: 10px !important;
+          }
+
+          .heroBottleArea {
+            height: 520px !important;
+            min-height: 520px !important;
+            padding-top: 120px !important;
+          }
+
+          .bottleSlider {
+            width: 145px !important;
+            height: 230px !important;
+          }
+
+          .productsSection {
+            margin-top: 0 !important;
+            padding-top: 24px !important;
+          }
+
+          .productsTitle {
+            font-size: 26px !important;
+          }
+        }
         `}
       </style>
     </main>
