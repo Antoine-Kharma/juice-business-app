@@ -12,17 +12,18 @@ type CartItem = {
   unit_price: number;
 };
 
-type Sale = {
+type POSSale = {
   id?: number;
   juice_name: string;
   quantity: number;
   unit_price: number;
   total_price: number;
   payment_method?: string;
-  sale_type?: string;
   paid_amount?: number;
   change_usd?: number;
   change_lbp?: number;
+  transaction_type?: "SALE" | "REFUND";
+  refunded_sale_id?: number | null;
   created_at?: string;
 };
 
@@ -39,7 +40,7 @@ type CategoryFilter = "All" | "250 ml" | "1 Liter";
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [heldCart, setHeldCart] = useState<CartItem[]>([]);
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [sales, setSales] = useState<POSSale[]>([]);
   const [products, setProducts] = useState<POSProduct[]>([]);
 
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
@@ -124,10 +125,10 @@ export default function POSPage() {
 
   const fetchSales = async () => {
     const { data, error } = await supabase
-      .from("sales")
+      .from("pos_sales")
       .select("*")
       .order("id", { ascending: false })
-      .limit(10);
+      .limit(20);
 
     if (error) {
       alert(error.message);
@@ -280,9 +281,9 @@ export default function POSPage() {
   };
 
   const deleteProduct = async (product: POSProduct) => {
-    const confirmDelete = confirm(
-      `Delete ${formatProductName(product)} from POS?`
-    );
+    const productName = formatProductName(product);
+
+    const confirmDelete = confirm(`Delete ${productName} from POS?`);
 
     if (!confirmDelete) {
       return;
@@ -299,13 +300,11 @@ export default function POSPage() {
     }
 
     setCart((currentCart) =>
-      currentCart.filter((item) => item.juice_name !== formatProductName(product))
+      currentCart.filter((item) => item.juice_name !== productName)
     );
 
     setHeldCart((currentHeldCart) =>
-      currentHeldCart.filter(
-        (item) => item.juice_name !== formatProductName(product)
-      )
+      currentHeldCart.filter((item) => item.juice_name !== productName)
     );
 
     fetchProducts();
@@ -337,16 +336,14 @@ export default function POSPage() {
       quantity: item.quantity,
       unit_price: item.unit_price,
       total_price: item.quantity * item.unit_price,
-      quantity_sold: item.quantity,
-      selling_price: item.unit_price,
       payment_method: paymentMethod,
-      sale_type: "POS",
       paid_amount: paidAmountNumber,
       change_usd: changeUSD,
       change_lbp: changeLBP,
+      transaction_type: "SALE",
     }));
 
-    const { error } = await supabase.from("sales").insert(salesRows);
+    const { error } = await supabase.from("pos_sales").insert(salesRows);
 
     if (error) {
       alert(error.message);
@@ -359,6 +356,203 @@ export default function POSPage() {
     setPaidAmount("");
     setShowPaymentPopup(false);
     fetchSales();
+  };
+
+  const refundSale = async (sale: POSSale) => {
+    if (sale.transaction_type === "REFUND") {
+      alert("This row is already a refund.");
+      return;
+    }
+
+    const alreadyRefunded = sales.some(
+      (item) =>
+        item.transaction_type === "REFUND" &&
+        Number(item.refunded_sale_id) === Number(sale.id)
+    );
+
+    if (alreadyRefunded) {
+      alert("This sale was already refunded.");
+      return;
+    }
+
+    const confirmRefund = confirm(
+      `Refund ${sale.juice_name} for $${Number(sale.total_price || 0).toFixed(
+        2
+      )}?`
+    );
+
+    if (!confirmRefund) {
+      return;
+    }
+
+    const { error } = await supabase.from("pos_sales").insert([
+      {
+        juice_name: sale.juice_name,
+        quantity: -Math.abs(Number(sale.quantity || 0)),
+        unit_price: Number(sale.unit_price || 0),
+        total_price: -Math.abs(Number(sale.total_price || 0)),
+        payment_method: sale.payment_method || "Cash",
+        paid_amount: 0,
+        change_usd: 0,
+        change_lbp: 0,
+        transaction_type: "REFUND",
+        refunded_sale_id: sale.id,
+      },
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    alert("Refund added successfully.");
+    fetchSales();
+  };
+
+  const exportFestivalReport = async () => {
+    const { data, error } = await supabase
+      .from("pos_sales")
+      .select("*")
+      .order("id", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const allSales: POSSale[] = data || [];
+
+    const reportWindow = window.open("", "_blank");
+
+    if (!reportWindow) {
+      alert("Popup blocked. Please allow popups to export the report.");
+      return;
+    }
+
+    const totalSalesAmount = allSales
+      .filter((sale) => sale.transaction_type !== "REFUND")
+      .reduce((sum, sale) => sum + Number(sale.total_price || 0), 0);
+
+    const totalRefunds = allSales
+      .filter((sale) => sale.transaction_type === "REFUND")
+      .reduce((sum, sale) => sum + Math.abs(Number(sale.total_price || 0)), 0);
+
+    const netTotal = totalSalesAmount - totalRefunds;
+
+    const totalBottlesSold = allSales.reduce(
+      (sum, sale) => sum + Number(sale.quantity || 0),
+      0
+    );
+
+    const rows = allSales
+      .map(
+        (sale) => `
+          <tr>
+            <td>${sale.transaction_type || "SALE"}</td>
+            <td>${sale.juice_name}</td>
+            <td>${sale.quantity}</td>
+            <td>$${Number(sale.unit_price || 0).toFixed(2)}</td>
+            <td>$${Number(sale.total_price || 0).toFixed(2)}</td>
+            <td>${sale.payment_method || "-"}</td>
+            <td>${
+              sale.created_at ? new Date(sale.created_at).toLocaleString() : ""
+            }</td>
+          </tr>
+        `
+      )
+      .join("");
+
+    reportWindow.document.write(`
+      <html>
+        <head>
+          <title>POS Festival Report</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 32px;
+              color: #2e4732;
+            }
+
+            h1, h2 {
+              color: #2e4732;
+            }
+
+            .summary {
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 12px;
+              margin-bottom: 30px;
+            }
+
+            .box {
+              border: 1px solid #ddd;
+              padding: 14px;
+              border-radius: 12px;
+            }
+
+            table {
+              width: 100%;
+              border-collapse: collapse;
+            }
+
+            th, td {
+              border-bottom: 1px solid #ddd;
+              padding: 10px;
+              text-align: left;
+            }
+
+            th {
+              background: #eef0df;
+            }
+          </style>
+        </head>
+
+        <body>
+          <h1>SPLASH Juice POS Festival Report</h1>
+
+          <div class="summary">
+            <div class="box"><strong>Total Sales</strong><br/>$${totalSalesAmount.toFixed(
+              2
+            )}</div>
+            <div class="box"><strong>Total Refunds</strong><br/>$${totalRefunds.toFixed(
+              2
+            )}</div>
+            <div class="box"><strong>Net Total</strong><br/>$${netTotal.toFixed(
+              2
+            )}</div>
+            <div class="box"><strong>Bottles Sold</strong><br/>${totalBottlesSold}</div>
+          </div>
+
+          <h2>Transactions</h2>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Payment</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              ${rows}
+            </tbody>
+          </table>
+
+          <script>
+            window.onload = function() {
+              window.print();
+            }
+          </script>
+        </body>
+      </html>
+    `);
+
+    reportWindow.document.close();
   };
 
   return (
@@ -429,6 +623,13 @@ export default function POSPage() {
                     style={editProductsButtonStyle}
                   >
                     Edit
+                  </button>
+
+                  <button
+                    onClick={exportFestivalReport}
+                    style={exportButtonStyle}
+                  >
+                    Export Report
                   </button>
                 </div>
               </div>
@@ -591,6 +792,7 @@ export default function POSPage() {
                 <thead>
                   <tr>
                     {[
+                      "Type",
                       "Product",
                       "Quantity",
                       "Unit Price",
@@ -600,6 +802,7 @@ export default function POSPage() {
                       "Change USD",
                       "Change LBP",
                       "Date & Time",
+                      "Action",
                     ].map((head) => (
                       <th key={head} style={thStyle}>
                         {head}
@@ -609,42 +812,65 @@ export default function POSPage() {
                 </thead>
 
                 <tbody>
-                  {sales.map((sale) => (
-                    <tr key={sale.id}>
-                      <td style={tdStyle}>{sale.juice_name}</td>
-                      <td style={tdStyle}>{sale.quantity}</td>
-                      <td style={tdStyle}>
-                        ${Number(sale.unit_price || 0).toFixed(2)}
-                      </td>
-                      <td style={tdStyle}>
-                        ${Number(sale.total_price || 0).toFixed(2)}
-                      </td>
-                      <td style={tdStyle}>{sale.payment_method || "-"}</td>
-                      <td style={tdStyle}>
-                        {sale.paid_amount !== undefined &&
-                        sale.paid_amount !== null
-                          ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
-                          : "-"}
-                      </td>
-                      <td style={tdStyle}>
-                        {sale.change_usd !== undefined &&
-                        sale.change_usd !== null
-                          ? `$${Number(sale.change_usd || 0).toFixed(2)}`
-                          : "-"}
-                      </td>
-                      <td style={tdStyle}>
-                        {sale.change_lbp !== undefined &&
-                        sale.change_lbp !== null
-                          ? `${Number(sale.change_lbp || 0).toLocaleString()} LBP`
-                          : "-"}
-                      </td>
-                      <td style={tdStyle}>
-                        {sale.created_at
-                          ? new Date(sale.created_at).toLocaleString()
-                          : ""}
-                      </td>
-                    </tr>
-                  ))}
+                  {sales.map((sale) => {
+                    const alreadyRefunded = sales.some(
+                      (item) =>
+                        item.transaction_type === "REFUND" &&
+                        Number(item.refunded_sale_id) === Number(sale.id)
+                    );
+
+                    return (
+                      <tr key={sale.id}>
+                        <td style={tdStyle}>{sale.transaction_type || "SALE"}</td>
+                        <td style={tdStyle}>{sale.juice_name}</td>
+                        <td style={tdStyle}>{sale.quantity}</td>
+                        <td style={tdStyle}>
+                          ${Number(sale.unit_price || 0).toFixed(2)}
+                        </td>
+                        <td style={tdStyle}>
+                          ${Number(sale.total_price || 0).toFixed(2)}
+                        </td>
+                        <td style={tdStyle}>{sale.payment_method || "-"}</td>
+                        <td style={tdStyle}>
+                          {sale.paid_amount !== undefined &&
+                          sale.paid_amount !== null
+                            ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
+                            : "-"}
+                        </td>
+                        <td style={tdStyle}>
+                          {sale.change_usd !== undefined &&
+                          sale.change_usd !== null
+                            ? `$${Number(sale.change_usd || 0).toFixed(2)}`
+                            : "-"}
+                        </td>
+                        <td style={tdStyle}>
+                          {sale.change_lbp !== undefined &&
+                          sale.change_lbp !== null
+                            ? `${Number(sale.change_lbp || 0).toLocaleString()} LBP`
+                            : "-"}
+                        </td>
+                        <td style={tdStyle}>
+                          {sale.created_at
+                            ? new Date(sale.created_at).toLocaleString()
+                            : ""}
+                        </td>
+                        <td style={tdStyle}>
+                          {sale.transaction_type === "REFUND" ? (
+                            <span style={refundLabelStyle}>Refund Row</span>
+                          ) : alreadyRefunded ? (
+                            <span style={refundLabelStyle}>Refunded</span>
+                          ) : (
+                            <button
+                              onClick={() => refundSale(sale)}
+                              style={refundButtonStyle}
+                            >
+                              Refund
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -1144,6 +1370,19 @@ const editProductsButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
+const exportButtonStyle = {
+  padding: "15px 20px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#7aa85a",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
+};
+
 const filterButtonsStyle = {
   display: "flex",
   gap: "10px",
@@ -1468,6 +1707,26 @@ const deleteProductButtonStyle = {
   background: "#ffe6e0",
   color: "#a33",
   cursor: "pointer",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
+};
+
+const refundButtonStyle = {
+  padding: "9px 14px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#ffe6e0",
+  color: "#a33",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
+};
+
+const refundLabelStyle = {
+  background: "#eef0df",
+  color: "#2e4732",
+  padding: "8px 12px",
+  borderRadius: "999px",
   fontWeight: 900,
   fontFamily: "Arial, sans-serif",
 };
