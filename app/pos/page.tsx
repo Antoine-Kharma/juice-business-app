@@ -42,6 +42,9 @@ export default function POSPage() {
   const [heldCart, setHeldCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<POSSale[]>([]);
   const [products, setProducts] = useState<POSProduct[]>([]);
+  const [productPriceEdits, setProductPriceEdits] = useState<
+    Record<number, string>
+  >({});
 
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
   const [searchText, setSearchText] = useState("");
@@ -149,7 +152,15 @@ export default function POSPage() {
       return;
     }
 
-    setProducts(data || []);
+    const productData = data || [];
+    setProducts(productData);
+
+    const priceMap: Record<number, string> = {};
+    productData.forEach((product) => {
+      priceMap[product.id] = String(Number(product.price || 0));
+    });
+
+    setProductPriceEdits(priceMap);
   };
 
   useEffect(() => {
@@ -277,6 +288,46 @@ export default function POSPage() {
     setNewProductPrice("");
     setShowAddProductPopup(false);
 
+    fetchProducts();
+  };
+
+  const updateProductPrice = async (product: POSProduct) => {
+    const newPrice = Number(productPriceEdits[product.id]);
+
+    if (newPrice <= 0) {
+      alert("Please enter a valid price.");
+      return;
+    }
+
+    const oldProductName = formatProductName(product);
+
+    const { error } = await supabase
+      .from("pos_products")
+      .update({ price: newPrice })
+      .eq("id", product.id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setCart((currentCart) =>
+      currentCart.map((item) =>
+        item.juice_name === oldProductName
+          ? { ...item, unit_price: newPrice }
+          : item
+      )
+    );
+
+    setHeldCart((currentHeldCart) =>
+      currentHeldCart.map((item) =>
+        item.juice_name === oldProductName
+          ? { ...item, unit_price: newPrice }
+          : item
+      )
+    );
+
+    alert("Price updated successfully.");
     fetchProducts();
   };
 
@@ -619,17 +670,17 @@ export default function POSPage() {
                   </button>
 
                   <button
-                    onClick={() => setShowEditProductsPopup(true)}
-                    style={editProductsButtonStyle}
-                  >
-                    Edit
-                  </button>
-
-                  <button
                     onClick={exportFestivalReport}
                     style={exportButtonStyle}
                   >
                     Export Report
+                  </button>
+
+                  <button
+                    onClick={() => setShowEditProductsPopup(true)}
+                    style={editProductsButtonStyle}
+                  >
+                    Edit
                   </button>
                 </div>
               </div>
@@ -943,19 +994,39 @@ export default function POSPage() {
                 <div style={editProductsListStyle}>
                   {products.map((product) => (
                     <div key={product.id} style={editProductRowStyle}>
-                      <div>
+                      <div style={{ flex: 1 }}>
                         <strong>{formatProductName(product)}</strong>
-                        <p style={smallTextStyle}>
-                          Price: ${Number(product.price || 0).toFixed(2)}
-                        </p>
+
+                        <label style={editPriceLabelStyle}>Price</label>
+
+                        <input
+                          type="number"
+                          value={productPriceEdits[product.id] || ""}
+                          onChange={(e) =>
+                            setProductPriceEdits((current) => ({
+                              ...current,
+                              [product.id]: e.target.value,
+                            }))
+                          }
+                          style={editPriceInputStyle}
+                        />
                       </div>
 
-                      <button
-                        onClick={() => deleteProduct(product)}
-                        style={deleteProductButtonStyle}
-                      >
-                        Delete
-                      </button>
+                      <div style={editProductActionsStyle}>
+                        <button
+                          onClick={() => updateProductPrice(product)}
+                          style={savePriceButtonStyle}
+                        >
+                          Save
+                        </button>
+
+                        <button
+                          onClick={() => deleteProduct(product)}
+                          style={deleteProductButtonStyle}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1357,12 +1428,12 @@ const addProductButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
-const editProductsButtonStyle = {
+const exportButtonStyle = {
   padding: "15px 20px",
   borderRadius: "999px",
   border: "none",
-  background: "#dfe8cf",
-  color: "#2e4732",
+  background: "#7aa85a",
+  color: "white",
   cursor: "pointer",
   fontWeight: 900,
   fontSize: "14px",
@@ -1370,12 +1441,12 @@ const editProductsButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
-const exportButtonStyle = {
+const editProductsButtonStyle = {
   padding: "15px 20px",
   borderRadius: "999px",
   border: "none",
-  background: "#7aa85a",
-  color: "white",
+  background: "#dfe8cf",
+  color: "#2e4732",
   cursor: "pointer",
   fontWeight: 900,
   fontSize: "14px",
@@ -1613,7 +1684,7 @@ const popupOverlayStyle = {
 
 const popupCardStyle = {
   width: "100%",
-  maxWidth: "520px",
+  maxWidth: "580px",
   background: "#f6f3e8",
   borderRadius: "34px",
   padding: "34px",
@@ -1682,7 +1753,7 @@ const cancelPopupButtonStyle = {
 const editProductsListStyle = {
   display: "grid",
   gap: "12px",
-  maxHeight: "330px",
+  maxHeight: "360px",
   overflowY: "auto" as const,
   paddingRight: "4px",
 };
@@ -1698,6 +1769,44 @@ const editProductRowStyle = {
   gap: "12px",
   fontFamily: "Arial, sans-serif",
   color: "#2e4732",
+};
+
+const editProductActionsStyle = {
+  display: "flex",
+  gap: "8px",
+  alignItems: "center",
+  flexWrap: "wrap" as const,
+};
+
+const editPriceLabelStyle = {
+  display: "block",
+  marginTop: "10px",
+  marginBottom: "6px",
+  color: "#435848",
+  fontSize: "13px",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
+};
+
+const editPriceInputStyle = {
+  width: "120px",
+  padding: "10px",
+  borderRadius: "12px",
+  border: "1px solid #d6d6d6",
+  outline: "none",
+  background: "rgba(255,255,255,0.9)",
+  fontFamily: "Arial, sans-serif",
+};
+
+const savePriceButtonStyle = {
+  padding: "10px 14px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#304638",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontFamily: "Arial, sans-serif",
 };
 
 const deleteProductButtonStyle = {
