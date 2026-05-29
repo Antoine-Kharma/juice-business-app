@@ -644,64 +644,62 @@ export default function POSPage() {
           <section style={posLayoutStyle} className="mainPOSGrid">
             <div style={cardStyle}>
               <div style={sectionHeaderStyle}>
-                <div>
-                  <p style={smallTitleStyle}>PRODUCTS</p>
-                  <h2 style={sectionTitleStyle}>Choose Juice</h2>
-                </div>
+  <div>
+    <p style={smallTitleStyle}>PRODUCTS</p>
+    <h2 style={sectionTitleStyle}>Choose Juice</h2>
+  </div>
 
-                <div
-                  style={productHeaderActionsStyle}
-                  className="productHeaderActionsMobile"
-                >
-                  <input
-                    type="text"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Search product..."
-                    style={searchInputStyle}
-                    className="searchMobile"
-                  />
+  <div
+    style={productHeaderActionsStyle}
+    className="productHeaderActionsMobile"
+  >
+    <input
+      type="text"
+      value={searchText}
+      onChange={(e) => setSearchText(e.target.value)}
+      placeholder="Search product..."
+      style={searchInputStyle}
+      className="searchMobile"
+    />
 
-                  <button
-                    onClick={() => setShowAddProductPopup(true)}
-                    style={addProductButtonStyle}
-                  >
-                    Add Product
-                  </button>
+    <button
+      onClick={() => setShowAddProductPopup(true)}
+      style={addProductButtonStyle}
+    >
+      Add Product
+    </button>
 
-                  <button
-                    onClick={exportFestivalReport}
-                    style={exportButtonStyle}
-                  >
-                    Export Report
-                  </button>
+    <button
+      onClick={() => setShowEditProductsPopup(true)}
+      style={editProductsButtonStyle}
+    >
+      Edit
+    </button>
 
-                  <button
-                    onClick={() => setShowEditProductsPopup(true)}
-                    style={editProductsButtonStyle}
-                  >
-                    Edit
-                  </button>
-                </div>
-              </div>
+    <button
+      onClick={exportFestivalReport}
+      style={exportButtonStyle}
+    >
+      Export Report
+    </button>
+  </div>
+</div>
 
-              <div style={filterButtonsStyle}>
-                {(["All", "250 ml", "1 Liter"] as CategoryFilter[]).map(
-                  (filter) => (
-                    <button
-                      key={filter}
-                      onClick={() => setCategoryFilter(filter)}
-                      style={
-                        categoryFilter === filter
-                          ? activeFilterButtonStyle
-                          : filterButtonStyle
-                      }
-                    >
-                      {filter}
-                    </button>
-                  )
-                )}
-              </div>
+<div style={filterButtonsStyle}>
+  {(["All", "250 ml", "1 Liter"] as CategoryFilter[]).map((filter) => (
+    <button
+      key={filter}
+      onClick={() => setCategoryFilter(filter)}
+      style={
+        categoryFilter === filter
+          ? activeFilterButtonStyle
+          : filterButtonStyle
+      }
+    >
+      {filter}
+    </button>
+  ))}
+</div>
 
               <div style={productsGridStyle} className="productsGridMobile">
                 {filteredProducts.length === 0 ? (
@@ -1458,6 +1456,7 @@ const filterButtonsStyle = {
   display: "flex",
   gap: "10px",
   flexWrap: "wrap" as const,
+  marginTop: "12px",
   marginBottom: "24px",
 };
 
