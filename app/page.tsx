@@ -10,6 +10,7 @@ const products = [
   "Strawberry Lemonade",
   "Strawberry Banana",
   "Straw Mango",
+  "Mango Passion",
 ];
 
 const bottles = [
@@ -22,6 +23,7 @@ const bottles = [
   "/bottles/strawberry-lemonade.png",
   "/bottles/strawberry-banana.png",
   "/bottles/straw-mango.png",
+  "/bottles/straw-mango-passion.png",
 ];
 
 export default function Home() {
