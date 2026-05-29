@@ -218,7 +218,7 @@ export default function SalesPage() {
     "Mango Passion - 1 Liter": {
       Mangos: 0.5,
       Sugar: 0.09,
-      "Passion Fruit": 0.150,
+      "Passion Fruit": 0.300,
       "Bottles 1 Liter": 1,
       Caps: 1,
       "Mango Passion Stickers 1L": 1,
