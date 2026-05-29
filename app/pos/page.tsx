@@ -6,7 +6,7 @@ import ProtectedPage from "../components/ProtectedPage";
 
 const USD_TO_LBP_RATE = 90000;
 
-const products = [
+const defaultProducts = [
   "Orange - 250 ml",
   "Orange - 1 Liter",
   "Strawberry Banana - 250 ml",
@@ -27,7 +27,6 @@ const products = [
   "Carrot - 1 Liter",
 ];
 
-// Add your fixed festival prices here before starting the event.
 const productPrices: Record<string, number> = {
   "Orange - 250 ml": 5,
   "Orange - 1 Liter": 10,
@@ -215,21 +214,65 @@ type Sale = {
   created_at?: string;
 };
 
+type POSProduct = {
+  id?: number;
+  name: string;
+  size: string;
+  price: number;
+  created_at?: string;
+};
+
 type CategoryFilter = "All" | "250 ml" | "1 Liter";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [heldCart, setHeldCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
+  const [customProducts, setCustomProducts] = useState<POSProduct[]>([]);
 
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
   const [searchText, setSearchText] = useState("");
 
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
+  const [showAddProductPopup, setShowAddProductPopup] = useState(false);
+
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [paidAmount, setPaidAmount] = useState("");
 
-  const filteredProducts = products.filter((item) => {
+  const [newProductName, setNewProductName] = useState("");
+  const [newProductSize, setNewProductSize] = useState("250 ml");
+  const [newProductPrice, setNewProductPrice] = useState("");
+
+  const formatCustomProductName = (product: POSProduct) => {
+    return `${product.name} - ${product.size}`;
+  };
+
+  const allProducts = useMemo(() => {
+    return [
+      ...defaultProducts,
+      ...customProducts.map((product) => formatCustomProductName(product)),
+    ];
+  }, [customProducts]);
+
+  const getProductPrice = (productName: string) => {
+    const customProduct = customProducts.find(
+      (product) => formatCustomProductName(product) === productName
+    );
+
+    if (customProduct) {
+      return Number(customProduct.price || 0);
+    }
+
+    return Number(productPrices[productName] || 0);
+  };
+
+  const isCustomProduct = (productName: string) => {
+    return customProducts.some(
+      (product) => formatCustomProductName(product) === productName
+    );
+  };
+
+  const filteredProducts = allProducts.filter((item) => {
     const matchesCategory =
       categoryFilter === "All" ||
       item.toLowerCase().includes(categoryFilter.toLowerCase());
@@ -303,12 +346,27 @@ export default function POSPage() {
     setSales(data || []);
   };
 
+  const fetchCustomProducts = async () => {
+    const { data, error } = await supabase
+      .from("pos_products")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setCustomProducts(data || []);
+  };
+
   useEffect(() => {
     fetchSales();
+    fetchCustomProducts();
   }, []);
 
   const addToCart = (productName: string) => {
-    const price = productPrices[productName] || 0;
+    const price = getProductPrice(productName);
 
     setCart((currentCart) => {
       const existingItem = currentCart.find(
@@ -389,6 +447,46 @@ export default function POSPage() {
     setHeldCart([]);
   };
 
+  const handleAddProduct = async () => {
+    const trimmedName = newProductName.trim();
+    const priceNumber = Number(newProductPrice);
+
+    if (!trimmedName) {
+      alert("Please enter the product name.");
+      return;
+    }
+
+    if (!newProductSize) {
+      alert("Please select the size.");
+      return;
+    }
+
+    if (priceNumber <= 0) {
+      alert("Please enter a valid price.");
+      return;
+    }
+
+    const { error } = await supabase.from("pos_products").insert([
+      {
+        name: trimmedName,
+        size: newProductSize,
+        price: priceNumber,
+      },
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setNewProductName("");
+    setNewProductSize("250 ml");
+    setNewProductPrice("");
+    setShowAddProductPopup(false);
+
+    fetchCustomProducts();
+  };
+
   const openPaymentPopup = () => {
     if (cart.length === 0) {
       alert("Cart is empty.");
@@ -416,6 +514,10 @@ export default function POSPage() {
       const recipe = recipes[cartItem.juice_name];
 
       if (!recipe) {
+        if (isCustomProduct(cartItem.juice_name)) {
+          continue;
+        }
+
         alert(`Recipe not found for ${cartItem.juice_name}`);
         return;
       }
@@ -542,14 +644,26 @@ export default function POSPage() {
                   <h2 style={sectionTitleStyle}>Choose Juice</h2>
                 </div>
 
-                <input
-                  type="text"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                  placeholder="Search product..."
-                  style={searchInputStyle}
-                  className="searchMobile"
-                />
+                <div
+                  style={productHeaderActionsStyle}
+                  className="productHeaderActionsMobile"
+                >
+                  <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search product..."
+                    style={searchInputStyle}
+                    className="searchMobile"
+                  />
+
+                  <button
+                    onClick={() => setShowAddProductPopup(true)}
+                    style={addProductButtonStyle}
+                  >
+                    Add Product
+                  </button>
+                </div>
               </div>
 
               <div style={filterButtonsStyle}>
@@ -579,13 +693,13 @@ export default function POSPage() {
                     className="productCardMobile"
                   >
                     <div style={bottleIconStyle} className="bottleIconMobile">
-  🍹
-                </div>
+                      🍹
+                    </div>
 
                     <div style={{ textAlign: "left" }}>
                       <h3 style={productNameStyle}>{productName}</h3>
                       <p style={productPriceStyle}>
-                        ${Number(productPrices[productName] || 0).toFixed(2)}
+                        ${getProductPrice(productName).toFixed(2)}
                       </p>
                     </div>
                   </button>
@@ -608,7 +722,11 @@ export default function POSPage() {
                   <p style={emptyTextStyle}>No products added yet.</p>
                 ) : (
                   cart.map((item) => (
-                    <div key={item.juice_name} style={cartItemStyle} className="cartItemMobile">
+                    <div
+                      key={item.juice_name}
+                      style={cartItemStyle}
+                      className="cartItemMobile"
+                    >
                       <div>
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
@@ -621,7 +739,10 @@ export default function POSPage() {
                         </p>
                       </div>
 
-                     <div style={quantityControlStyle} className="quantityMobile">
+                      <div
+                        style={quantityControlStyle}
+                        className="quantityMobile"
+                      >
                         <button
                           onClick={() => decreaseQuantity(item.juice_name)}
                           style={qtyButtonStyle}
@@ -754,6 +875,61 @@ export default function POSPage() {
           </section>
         </div>
 
+        {showAddProductPopup && (
+          <div style={popupOverlayStyle}>
+            <div style={popupCardStyle}>
+              <h2 style={popupTitleStyle}>Add Product</h2>
+
+              <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Name</label>
+                <input
+                  type="text"
+                  value={newProductName}
+                  onChange={(e) => setNewProductName(e.target.value)}
+                  placeholder="Example: Orange"
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Size</label>
+                <select
+                  value={newProductSize}
+                  onChange={(e) => setNewProductSize(e.target.value)}
+                  style={inputStyle}
+                >
+                  <option value="250 ml">250 ml</option>
+                  <option value="1 Liter">1 Liter</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Price</label>
+                <input
+                  type="number"
+                  value={newProductPrice}
+                  onChange={(e) => setNewProductPrice(e.target.value)}
+                  placeholder="Example: 5"
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={popupButtonsStyle}>
+                <button
+                  onClick={() => setShowAddProductPopup(false)}
+                  style={cancelPopupButtonStyle}
+                >
+                  Cancel
+                </button>
+
+                <button onClick={handleAddProduct} style={confirmButtonStyle}>
+                  Save Product
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showPaymentPopup && (
           <div style={popupOverlayStyle}>
             <div style={popupCardStyle}>
@@ -845,134 +1021,138 @@ export default function POSPage() {
         )}
 
         <style>
-  {`
-    @media (max-width: 1100px) {
-      .mainPOSGrid {
-        grid-template-columns: 1fr !important;
-      }
-    }
+          {`
+            @media (max-width: 1100px) {
+              .mainPOSGrid {
+                grid-template-columns: 1fr !important;
+              }
+            }
 
-    @media (max-width: 850px) {
-      main {
-        padding: 14px !important;
-      }
+            @media (max-width: 850px) {
+              main {
+                padding: 14px !important;
+              }
 
-      section {
-        padding: 20px !important;
-        border-radius: 24px !important;
-      }
+              section {
+                padding: 20px !important;
+                border-radius: 24px !important;
+              }
 
-      h1 {
-        font-size: 42px !important;
-      }
+              h1 {
+                font-size: 42px !important;
+              }
 
-      h2 {
-        font-size: 28px !important;
-      }
+              h2 {
+                font-size: 28px !important;
+              }
 
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
+              table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+              }
 
-      input,
-      select,
-      button {
-        box-sizing: border-box;
-      }
-    }
+              input,
+              select,
+              button {
+                box-sizing: border-box;
+              }
+            }
 
-    @media (max-width: 600px) {
-      main {
-        padding: 10px !important;
-      }
+            @media (max-width: 600px) {
+              main {
+                padding: 10px !important;
+              }
 
-      section {
-        padding: 16px !important;
-        border-radius: 22px !important;
-      }
+              section {
+                padding: 16px !important;
+                border-radius: 22px !important;
+              }
 
-      h1 {
-        font-size: 34px !important;
-        line-height: 1.05 !important;
-      }
+              h1 {
+                font-size: 34px !important;
+                line-height: 1.05 !important;
+              }
 
-      h2 {
-        font-size: 26px !important;
-      }
+              h2 {
+                font-size: 26px !important;
+              }
 
-      .mainPOSGrid {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 16px !important;
-      }
+              .mainPOSGrid {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 16px !important;
+              }
 
-      .productsGridMobile {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 10px !important;
-      }
+              .productsGridMobile {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+              }
 
-      .productCardMobile {
-        padding: 12px !important;
-        border-radius: 18px !important;
-        gap: 8px !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-      }
+              .productCardMobile {
+                padding: 12px !important;
+                border-radius: 18px !important;
+                gap: 8px !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+              }
 
-      .productCardMobile h3 {
-        font-size: 13px !important;
-        line-height: 1.25 !important;
-      }
+              .productCardMobile h3 {
+                font-size: 13px !important;
+                line-height: 1.25 !important;
+              }
 
-      .productCardMobile p {
-        font-size: 13px !important;
-      }
+              .productCardMobile p {
+                font-size: 13px !important;
+              }
 
-      .bottleIconMobile {
-        width: 42px !important;
-        height: 42px !important;
-        font-size: 22px !important;
-      }
+              .bottleIconMobile {
+                width: 42px !important;
+                height: 42px !important;
+                font-size: 22px !important;
+              }
 
-      .cartItemMobile {
-        flex-direction: column !important;
-        align-items: flex-start !important;
-      }
+              .cartItemMobile {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+              }
 
-      .quantityMobile {
-        width: 100% !important;
-        justify-content: space-between !important;
-        margin-top: 10px !important;
-      }
+              .quantityMobile {
+                width: 100% !important;
+                justify-content: space-between !important;
+                margin-top: 10px !important;
+              }
 
-      .posActionsMobile {
-        grid-template-columns: 1fr !important;
-      }
+              .posActionsMobile {
+                grid-template-columns: 1fr !important;
+              }
 
-      .summaryGridMobile {
-        grid-template-columns: 1fr !important;
-        width: 100% !important;
-      }
+              .summaryGridMobile {
+                grid-template-columns: 1fr !important;
+                width: 100% !important;
+              }
 
-      .searchMobile {
-        max-width: 100% !important;
-        width: 100% !important;
-      }
-    }
+              .searchMobile {
+                max-width: 100% !important;
+                width: 100% !important;
+              }
 
-    @media (max-width: 420px) {
-      h1 {
-        font-size: 30px !important;
-      }
+              .productHeaderActionsMobile {
+                width: 100% !important;
+              }
+            }
 
-      .productsGridMobile {
-        grid-template-columns: 1fr !important;
-      }
-    }
-  `}
-</style>
+            @media (max-width: 420px) {
+              h1 {
+                font-size: 30px !important;
+              }
+
+              .productsGridMobile {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          `}
+        </style>
       </main>
     </ProtectedPage>
   );
@@ -1112,6 +1292,26 @@ const searchInputStyle = {
   ...inputStyle,
   maxWidth: "260px",
   marginTop: 0,
+};
+
+const productHeaderActionsStyle = {
+  display: "flex",
+  gap: "12px",
+  alignItems: "center",
+  flexWrap: "wrap" as const,
+};
+
+const addProductButtonStyle = {
+  padding: "15px 20px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#304638",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
 };
 
 const filterButtonsStyle = {
