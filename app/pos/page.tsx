@@ -6,194 +6,6 @@ import ProtectedPage from "../components/ProtectedPage";
 
 const USD_TO_LBP_RATE = 90000;
 
-const defaultProducts = [
-  "Orange - 250 ml",
-  "Orange - 1 Liter",
-  "Strawberry Banana - 250 ml",
-  "Strawberry Banana - 1 Liter",
-  "Strawberry Lemonade - 250 ml",
-  "Strawberry Lemonade - 1 Liter",
-  "Lemonade - 250 ml",
-  "Lemonade - 1 Liter",
-  "Pomegranate - 250 ml",
-  "Pomegranate - 1 Liter",
-  "Minted Lemonade - 250 ml",
-  "Minted Lemonade - 1 Liter",
-  "Straw Mango - 250 ml",
-  "Straw Mango - 1 Liter",
-  "Mango - 250 ml",
-  "Mango - 1 Liter",
-  "Carrot - 250 ml",
-  "Carrot - 1 Liter",
-];
-
-const productPrices: Record<string, number> = {
-  "Orange - 250 ml": 5,
-  "Orange - 1 Liter": 10,
-  "Strawberry Banana - 250 ml": 0,
-  "Strawberry Banana - 1 Liter": 0,
-  "Strawberry Lemonade - 250 ml": 0,
-  "Strawberry Lemonade - 1 Liter": 0,
-  "Lemonade - 250 ml": 0,
-  "Lemonade - 1 Liter": 0,
-  "Pomegranate - 250 ml": 0,
-  "Pomegranate - 1 Liter": 0,
-  "Minted Lemonade - 250 ml": 0,
-  "Minted Lemonade - 1 Liter": 0,
-  "Straw Mango - 250 ml": 0,
-  "Straw Mango - 1 Liter": 0,
-  "Mango - 250 ml": 0,
-  "Mango - 1 Liter": 0,
-  "Carrot - 250 ml": 0,
-  "Carrot - 1 Liter": 0,
-};
-
-const recipes: Record<string, Record<string, number>> = {
-  "Pomegranate - 250 ml": {
-    "Frozen Pomegranates": 0.4,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Pomegranate Stickers 250ML": 1,
-  },
-
-  "Pomegranate - 1 Liter": {
-    "Frozen Pomegranates": 1.6,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Pomegranate Stickers 1L": 1,
-  },
-
-  "Orange - 250 ml": {
-    Oranges: 0.7,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Orange Stickers 250ML": 1,
-  },
-
-  "Orange - 1 Liter": {
-    Oranges: 2.8,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Orange Stickers 1L": 1,
-  },
-
-  "Carrot - 250 ml": {
-    Carrots: 0.7,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Carrot Stickers 250ML": 1,
-  },
-
-  "Carrot - 1 Liter": {
-    Carrots: 2.8,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Carrot Stickers 1L": 1,
-  },
-
-  "Lemonade - 250 ml": {
-    Lemons: 0.33,
-    Sugar: 0.05,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Lemonade Stickers 250ML": 1,
-  },
-
-  "Lemonade - 1 Liter": {
-    Lemons: 1.32,
-    Sugar: 0.2,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Lemonade Stickers 1L": 1,
-  },
-
-  "Minted Lemonade - 250 ml": {
-    Lemons: 0.33,
-    Sugar: 0.05,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Minted Lemonade Stickers 250ML": 1,
-  },
-
-  "Minted Lemonade - 1 Liter": {
-    Lemons: 1.32,
-    Sugar: 0.2,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Minted Lemonade Stickers 1L": 1,
-  },
-
-  "Strawberry Lemonade - 250 ml": {
-    Lemons: 0.25,
-    Strawberries: 0.042,
-    Sugar: 0.043,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Strawberry Lemonade Stickers 250ML": 1,
-  },
-
-  "Strawberry Lemonade - 1 Liter": {
-    Lemons: 1,
-    Strawberries: 0.17,
-    Sugar: 0.172,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Strawberry Lemonade Stickers 1L": 1,
-  },
-
-  "Strawberry Banana - 250 ml": {
-    Strawberries: 0.17,
-    Bananas: 0.1,
-    Sugar: 0.02,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Strawberry Banana Stickers 250ML": 1,
-  },
-
-  "Strawberry Banana - 1 Liter": {
-    Strawberries: 0.68,
-    Bananas: 0.4,
-    Sugar: 0.08,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Strawberry Banana Stickers 1L": 1,
-  },
-
-  "Mango - 250 ml": {
-    Mangos: 0.125,
-    Sugar: 0.023,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Mango Stickers 250ML": 1,
-  },
-
-  "Mango - 1 Liter": {
-    Mangos: 0.5,
-    Sugar: 0.09,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Mango Stickers 1L": 1,
-  },
-
-  "Straw Mango - 250 ml": {
-    Mangos: 0.063,
-    Strawberries: 0.084,
-    Sugar: 0.022,
-    "Bottles 250 ml": 1,
-    Caps: 1,
-    "Straw Mango Stickers 250ML": 1,
-  },
-
-  "Straw Mango - 1 Liter": {
-    Mangos: 0.25,
-    Strawberries: 0.336,
-    Sugar: 0.088,
-    "Bottles 1 Liter": 1,
-    Caps: 1,
-    "Straw Mango Stickers 1L": 1,
-  },
-};
-
 type CartItem = {
   juice_name: string;
   quantity: number;
@@ -215,7 +27,7 @@ type Sale = {
 };
 
 type POSProduct = {
-  id?: number;
+  id: number;
   name: string;
   size: string;
   price: number;
@@ -228,13 +40,14 @@ export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [heldCart, setHeldCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
-  const [customProducts, setCustomProducts] = useState<POSProduct[]>([]);
+  const [products, setProducts] = useState<POSProduct[]>([]);
 
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
   const [searchText, setSearchText] = useState("");
 
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
   const [showAddProductPopup, setShowAddProductPopup] = useState(false);
+  const [showEditProductsPopup, setShowEditProductsPopup] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [paidAmount, setPaidAmount] = useState("");
@@ -243,41 +56,19 @@ export default function POSPage() {
   const [newProductSize, setNewProductSize] = useState("250 ml");
   const [newProductPrice, setNewProductPrice] = useState("");
 
-  const formatCustomProductName = (product: POSProduct) => {
+  const formatProductName = (product: POSProduct) => {
     return `${product.name} - ${product.size}`;
   };
 
-  const allProducts = useMemo(() => {
-    return [
-      ...defaultProducts,
-      ...customProducts.map((product) => formatCustomProductName(product)),
-    ];
-  }, [customProducts]);
+  const filteredProducts = products.filter((product) => {
+    const fullName = formatProductName(product);
 
-  const getProductPrice = (productName: string) => {
-    const customProduct = customProducts.find(
-      (product) => formatCustomProductName(product) === productName
-    );
-
-    if (customProduct) {
-      return Number(customProduct.price || 0);
-    }
-
-    return Number(productPrices[productName] || 0);
-  };
-
-  const isCustomProduct = (productName: string) => {
-    return customProducts.some(
-      (product) => formatCustomProductName(product) === productName
-    );
-  };
-
-  const filteredProducts = allProducts.filter((item) => {
     const matchesCategory =
-      categoryFilter === "All" ||
-      item.toLowerCase().includes(categoryFilter.toLowerCase());
+      categoryFilter === "All" || product.size === categoryFilter;
 
-    const matchesSearch = item.toLowerCase().includes(searchText.toLowerCase());
+    const matchesSearch = fullName
+      .toLowerCase()
+      .includes(searchText.toLowerCase());
 
     return matchesCategory && matchesSearch;
   });
@@ -346,7 +137,7 @@ export default function POSPage() {
     setSales(data || []);
   };
 
-  const fetchCustomProducts = async () => {
+  const fetchProducts = async () => {
     const { data, error } = await supabase
       .from("pos_products")
       .select("*")
@@ -357,16 +148,17 @@ export default function POSPage() {
       return;
     }
 
-    setCustomProducts(data || []);
+    setProducts(data || []);
   };
 
   useEffect(() => {
     fetchSales();
-    fetchCustomProducts();
+    fetchProducts();
   }, []);
 
-  const addToCart = (productName: string) => {
-    const price = getProductPrice(productName);
+  const addToCart = (product: POSProduct) => {
+    const productName = formatProductName(product);
+    const price = Number(product.price || 0);
 
     setCart((currentCart) => {
       const existingItem = currentCart.find(
@@ -484,7 +276,39 @@ export default function POSPage() {
     setNewProductPrice("");
     setShowAddProductPopup(false);
 
-    fetchCustomProducts();
+    fetchProducts();
+  };
+
+  const deleteProduct = async (product: POSProduct) => {
+    const confirmDelete = confirm(
+      `Delete ${formatProductName(product)} from POS?`
+    );
+
+    if (!confirmDelete) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from("pos_products")
+      .delete()
+      .eq("id", product.id);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setCart((currentCart) =>
+      currentCart.filter((item) => item.juice_name !== formatProductName(product))
+    );
+
+    setHeldCart((currentHeldCart) =>
+      currentHeldCart.filter(
+        (item) => item.juice_name !== formatProductName(product)
+      )
+    );
+
+    fetchProducts();
   };
 
   const openPaymentPopup = () => {
@@ -506,70 +330,6 @@ export default function POSPage() {
     if (paidAmountNumber < cartTotal) {
       alert("Paid amount is less than the total amount.");
       return;
-    }
-
-    const neededInventory: Record<string, number> = {};
-
-    for (const cartItem of cart) {
-      const recipe = recipes[cartItem.juice_name];
-
-      if (!recipe) {
-        if (isCustomProduct(cartItem.juice_name)) {
-          continue;
-        }
-
-        alert(`Recipe not found for ${cartItem.juice_name}`);
-        return;
-      }
-
-      for (const itemName in recipe) {
-        neededInventory[itemName] =
-          (neededInventory[itemName] || 0) +
-          recipe[itemName] * cartItem.quantity;
-      }
-    }
-
-    const inventoryUpdates: { id: number; quantity: number }[] = [];
-
-    for (const itemName in neededInventory) {
-      const neededQuantity = neededInventory[itemName];
-
-      const { data: inventoryItem, error: fetchError } = await supabase
-        .from("inventory")
-        .select("*")
-        .eq("item_name", itemName)
-        .single();
-
-      if (fetchError || !inventoryItem) {
-        alert(`${itemName} not found in inventory`);
-        return;
-      }
-
-      const newStock = Number(
-        (Number(inventoryItem.quantity || 0) - neededQuantity).toFixed(3)
-      );
-
-      if (newStock < 0) {
-        alert(`Not enough stock for ${itemName}`);
-        return;
-      }
-
-      inventoryUpdates.push({
-        id: inventoryItem.id,
-        quantity: newStock,
-      });
-    }
-
-    for (const update of inventoryUpdates) {
-      const { error: updateError } = await supabase
-        .from("inventory")
-        .update({ quantity: update.quantity })
-        .eq("id", update.id);
-
-      if (updateError) {
-        alert(updateError.message);
-        return;
-      }
     }
 
     const salesRows = cart.map((item) => ({
@@ -663,6 +423,13 @@ export default function POSPage() {
                   >
                     Add Product
                   </button>
+
+                  <button
+                    onClick={() => setShowEditProductsPopup(true)}
+                    style={editProductsButtonStyle}
+                  >
+                    Edit
+                  </button>
                 </div>
               </div>
 
@@ -685,25 +452,34 @@ export default function POSPage() {
               </div>
 
               <div style={productsGridStyle} className="productsGridMobile">
-                {filteredProducts.map((productName) => (
-                  <button
-                    key={productName}
-                    onClick={() => addToCart(productName)}
-                    style={productCardStyle}
-                    className="productCardMobile"
-                  >
-                    <div style={bottleIconStyle} className="bottleIconMobile">
-                      🍹
-                    </div>
+                {filteredProducts.length === 0 ? (
+                  <p style={emptyTextStyle}>
+                    No products yet. Press Add Product to create your festival
+                    menu.
+                  </p>
+                ) : (
+                  filteredProducts.map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => addToCart(product)}
+                      style={productCardStyle}
+                      className="productCardMobile"
+                    >
+                      <div style={bottleIconStyle} className="bottleIconMobile">
+                        🍹
+                      </div>
 
-                    <div style={{ textAlign: "left" }}>
-                      <h3 style={productNameStyle}>{productName}</h3>
-                      <p style={productPriceStyle}>
-                        ${getProductPrice(productName).toFixed(2)}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+                      <div style={{ textAlign: "left" }}>
+                        <h3 style={productNameStyle}>
+                          {formatProductName(product)}
+                        </h3>
+                        <p style={productPriceStyle}>
+                          ${Number(product.price || 0).toFixed(2)}
+                        </p>
+                      </div>
+                    </button>
+                  ))
+                )}
               </div>
             </div>
 
@@ -924,6 +700,47 @@ export default function POSPage() {
 
                 <button onClick={handleAddProduct} style={confirmButtonStyle}>
                   Save Product
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {showEditProductsPopup && (
+          <div style={popupOverlayStyle}>
+            <div style={popupCardStyle}>
+              <h2 style={popupTitleStyle}>Edit Products</h2>
+
+              {products.length === 0 ? (
+                <p style={emptyTextStyle}>No products to edit yet.</p>
+              ) : (
+                <div style={editProductsListStyle}>
+                  {products.map((product) => (
+                    <div key={product.id} style={editProductRowStyle}>
+                      <div>
+                        <strong>{formatProductName(product)}</strong>
+                        <p style={smallTextStyle}>
+                          Price: ${Number(product.price || 0).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={() => deleteProduct(product)}
+                        style={deleteProductButtonStyle}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div style={{ marginTop: "20px" }}>
+                <button
+                  onClick={() => setShowEditProductsPopup(false)}
+                  style={confirmButtonStyle}
+                >
+                  Done
                 </button>
               </div>
             </div>
@@ -1314,6 +1131,19 @@ const addProductButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
+const editProductsButtonStyle = {
+  padding: "15px 20px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#dfe8cf",
+  color: "#2e4732",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
+};
+
 const filterButtonsStyle = {
   display: "flex",
   gap: "10px",
@@ -1607,6 +1437,38 @@ const cancelPopupButtonStyle = {
   cursor: "pointer",
   fontWeight: 900,
   fontSize: "16px",
+  fontFamily: "Arial, sans-serif",
+};
+
+const editProductsListStyle = {
+  display: "grid",
+  gap: "12px",
+  maxHeight: "330px",
+  overflowY: "auto" as const,
+  paddingRight: "4px",
+};
+
+const editProductRowStyle = {
+  background: "rgba(255,255,255,0.75)",
+  border: "1px solid rgba(48,70,56,0.1)",
+  borderRadius: "18px",
+  padding: "14px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "12px",
+  fontFamily: "Arial, sans-serif",
+  color: "#2e4732",
+};
+
+const deleteProductButtonStyle = {
+  padding: "10px 14px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#ffe6e0",
+  color: "#a33",
+  cursor: "pointer",
+  fontWeight: 900,
   fontFamily: "Arial, sans-serif",
 };
 
