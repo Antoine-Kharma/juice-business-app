@@ -22,6 +22,7 @@ const itemOptions = [
   { name: "Frozen Pomegranates", category: "Fruit", unit: "Kg" },
   { name: "Mangos", category: "Fruit", unit: "Kg" },
   { name: "Carrots", category: "Fruit", unit: "Kg" },
+  { name: "Passion Fruit", category: "Fruit", unit: "Kg" },
   { name: "Mints", category: "Ingredient", unit: "Pc" },
   { name: "Sugar", category: "Ingredient", unit: "Kg" },
   { name: "Water", category: "Ingredient", unit: "Liter" },
@@ -37,6 +38,7 @@ const itemOptions = [
   { name: "Carrot Stickers 250ML", category: "Packaging", unit: "Pc" },
   { name: "Pomegranate Stickers 250ML", category: "Packaging", unit: "Pc" },
   { name: "Straw Mango Stickers 250ML", category: "Packaging", unit: "Pc" },
+  { name: "Mango Passion Stickers 250ML", category: "Packaging", unit: "Pc" },
   { name: "Orange Stickers 1L", category: "Packaging", unit: "Pc" },
   { name: "Strawberry Banana Stickers 1L", category: "Packaging", unit: "Pc" },
   { name: "Strawberry Lemonade Stickers 1L", category: "Packaging", unit: "Pc" },
@@ -46,6 +48,7 @@ const itemOptions = [
   { name: "Carrot Stickers 1L", category: "Packaging", unit: "Pc" },
   { name: "Pomegranate Stickers 1L", category: "Packaging", unit: "Pc" },
   { name: "Straw Mango Stickers 1L", category: "Packaging", unit: "Pc" },
+  { name: "Mango Passion Stickers 1L", category: "Packaging", unit: "Pc" },
 
 ];
 

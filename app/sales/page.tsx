@@ -23,6 +23,8 @@ const products = [
   "Mango - 1 Liter",
   "Carrot - 250 ml",
   "Carrot - 1 Liter",
+  "Mango Passion - 250 ml",
+  "Mango Passion - 1 Liter",
 ];
 
 type Sale = {
@@ -203,6 +205,23 @@ export default function SalesPage() {
       "Bottles 1 Liter": 1,
       Caps: 1,
       "Straw Mango Stickers 1L": 1,
+    },
+
+    "Mango Passion - 250 ml": {
+      Mangos: 0.125,
+      Sugar: 0.023,
+      "Passion Fruit": 0.075,
+      "Bottles 250 ml": 1,
+      Caps: 1,
+      "Mango Passion Stickers 250ML": 1,
+    },
+    "Mango Passion - 1 Liter": {
+      Mangos: 0.5,
+      Sugar: 0.09,
+      "Passion Fruit": 0.150,
+      "Bottles 1 Liter": 1,
+      Caps: 1,
+      "Mango Passion Stickers 1L": 1,
     },
   };
     const recipe = recipes[product];
