@@ -643,63 +643,65 @@ export default function POSPage() {
 
           <section style={posLayoutStyle} className="mainPOSGrid">
             <div style={cardStyle}>
-              <div style={sectionHeaderStyle}>
-  <div>
-    <p style={smallTitleStyle}>PRODUCTS</p>
-    <h2 style={sectionTitleStyle}>Choose Juice</h2>
-  </div>
+              <div style={productsHeaderBlockStyle}>
+                <div>
+                  <p style={smallTitleStyle}>PRODUCTS</p>
+                  <h2 style={sectionTitleStyle}>Choose Juice</h2>
+                </div>
 
-  <div
-    style={productHeaderActionsStyle}
-    className="productHeaderActionsMobile"
-  >
-    <input
-      type="text"
-      value={searchText}
-      onChange={(e) => setSearchText(e.target.value)}
-      placeholder="Search product..."
-      style={searchInputStyle}
-      className="searchMobile"
-    />
+                <div
+                  style={productHeaderActionsStyle}
+                  className="productHeaderActionsMobile"
+                >
+                  <input
+                    type="text"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                    placeholder="Search product..."
+                    style={searchInputStyle}
+                    className="searchMobile"
+                  />
 
-    <button
-      onClick={() => setShowAddProductPopup(true)}
-      style={addProductButtonStyle}
-    >
-      Add Product
-    </button>
+                  <button
+                    onClick={() => setShowAddProductPopup(true)}
+                    style={addProductButtonStyle}
+                  >
+                    Add Product
+                  </button>
 
-    <button
-      onClick={() => setShowEditProductsPopup(true)}
-      style={editProductsButtonStyle}
-    >
-      Edit
-    </button>
+                  <button
+                    onClick={() => setShowEditProductsPopup(true)}
+                    style={editProductsButtonStyle}
+                  >
+                    Edit
+                  </button>
 
-    <button
-      onClick={exportFestivalReport}
-      style={exportButtonStyle}
-    >
-      Export Report
-    </button>
-  </div>
-</div>
+                  <button
+                    onClick={exportFestivalReport}
+                    style={exportButtonStyle}
+                  >
+                    Export Report
+                  </button>
+                </div>
 
-<div style={filterButtonsStyle}>
-  {(["All", "250 ml", "1 Liter"] as CategoryFilter[]).map((filter) => (
-    <button
-      key={filter}
-      onClick={() => setCategoryFilter(filter)}
-      style={
-        categoryFilter === filter
-          ? activeFilterButtonStyle
-          : filterButtonStyle
-      }
-    >
-      {filter}
-    </button>
-  ))}
-</div>
+                <div style={filterButtonsStyle}>
+                  {(["All", "250 ml", "1 Liter"] as CategoryFilter[]).map(
+                    (filter) => (
+                      <button
+                        key={filter}
+                        onClick={() => setCategoryFilter(filter)}
+                        style={
+                          categoryFilter === filter
+                            ? activeFilterButtonStyle
+                            : filterButtonStyle
+                        }
+                      >
+                        {filter}
+                      </button>
+                    )
+                  )}
+                </div>
+              </div>
 
               <div style={productsGridStyle} className="productsGridMobile">
                 {filteredProducts.length === 0 ? (
@@ -870,7 +872,9 @@ export default function POSPage() {
 
                     return (
                       <tr key={sale.id}>
-                        <td style={tdStyle}>{sale.transaction_type || "SALE"}</td>
+                        <td style={tdStyle}>
+                          {sale.transaction_type || "SALE"}
+                        </td>
                         <td style={tdStyle}>{sale.juice_name}</td>
                         <td style={tdStyle}>{sale.quantity}</td>
                         <td style={tdStyle}>
@@ -895,7 +899,9 @@ export default function POSPage() {
                         <td style={tdStyle}>
                           {sale.change_lbp !== undefined &&
                           sale.change_lbp !== null
-                            ? `${Number(sale.change_lbp || 0).toLocaleString()} LBP`
+                            ? `${Number(
+                                sale.change_lbp || 0
+                              ).toLocaleString()} LBP`
                             : "-"}
                         </td>
                         <td style={tdStyle}>
@@ -1376,6 +1382,12 @@ const sectionHeaderStyle = {
   marginBottom: "22px",
 };
 
+const productsHeaderBlockStyle = {
+  display: "grid",
+  gap: "18px",
+  marginBottom: "24px",
+};
+
 const sectionTitleStyle = {
   margin: "8px 0 0",
   color: "#2e4732",
@@ -1426,19 +1438,6 @@ const addProductButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
-const exportButtonStyle = {
-  padding: "15px 20px",
-  borderRadius: "999px",
-  border: "none",
-  background: "#7aa85a",
-  color: "white",
-  cursor: "pointer",
-  fontWeight: 900,
-  fontSize: "14px",
-  fontFamily: "Arial, sans-serif",
-  whiteSpace: "nowrap" as const,
-};
-
 const editProductsButtonStyle = {
   padding: "15px 20px",
   borderRadius: "999px",
@@ -1452,12 +1451,23 @@ const editProductsButtonStyle = {
   whiteSpace: "nowrap" as const,
 };
 
+const exportButtonStyle = {
+  padding: "15px 18px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#7aa85a",
+  color: "white",
+  cursor: "pointer",
+  fontWeight: 900,
+  fontSize: "14px",
+  fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
+};
+
 const filterButtonsStyle = {
   display: "flex",
   gap: "10px",
   flexWrap: "wrap" as const,
-  marginTop: "12px",
-  marginBottom: "24px",
 };
 
 const filterButtonStyle = {
