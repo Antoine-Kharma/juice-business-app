@@ -35,7 +35,7 @@ type POSProduct = {
   created_at?: string;
 };
 
-type CategoryFilter = "All" | "250 ml" | "1 Liter";
+type CategoryFilter = "All" | "250 ml" | "330 ml" | "1 Liter";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -956,6 +956,7 @@ export default function POSPage() {
                   style={inputStyle}
                 >
                   <option value="250 ml">250 ml</option>
+                  <option value="330 ml">330 ml</option>
                   <option value="1 Liter">1 Liter</option>
                 </select>
               </div>
