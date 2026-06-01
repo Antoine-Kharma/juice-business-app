@@ -26,6 +26,9 @@ const bottles = [
   "/bottles/straw-mango-passion.png",
 ];
 
+const SLIDE_TIME_SECONDS = 3;
+const SLIDESHOW_DURATION = bottles.length * SLIDE_TIME_SECONDS;
+
 export default function Home() {
   return (
     <main
@@ -37,15 +40,15 @@ export default function Home() {
         color: "#304638",
       }}
     >
-              <section
-          className="heroSection"
-          style={{
-            minHeight: "620px",
-            position: "relative",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-          }}
-        >
+      <section
+        className="heroSection"
+        style={{
+          minHeight: "620px",
+          position: "relative",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+        }}
+      >
         <div
           className="heroBackground"
           style={{
@@ -167,7 +170,6 @@ export default function Home() {
             flavors made daily with premium ingredients and smooth packaging.
           </p>
         </div>
-  
 
         <div className="heroBottleArea">
           <h2 className="verticalText">Fresh Juice</h2>
@@ -177,9 +179,12 @@ export default function Home() {
               <img
                 key={bottle}
                 src={bottle}
-                alt="SPLASH Juice Bottle"
+                alt={`SPLASH Juice Bottle ${index + 1}`}
                 className="bottleImage"
-                style={{ animationDelay: `${index * 3}s` }}
+                style={{
+                  animationDuration: `${SLIDESHOW_DURATION}s`,
+                  animationDelay: `${index * SLIDE_TIME_SECONDS}s`,
+                }}
               />
             ))}
           </div>
@@ -297,15 +302,37 @@ export default function Home() {
             object-fit: contain;
             opacity: 0;
             filter: drop-shadow(0 35px 45px rgba(37,62,39,0.35));
-            animation: bottleFade 21s infinite;
+            animation-name: bottleFade;
+            animation-timing-function: ease-in-out;
+            animation-iteration-count: infinite;
+            animation-fill-mode: both;
           }
 
           @keyframes bottleFade {
-            0% { opacity: 0; transform: translateY(20px) scale(0.96); }
-            5% { opacity: 1; transform: translateY(0) scale(1); }
-            14% { opacity: 1; transform: translateY(0) scale(1); }
-            19% { opacity: 0; transform: translateY(-20px) scale(0.96); }
-            100% { opacity: 0; }
+            0% {
+              opacity: 0;
+              transform: translateY(20px) scale(0.96);
+            }
+
+            3% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+
+            9% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+            }
+
+            12% {
+              opacity: 0;
+              transform: translateY(-20px) scale(0.96);
+            }
+
+            100% {
+              opacity: 0;
+              transform: translateY(-20px) scale(0.96);
+            }
           }
 
           @keyframes floatBottle {
@@ -320,49 +347,38 @@ export default function Home() {
 
           @media (max-width: 850px) {
             .heroSection {
-              min-height: auto !important;
-              height: auto !important;
+              min-height: 520px !important;
+              height: 520px !important;
               display: grid !important;
-              grid-template-columns: 1fr 1fr !important;
+              grid-template-columns: 58% 42% !important;
             }
 
             .heroContent {
-              padding: 95px 20px 35px 20px !important;
+              padding: 85px 10px 20px 20px !important;
               max-width: 100% !important;
             }
 
             .heroTitle {
-              font-size: 34px !important;
+              font-size: 30px !important;
               line-height: 1.08 !important;
             }
 
             .heroText {
-              font-size: 11px !important;
-              line-height: 1.6 !important;
-              max-width: 260px !important;
-              margin-top: 16px !important;
-            }
-
-            .heroButtons {
-              gap: 8px !important;
-              margin-top: 20px !important;
-              flex-wrap: wrap !important;
-            }
-
-            .heroButtons a {
-              padding: 10px 14px !important;
-              font-size: 11px !important;
+              font-size: 10px !important;
+              line-height: 1.5 !important;
+              max-width: 210px !important;
+              margin-top: 14px !important;
             }
 
             .heroBottleArea {
-              min-height: 430px !important;
-              height: 430px !important;
-              padding-top: 80px !important;
+              height: 520px !important;
+              min-height: 520px !important;
+              padding-top: 120px !important;
             }
 
             .bottleSlider {
-              width: 210px !important;
-              height: 310px !important;
+              width: 145px !important;
+              height: 230px !important;
             }
 
             .verticalText {
@@ -396,7 +412,7 @@ export default function Home() {
             }
 
             .productsTitle {
-              font-size: 28px !important;
+              font-size: 26px !important;
             }
 
             .productsGrid {
@@ -424,22 +440,9 @@ export default function Home() {
           }
 
           @media (max-width: 430px) {
-            .heroSection {
-              grid-template-columns: 58% 42% !important;
-            }
-
             .heroContent {
               padding-top: 90px !important;
               padding-right: 8px !important;
-            }
-
-            .heroTitle {
-              font-size: 30px !important;
-            }
-
-            .heroText {
-              font-size: 10px !important;
-              max-width: 210px !important;
             }
 
             .heroBottleArea {
@@ -467,59 +470,6 @@ export default function Home() {
               height: 120px !important;
             }
           }
-            @media (max-width: 850px) {
-          .heroSection {
-            min-height: 520px !important;
-            height: 520px !important;
-            grid-template-columns: 58% 42% !important;
-          }
-
-          .heroContent {
-            padding: 85px 10px 20px 20px !important;
-          }
-
-          .heroTitle {
-            font-size: 30px !important;
-            line-height: 1.08 !important;
-          }
-
-          .heroText {
-            font-size: 10px !important;
-            line-height: 1.5 !important;
-            max-width: 210px !important;
-            margin-top: 14px !important;
-          }
-
-          .heroButtons {
-            margin-top: 16px !important;
-            gap: 7px !important;
-          }
-
-          .heroButtons a {
-            padding: 9px 12px !important;
-            font-size: 10px !important;
-          }
-
-          .heroBottleArea {
-            height: 520px !important;
-            min-height: 520px !important;
-            padding-top: 120px !important;
-          }
-
-          .bottleSlider {
-            width: 145px !important;
-            height: 230px !important;
-          }
-
-          .productsSection {
-            margin-top: 0 !important;
-            padding-top: 24px !important;
-          }
-
-          .productsTitle {
-            font-size: 26px !important;
-          }
-        }
         `}
       </style>
     </main>
