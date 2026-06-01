@@ -852,7 +852,6 @@ export default function POSPage() {
                       "Payment",
                       "Paid",
                       "Change USD",
-                      "Change LBP",
                       "Date & Time",
                     ].map((head) => (
                       <th key={head} style={thStyle}>
@@ -906,25 +905,14 @@ export default function POSPage() {
                         <td style={tdStyle}>{sale.payment_method || "-"}</td>
 
                         <td style={tdStyle}>
-                          {sale.paid_amount !== undefined &&
-                          sale.paid_amount !== null
+                          {sale.paid_amount !== undefined && sale.paid_amount !== null
                             ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
                             : "-"}
                         </td>
 
                         <td style={tdStyle}>
-                          {sale.change_usd !== undefined &&
-                          sale.change_usd !== null
+                          {sale.change_usd !== undefined && sale.change_usd !== null
                             ? `$${Number(sale.change_usd || 0).toFixed(2)}`
-                            : "-"}
-                        </td>
-
-                        <td style={tdStyle}>
-                          {sale.change_lbp !== undefined &&
-                          sale.change_lbp !== null
-                            ? `${Number(
-                                sale.change_lbp || 0
-                              ).toLocaleString()} LBP`
                             : "-"}
                         </td>
 
