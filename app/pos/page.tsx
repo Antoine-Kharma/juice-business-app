@@ -57,7 +57,7 @@ export default function POSPage() {
   const [paidAmount, setPaidAmount] = useState("");
 
   const [newProductName, setNewProductName] = useState("");
-  const [newProductSize, setNewProductSize] = useState("250 ml");
+  const [newProductSize, setNewProductSize] = useState("330 ml");
   const [newProductPrice, setNewProductPrice] = useState("");
 
   const formatProductName = (product: POSProduct) => {
@@ -284,7 +284,7 @@ export default function POSPage() {
     }
 
     setNewProductName("");
-    setNewProductSize("250 ml");
+    setNewProductSize("330 ml");
     setNewProductPrice("");
     setShowAddProductPopup(false);
 
@@ -685,7 +685,7 @@ export default function POSPage() {
                 </div>
 
                 <div style={filterButtonsStyle}>
-                  {(["All", "250 ml", "1 Liter"] as CategoryFilter[]).map(
+                  {(["All", "250 ml", "330 ml", "1 Liter"] as CategoryFilter[]).map(
                     (filter) => (
                       <button
                         key={filter}
