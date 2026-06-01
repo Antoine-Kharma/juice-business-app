@@ -828,7 +828,10 @@ export default function POSPage() {
             </div>
           </section>
 
-          <section style={{ ...cardStyle, marginTop: "30px" }}>
+          <section
+            className="latestSalesSection"
+            style={{ ...cardStyle, marginTop: "30px" }}
+          >
             <div style={sectionHeaderStyle}>
               <div>
                 <p style={smallTitleStyle}>RECENT POS SALES</p>
@@ -839,7 +842,8 @@ export default function POSPage() {
             {sales.length === 0 ? (
               <p style={emptyTextStyle}>No sales added yet.</p>
             ) : (
-              <table style={tableStyle}>
+              <div className="latestSalesTableWrap" style={tableWrapperStyle}>
+                <table style={tableStyle}>
                 <thead>
                   <tr>
                     {[
@@ -926,6 +930,7 @@ export default function POSPage() {
                   })}
                 </tbody>
               </table>
+              </div>
             )}
           </section>
         </div>
@@ -1268,7 +1273,44 @@ export default function POSPage() {
                 grid-template-columns: 1fr !important;
               }
             }
+              .latestSalesTableWrap {
+  margin-left: -18px;
+  width: calc(100% + 36px);
+}
+
+@media (max-width: 850px) {
+  .latestSalesTableWrap {
+    margin-left: -20px !important;
+    width: calc(100% + 40px) !important;
+  }
+
+  .latestSalesTableWrap table {
+    font-size: 13px !important;
+  }
+
+  .latestSalesTableWrap th,
+  .latestSalesTableWrap td {
+    padding: 10px !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .latestSalesTableWrap {
+    margin-left: -16px !important;
+    width: calc(100% + 32px) !important;
+  }
+
+  .latestSalesTableWrap table {
+    font-size: 12px !important;
+  }
+
+  .latestSalesTableWrap th,
+  .latestSalesTableWrap td {
+    padding: 8px !important;
+  }
+}
           `}
+          
         </style>
       </main>
     </ProtectedPage>
@@ -1873,4 +1915,9 @@ const tdStyle = {
 const actionTdStyle = {
   ...tdStyle,
   whiteSpace: "nowrap" as const,
+};
+
+const tableWrapperStyle = {
+  width: "100%",
+  overflowX: "auto" as const,
 };
