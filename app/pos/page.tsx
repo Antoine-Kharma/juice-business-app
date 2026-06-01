@@ -844,6 +844,7 @@ export default function POSPage() {
                   <tr>
                     {[
                       "Type",
+                      "Action",
                       "Product",
                       "Quantity",
                       "Unit Price",
@@ -853,7 +854,6 @@ export default function POSPage() {
                       "Change USD",
                       "Change LBP",
                       "Date & Time",
-                      "Action",
                     ].map((head) => (
                       <th key={head} style={thStyle}>
                         {head}
@@ -875,41 +875,8 @@ export default function POSPage() {
                         <td style={tdStyle}>
                           {sale.transaction_type || "SALE"}
                         </td>
-                        <td style={tdStyle}>{sale.juice_name}</td>
-                        <td style={tdStyle}>{sale.quantity}</td>
-                        <td style={tdStyle}>
-                          ${Number(sale.unit_price || 0).toFixed(2)}
-                        </td>
-                        <td style={tdStyle}>
-                          ${Number(sale.total_price || 0).toFixed(2)}
-                        </td>
-                        <td style={tdStyle}>{sale.payment_method || "-"}</td>
-                        <td style={tdStyle}>
-                          {sale.paid_amount !== undefined &&
-                          sale.paid_amount !== null
-                            ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
-                            : "-"}
-                        </td>
-                        <td style={tdStyle}>
-                          {sale.change_usd !== undefined &&
-                          sale.change_usd !== null
-                            ? `$${Number(sale.change_usd || 0).toFixed(2)}`
-                            : "-"}
-                        </td>
-                        <td style={tdStyle}>
-                          {sale.change_lbp !== undefined &&
-                          sale.change_lbp !== null
-                            ? `${Number(
-                                sale.change_lbp || 0
-                              ).toLocaleString()} LBP`
-                            : "-"}
-                        </td>
-                        <td style={tdStyle}>
-                          {sale.created_at
-                            ? new Date(sale.created_at).toLocaleString()
-                            : ""}
-                        </td>
-                        <td style={tdStyle}>
+
+                        <td style={actionTdStyle}>
                           {sale.transaction_type === "REFUND" ? (
                             <span style={refundLabelStyle}>Refund Row</span>
                           ) : alreadyRefunded ? (
@@ -922,6 +889,49 @@ export default function POSPage() {
                               Refund
                             </button>
                           )}
+                        </td>
+
+                        <td style={tdStyle}>{sale.juice_name}</td>
+
+                        <td style={tdStyle}>{sale.quantity}</td>
+
+                        <td style={tdStyle}>
+                          ${Number(sale.unit_price || 0).toFixed(2)}
+                        </td>
+
+                        <td style={tdStyle}>
+                          ${Number(sale.total_price || 0).toFixed(2)}
+                        </td>
+
+                        <td style={tdStyle}>{sale.payment_method || "-"}</td>
+
+                        <td style={tdStyle}>
+                          {sale.paid_amount !== undefined &&
+                          sale.paid_amount !== null
+                            ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
+                            : "-"}
+                        </td>
+
+                        <td style={tdStyle}>
+                          {sale.change_usd !== undefined &&
+                          sale.change_usd !== null
+                            ? `$${Number(sale.change_usd || 0).toFixed(2)}`
+                            : "-"}
+                        </td>
+
+                        <td style={tdStyle}>
+                          {sale.change_lbp !== undefined &&
+                          sale.change_lbp !== null
+                            ? `${Number(
+                                sale.change_lbp || 0
+                              ).toLocaleString()} LBP`
+                            : "-"}
+                        </td>
+
+                        <td style={tdStyle}>
+                          {sale.created_at
+                            ? new Date(sale.created_at).toLocaleString()
+                            : ""}
                         </td>
                       </tr>
                     );
@@ -1831,7 +1841,7 @@ const deleteProductButtonStyle = {
 };
 
 const refundButtonStyle = {
-  padding: "9px 14px",
+  padding: "9px 16px",
   borderRadius: "999px",
   border: "none",
   background: "#ffe6e0",
@@ -1839,6 +1849,7 @@ const refundButtonStyle = {
   cursor: "pointer",
   fontWeight: 900,
   fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
 };
 
 const refundLabelStyle = {
@@ -1848,6 +1859,8 @@ const refundLabelStyle = {
   borderRadius: "999px",
   fontWeight: 900,
   fontFamily: "Arial, sans-serif",
+  whiteSpace: "nowrap" as const,
+  display: "inline-block",
 };
 
 const tableStyle = {
@@ -1867,4 +1880,9 @@ const tdStyle = {
   padding: "14px",
   borderBottom: "1px solid rgba(48,70,56,0.1)",
   color: "#435848",
+};
+
+const actionTdStyle = {
+  ...tdStyle,
+  whiteSpace: "nowrap" as const,
 };
