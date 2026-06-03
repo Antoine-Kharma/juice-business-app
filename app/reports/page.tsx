@@ -45,7 +45,7 @@ type SortOption =
   | "highestTotal"
   | "productAZ";
 
-type ChartMode = "weekly" | "weeks" | "monthly";
+type ChartMode = "weekly"   | "monthly";
 
 const juiceOptions = [
   "Orange - 250 ml",
@@ -86,7 +86,6 @@ export default function ReportsPage() {
 
   const [chartMode, setChartMode] = useState<ChartMode>("weekly");
   const [weeklySales, setWeeklySales] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
-  const [fourWeekSales, setFourWeekSales] = useState<number[]>([0, 0, 0, 0]);
   const [monthlySales, setMonthlySales] = useState<number[]>([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
@@ -209,7 +208,6 @@ export default function ReportsPage() {
       .sort((a, b) => b.quantity - a.quantity);
 
     const weekly = [0, 0, 0, 0, 0, 0, 0];
-    const fourWeeks = [0, 0, 0, 0];
     const monthly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
     sales.forEach((sale) => {
@@ -217,10 +215,6 @@ export default function ReportsPage() {
 
       const day = saleDate.getDay();
       weekly[day] += Number(sale.total_price || 0);
-
-      const dateOfMonth = saleDate.getDate();
-      const weekIndex = Math.min(Math.floor((dateOfMonth - 1) / 7), 3);
-      fourWeeks[weekIndex] += Number(sale.total_price || 0);
 
       const monthIndex = saleDate.getMonth();
       monthly[monthIndex] += Number(sale.total_price || 0);
@@ -235,7 +229,6 @@ export default function ReportsPage() {
       inventory.filter((item) => Number(item.quantity || 0) <= 0).length
     );
     setWeeklySales(weekly);
-    setFourWeekSales(fourWeeks);
     setMonthlySales(monthly);
     setTopProducts(breakdown.slice(0, 5));
     setProductBreakdown(breakdown);
@@ -349,19 +342,12 @@ export default function ReportsPage() {
     ...Array.from(new Set(salesReport.map((sale) => sale.juice_name))),
   ];
 
-  const chartValues =
-    chartMode === "weekly"
-      ? weeklySales
-      : chartMode === "weeks"
-      ? fourWeekSales
-      : monthlySales;
+  const chartValues = chartMode === "weekly" ? weeklySales : monthlySales;
 
   const chartLabels =
-    chartMode === "weekly"
-      ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-      : chartMode === "weeks"
-      ? ["Week 1", "Week 2", "Week 3", "Week 4"]
-      : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  chartMode === "weekly"
+    ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const totalReturnedBottles = returns.reduce(
     (sum, item) => sum + Number(item.quantity_returned || 0),
@@ -859,11 +845,7 @@ export default function ReportsPage() {
             <div style={cardStyle}>
               <div style={sectionHeaderRowStyle}>
                 <h2 style={sectionTitleStyle}>
-                  {chartMode === "weekly"
-                    ? "Weekly Sales Chart"
-                    : chartMode === "weeks"
-                    ? "Sales Per Week"
-                    : "Monthly Sales Chart"}
+                  {chartMode === "weekly" ? "Weekly Sales Chart" : "Monthly Sales Chart"}
                 </h2>
 
                 <div style={chartSwitchStyle}>
@@ -876,17 +858,6 @@ export default function ReportsPage() {
                     onClick={() => setChartMode("weekly")}
                   >
                     Weekly
-                  </button>
-
-                  <button
-                    style={
-                      chartMode === "weeks"
-                        ? activeChartButtonStyle
-                        : chartButtonStyle
-                    }
-                    onClick={() => setChartMode("weeks")}
-                  >
-                    4 Weeks
                   </button>
 
                   <button
