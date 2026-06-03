@@ -675,13 +675,6 @@ export default function POSPage() {
                   >
                     Edit
                   </button>
-
-                  <button
-                    onClick={exportFestivalReport}
-                    style={exportButtonStyle}
-                  >
-                    Export Report
-                  </button>
                 </div>
 
                 <div style={filterButtonsStyle}>
@@ -737,13 +730,13 @@ export default function POSPage() {
 
             <div style={cardStyle}>
               <div style={sectionHeaderStyle}>
-                <div>
-                  <p style={smallTitleStyle}>CURRENT CART</p>
-                  <h2 style={sectionTitleStyle}>Order</h2>
-                </div>
-
-                <div style={cartCountStyle}>{totalBottles} bottles</div>
+              <div>
+                <p style={smallTitleStyle}>CURRENT CART</p>
+                <h2 style={sectionTitleStyle}>Order</h2>
               </div>
+
+              <div style={cartCountStyle}>{totalBottles} bottles</div>
+            </div>
 
               <div style={{ display: "grid", gap: "14px" }}>
                 {cart.length === 0 ? (
@@ -833,11 +826,18 @@ export default function POSPage() {
             style={{ ...cardStyle, marginTop: "30px" }}
           >
             <div style={sectionHeaderStyle}>
-              <div>
-                <p style={smallTitleStyle}>RECENT POS SALES</p>
-                <h2 style={sectionTitleStyle}>Latest Sales</h2>
-              </div>
+            <div>
+              <p style={smallTitleStyle}>RECENT POS SALES</p>
+              <h2 style={sectionTitleStyle}>Latest Sales</h2>
             </div>
+
+            <button
+              onClick={exportFestivalReport}
+              style={exportButtonStyle}
+            >
+              Export Report
+            </button>
+          </div>
 
             {sales.length === 0 ? (
               <p style={emptyTextStyle}>No sales added yet.</p>
