@@ -278,29 +278,37 @@ export default function ReportsPage() {
     fetchReportsData(startDate, endDate);
   };
 
-  const applyQuickFilter = (type: "today" | "month" | "year") => {
-    const today = new Date();
-    let start = new Date();
+  const formatDateForInput = (date: Date) => {
+  return date.toISOString().split("T")[0];
+};
 
-    if (type === "today") {
-      start = today;
-    }
+const applyQuickFilter = (type: "today" | "month" | "year") => {
+  const today = new Date();
+  let start = new Date();
+  let end = new Date();
 
-    if (type === "month") {
-      start = new Date(today.getFullYear(), today.getMonth(), 1);
-    }
+  if (type === "today") {
+    start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  }
 
-    if (type === "year") {
-      start = new Date(today.getFullYear(), 0, 1);
-    }
+  if (type === "month") {
+    start = new Date(today.getFullYear(), today.getMonth(), 1);
+    end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  }
 
-    const startValue = start.toISOString().split("T")[0];
-    const endValue = today.toISOString().split("T")[0];
+  if (type === "year") {
+    start = new Date(today.getFullYear(), 0, 1);
+    end = new Date(today.getFullYear(), 11, 31);
+  }
 
-    setStartDate(startValue);
-    setEndDate(endValue);
-    fetchReportsData(startValue, endValue);
-  };
+  const startValue = formatDateForInput(start);
+  const endValue = formatDateForInput(end);
+
+  setStartDate(startValue);
+  setEndDate(endValue);
+  fetchReportsData(startValue, endValue);
+};
 
   const filteredSalesReport = salesReport
     .filter((sale) => {
