@@ -768,7 +768,22 @@ export default function ReportsPage() {
           </section>
 
           <section style={{ ...cardStyle, marginBottom: "24px" }}>
+          <div style={filterHeaderStyle}>
             <h2 style={sectionTitleStyle}>Filter Reports</h2>
+
+            <div style={exportButtonsGroupStyle}>
+              <button style={smallButtonStyle} onClick={exportPDF}>
+                Export PDF
+              </button>
+
+              <button
+                style={{ ...smallButtonStyle, background: "#7aa85a" }}
+                onClick={exportExcel}
+              >
+                Export Excel
+              </button>
+            </div>
+          </div>
 
             <div style={quickFilterStyle}>
               <button style={quickButtonStyle} onClick={() => applyQuickFilter("today")}>
@@ -816,21 +831,6 @@ export default function ReportsPage() {
                 Reset
               </button>
             </div>
-          </section>
-
-          <section style={compactExportStyle}>
-            <span style={exportTextStyle}>Export current filtered report</span>
-
-            <button style={smallButtonStyle} onClick={exportPDF}>
-              Export PDF
-            </button>
-
-            <button
-              style={{ ...smallButtonStyle, background: "#7aa85a" }}
-              onClick={exportExcel}
-            >
-              Export Excel
-            </button>
           </section>
 
           <section style={statsGridStyle}>
@@ -1409,27 +1409,6 @@ const returnFormGridStyle = {
   alignItems: "end",
 };
 
-const compactExportStyle = {
-  background: "rgba(255,255,255,0.72)",
-  backdropFilter: "blur(14px)",
-  padding: "18px 24px",
-  borderRadius: "26px",
-  boxShadow: "0 12px 28px rgba(0,0,0,0.06)",
-  border: "1px solid rgba(255,255,255,0.7)",
-  marginBottom: "34px",
-  display: "flex",
-  alignItems: "center",
-  gap: "14px",
-  flexWrap: "wrap" as const,
-};
-
-const exportTextStyle = {
-  color: "#2e4732",
-  fontWeight: 900,
-  fontFamily: "Arial, sans-serif",
-  marginRight: "8px",
-};
-
 const chartWrapperStyle = {
   display: "flex",
   alignItems: "flex-end",
@@ -1564,4 +1543,19 @@ const tdStyle = {
   padding: "14px",
   borderBottom: "1px solid rgba(48,70,56,0.1)",
   color: "#435848",
+};
+
+const filterHeaderStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "16px",
+  flexWrap: "wrap" as const,
+  marginBottom: "24px",
+};
+
+const exportButtonsGroupStyle = {
+  display: "flex",
+  gap: "12px",
+  flexWrap: "wrap" as const,
 };
