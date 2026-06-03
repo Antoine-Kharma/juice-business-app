@@ -45,7 +45,7 @@ type SortOption =
   | "highestTotal"
   | "productAZ";
 
-type ChartMode = "weekly"   | "monthly";
+type ChartMode = "weekly" | "monthly";
 
 const juiceOptions = [
   "Orange - 250 ml",
@@ -68,6 +68,14 @@ const juiceOptions = [
   "Straw Mango - 1 Liter",
 ];
 
+const formatDateForInput = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 export default function ReportsPage() {
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -85,7 +93,9 @@ export default function ReportsPage() {
   const [returnNote, setReturnNote] = useState("");
 
   const [chartMode, setChartMode] = useState<ChartMode>("weekly");
-  const [weeklySales, setWeeklySales] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+  const [weeklySales, setWeeklySales] = useState<number[]>([
+    0, 0, 0, 0, 0, 0, 0,
+  ]);
   const [monthlySales, setMonthlySales] = useState<number[]>([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
@@ -104,11 +114,14 @@ export default function ReportsPage() {
   const [startDate, setStartDate] = useState(() => {
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    return firstDay.toISOString().split("T")[0];
+
+    return formatDateForInput(firstDay);
   });
 
   const [endDate, setEndDate] = useState(() => {
-    return new Date().toISOString().split("T")[0];
+    const today = new Date();
+
+    return formatDateForInput(today);
   });
 
   const fetchReportsData = async (
@@ -185,7 +198,8 @@ export default function ReportsPage() {
       0
     );
 
-    const productMap: Record<string, { quantity: number; revenue: number }> = {};
+    const productMap: Record<string, { quantity: number; revenue: number }> =
+      {};
 
     sales.forEach((sale) => {
       if (!productMap[sale.juice_name]) {
@@ -278,37 +292,35 @@ export default function ReportsPage() {
     fetchReportsData(startDate, endDate);
   };
 
-  const formatDateForInput = (date: Date) => {
-  return date.toISOString().split("T")[0];
-};
+  const applyQuickFilter = (type: "today" | "month" | "year") => {
+    const today = new Date();
 
-const applyQuickFilter = (type: "today" | "month" | "year") => {
-  const today = new Date();
-  let start = new Date();
-  let end = new Date();
+    let start = new Date(today);
+    let end = new Date(today);
 
-  if (type === "today") {
-    start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-  }
+    if (type === "today") {
+      start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    }
 
-  if (type === "month") {
-    start = new Date(today.getFullYear(), today.getMonth(), 1);
-    end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  }
+    if (type === "month") {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+      end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
 
-  if (type === "year") {
-    start = new Date(today.getFullYear(), 0, 1);
-    end = new Date(today.getFullYear(), 11, 31);
-  }
+    if (type === "year") {
+      start = new Date(today.getFullYear(), 0, 1);
+      end = new Date(today.getFullYear(), 11, 31);
+    }
 
-  const startValue = formatDateForInput(start);
-  const endValue = formatDateForInput(end);
+    const startValue = formatDateForInput(start);
+    const endValue = formatDateForInput(end);
 
-  setStartDate(startValue);
-  setEndDate(endValue);
-  fetchReportsData(startValue, endValue);
-};
+    setStartDate(startValue);
+    setEndDate(endValue);
+
+    fetchReportsData(startValue, endValue);
+  };
 
   const filteredSalesReport = salesReport
     .filter((sale) => {
@@ -353,9 +365,22 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
   const chartValues = chartMode === "weekly" ? weeklySales : monthlySales;
 
   const chartLabels =
-  chartMode === "weekly"
-    ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    chartMode === "weekly"
+      ? ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      : [
+          "Jan",
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+        ];
 
   const totalReturnedBottles = returns.reduce(
     (sum, item) => sum + Number(item.quantity_returned || 0),
@@ -611,134 +636,131 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
   };
 
   const exportExcel = () => {
-  const workbook = XLSX.utils.book_new();
+    const workbook = XLSX.utils.book_new();
 
-  const summaryData = [
-    ["SPLASH Juice Report"],
-    [`From ${startDate} to ${endDate}`],
-    [],
-    ["Summary"],
-    ["Revenue", totalRevenue],
-    ["Expenses", totalExpenses],
-    ["Net Profit", netProfit],
-    ["Orders", totalOrders],
-    ["Best Seller", bestSeller],
-    ["Out of Stock", outOfStock],
-    ["Returned Bottles", totalReturnedBottles],
-    ["Most Returned", mostReturnedProduct],
-    ["Top Return Store", storeWithMostReturns],
-  ];
+    const summaryData = [
+      ["SPLASH Juice Report"],
+      [`From ${startDate} to ${endDate}`],
+      [],
+      ["Summary"],
+      ["Revenue", totalRevenue],
+      ["Expenses", totalExpenses],
+      ["Net Profit", netProfit],
+      ["Orders", totalOrders],
+      ["Best Seller", bestSeller],
+      ["Out of Stock", outOfStock],
+      ["Returned Bottles", totalReturnedBottles],
+      ["Most Returned", mostReturnedProduct],
+      ["Top Return Store", storeWithMostReturns],
+    ];
 
-  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
 
-  summarySheet["!cols"] = [
-    { wch: 28 },
-    { wch: 22 },
-    { wch: 22 },
-    { wch: 22 },
-  ];
+    summarySheet["!cols"] = [
+      { wch: 28 },
+      { wch: 22 },
+      { wch: 22 },
+      { wch: 22 },
+    ];
 
-  XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
+    XLSX.utils.book_append_sheet(workbook, summarySheet, "Summary");
 
-  const productBreakdownData = [
-    ["Product", "Quantity Sold", "Revenue"],
-    ...productBreakdown.map((product) => [
-      product.name,
-      product.quantity,
-      product.revenue,
-    ]),
-  ];
+    const productBreakdownData = [
+      ["Product", "Quantity Sold", "Revenue"],
+      ...productBreakdown.map((product) => [
+        product.name,
+        product.quantity,
+        product.revenue,
+      ]),
+    ];
 
-  const productSheet = XLSX.utils.aoa_to_sheet(productBreakdownData);
+    const productSheet = XLSX.utils.aoa_to_sheet(productBreakdownData);
 
-  productSheet["!cols"] = [
-    { wch: 32 },
-    { wch: 18 },
-    { wch: 18 },
-  ];
+    productSheet["!cols"] = [
+      { wch: 32 },
+      { wch: 18 },
+      { wch: 18 },
+    ];
 
-  XLSX.utils.book_append_sheet(
-    workbook,
-    productSheet,
-    "Product Breakdown"
-  );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      productSheet,
+      "Product Breakdown"
+    );
 
-  const salesData = [
-    ["Product", "Quantity", "Unit Price", "Total", "Date"],
-    ...filteredSalesReport.map((sale) => [
-      sale.juice_name,
-      sale.quantity,
-      Number(sale.unit_price || 0),
-      Number(sale.total_price || 0),
-      sale.created_at ? new Date(sale.created_at).toLocaleString() : "",
-    ]),
-  ];
+    const salesData = [
+      ["Product", "Quantity", "Unit Price", "Total", "Date"],
+      ...filteredSalesReport.map((sale) => [
+        sale.juice_name,
+        sale.quantity,
+        Number(sale.unit_price || 0),
+        Number(sale.total_price || 0),
+        sale.created_at ? new Date(sale.created_at).toLocaleString() : "",
+      ]),
+    ];
 
-  const salesSheet = XLSX.utils.aoa_to_sheet(salesData);
+    const salesSheet = XLSX.utils.aoa_to_sheet(salesData);
 
-  salesSheet["!cols"] = [
-    { wch: 32 },
-    { wch: 12 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 24 },
-  ];
+    salesSheet["!cols"] = [
+      { wch: 32 },
+      { wch: 12 },
+      { wch: 14 },
+      { wch: 14 },
+      { wch: 24 },
+    ];
 
-  XLSX.utils.book_append_sheet(workbook, salesSheet, "Sales Report");
+    XLSX.utils.book_append_sheet(workbook, salesSheet, "Sales Report");
 
-  const returnsData = [
-    ["Store", "Product", "Returned Quantity", "Reason", "Note", "Date"],
-    ...returns.map((item) => [
-      item.store_name,
-      item.juice_name,
-      Number(item.quantity_returned || 0),
-      item.reason || "",
-      item.note || "",
-      item.created_at ? new Date(item.created_at).toLocaleString() : "",
-    ]),
-  ];
+    const returnsData = [
+      ["Store", "Product", "Returned Quantity", "Reason", "Note", "Date"],
+      ...returns.map((item) => [
+        item.store_name,
+        item.juice_name,
+        Number(item.quantity_returned || 0),
+        item.reason || "",
+        item.note || "",
+        item.created_at ? new Date(item.created_at).toLocaleString() : "",
+      ]),
+    ];
 
-  const returnsSheet = XLSX.utils.aoa_to_sheet(returnsData);
+    const returnsSheet = XLSX.utils.aoa_to_sheet(returnsData);
 
-  returnsSheet["!cols"] = [
-    { wch: 28 },
-    { wch: 32 },
-    { wch: 20 },
-    { wch: 18 },
-    { wch: 45 },
-    { wch: 24 },
-  ];
+    returnsSheet["!cols"] = [
+      { wch: 28 },
+      { wch: 32 },
+      { wch: 20 },
+      { wch: 18 },
+      { wch: 45 },
+      { wch: 24 },
+    ];
 
-  XLSX.utils.book_append_sheet(workbook, returnsSheet, "Returns Report");
+    XLSX.utils.book_append_sheet(workbook, returnsSheet, "Returns Report");
 
-  const expensesData = [
-    ["Item", "Category", "Amount", "Date"],
-    ...expensesReport.map((expense) => [
-      expense.item_name,
-      expense.category || "",
-      Number(expense.paid_amount || 0),
-      expense.created_at
-        ? new Date(expense.created_at).toLocaleString()
-        : "",
-    ]),
-  ];
+    const expensesData = [
+      ["Item", "Category", "Amount", "Date"],
+      ...expensesReport.map((expense) => [
+        expense.item_name,
+        expense.category || "",
+        Number(expense.paid_amount || 0),
+        expense.created_at
+          ? new Date(expense.created_at).toLocaleString()
+          : "",
+      ]),
+    ];
 
-  const expensesSheet = XLSX.utils.aoa_to_sheet(expensesData);
+    const expensesSheet = XLSX.utils.aoa_to_sheet(expensesData);
 
-  expensesSheet["!cols"] = [
-    { wch: 28 },
-    { wch: 18 },
-    { wch: 14 },
-    { wch: 24 },
-  ];
+    expensesSheet["!cols"] = [
+      { wch: 28 },
+      { wch: 18 },
+      { wch: 14 },
+      { wch: 24 },
+    ];
 
-  XLSX.utils.book_append_sheet(workbook, expensesSheet, "Expenses Report");
+    XLSX.utils.book_append_sheet(workbook, expensesSheet, "Expenses Report");
 
-  XLSX.writeFile(
-    workbook,
-    `splash-report-${startDate}-to-${endDate}.xlsx`
-  );
-};
+    XLSX.writeFile(workbook, `splash-report-${startDate}-to-${endDate}.xlsx`);
+  };
 
   return (
     <ProtectedPage>
@@ -762,33 +784,42 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
           </section>
 
           <section style={{ ...cardStyle, marginBottom: "24px" }}>
-          <div style={filterHeaderStyle}>
-            <h2 style={sectionTitleStyle}>Filter Reports</h2>
+            <div style={filterHeaderStyle}>
+              <h2 style={sectionTitleStyle}>Filter Reports</h2>
 
-            <div style={exportButtonsGroupStyle}>
-              <button style={smallButtonStyle} onClick={exportPDF}>
-                Export PDF
-              </button>
+              <div style={exportButtonsGroupStyle}>
+                <button style={smallButtonStyle} onClick={exportPDF}>
+                  Export PDF
+                </button>
 
-              <button
-                style={{ ...smallButtonStyle, background: "#7aa85a" }}
-                onClick={exportExcel}
-              >
-                Export Excel
-              </button>
+                <button
+                  style={{ ...smallButtonStyle, background: "#7aa85a" }}
+                  onClick={exportExcel}
+                >
+                  Export Excel
+                </button>
+              </div>
             </div>
-          </div>
 
             <div style={quickFilterStyle}>
-              <button style={quickButtonStyle} onClick={() => applyQuickFilter("today")}>
+              <button
+                style={quickButtonStyle}
+                onClick={() => applyQuickFilter("today")}
+              >
                 Today
               </button>
 
-              <button style={quickButtonStyle} onClick={() => applyQuickFilter("month")}>
+              <button
+                style={quickButtonStyle}
+                onClick={() => applyQuickFilter("month")}
+              >
                 This Month
               </button>
 
-              <button style={quickButtonStyle} onClick={() => applyQuickFilter("year")}>
+              <button
+                style={quickButtonStyle}
+                onClick={() => applyQuickFilter("year")}
+              >
                 This Year
               </button>
             </div>
@@ -853,7 +884,9 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
             <div style={cardStyle}>
               <div style={sectionHeaderRowStyle}>
                 <h2 style={sectionTitleStyle}>
-                  {chartMode === "weekly" ? "Weekly Sales Chart" : "Monthly Sales Chart"}
+                  {chartMode === "weekly"
+                    ? "Weekly Sales Chart"
+                    : "Monthly Sales Chart"}
                 </h2>
 
                 <div style={chartSwitchStyle}>
@@ -923,7 +956,8 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
                           style={{
                             height: "100%",
                             width: `${
-                              (product.quantity / topProducts[0].quantity) * 100
+                              (product.quantity / topProducts[0].quantity) *
+                              100
                             }%`,
                             background: "#7aa85a",
                             borderRadius: "999px",
@@ -1049,7 +1083,10 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
                 </div>
               </div>
 
-              <button type="submit" style={{ ...buttonStyle, marginTop: "20px" }}>
+              <button
+                type="submit"
+                style={{ ...buttonStyle, marginTop: "20px" }}
+              >
                 Add Return
               </button>
             </form>
@@ -1061,13 +1098,18 @@ const applyQuickFilter = (type: "today" | "month" | "year") => {
             <table style={tableStyle}>
               <thead>
                 <tr>
-                  {["Date", "Store", "Product", "Returned Qty", "Reason", "Note"].map(
-                    (head) => (
-                      <th key={head} style={thStyle}>
-                        {head}
-                      </th>
-                    )
-                  )}
+                  {[
+                    "Date",
+                    "Store",
+                    "Product",
+                    "Returned Qty",
+                    "Reason",
+                    "Note",
+                  ].map((head) => (
+                    <th key={head} style={thStyle}>
+                      {head}
+                    </th>
+                  ))}
                 </tr>
               </thead>
 
