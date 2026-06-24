@@ -745,7 +745,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                 <h2 style={sectionTitleStyle}>Order</h2>
               </div>
 
-              <div style={cartCountStyle}>{totalBottles} bottles</div>
+              <div style={cartCountStyle}>{totalBottles} Cups</div>
             </div>
 
               <div style={{ display: "grid", gap: "14px" }}>
