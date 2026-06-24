@@ -581,7 +581,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
             <div class="box"><strong>Net Total</strong><br/>$${netTotal.toFixed(
               2
             )}</div>
-            <div class="box"><strong>Bottles Sold</strong><br/>${totalBottlesSold}</div>
+            <div class="box"><strong>Items Sold</strong><br/>${totalBottlesSold}</div>
           </div>
 
           <h2>Transactions</h2>
@@ -745,7 +745,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                 <h2 style={sectionTitleStyle}>Order</h2>
               </div>
 
-              <div style={cartCountStyle}>{totalBottles} Cups</div>
+              <div style={cartCountStyle}>{totalBottles} Items</div>
             </div>
 
               <div style={{ display: "grid", gap: "14px" }}>
