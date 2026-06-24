@@ -645,7 +645,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
               </div>
 
               <div style={smallInfoCardStyle}>
-                <p style={smallTitleStyle}>Bottles Sold</p>
+                <p style={smallTitleStyle}>Items Sold</p>
                 <h3 style={infoValueStyle}>{todayBottlesSold}</h3>
               </div>
             </div>
@@ -750,7 +750,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
               <div style={{ display: "grid", gap: "14px" }}>
                 {cart.length === 0 ? (
-                  <p style={emptyTextStyle}>No products added yet.</p>
+                  <p style={emptyTextStyle}>No items added yet.</p>
                 ) : (
                   cart.map((item) => (
                     <div
