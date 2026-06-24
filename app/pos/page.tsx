@@ -77,32 +77,30 @@ export default function POSPage() {
     return matchesCategory && matchesSearch;
   });
 
-  const cartTotal = useMemo(() => {
-    return cart.reduce(
-      (sum, item) => sum + item.quantity * item.unit_price,
-      0
-    );
+  const cartTotalLBP = useMemo(() => {
+  return cart.reduce(
+    (sum, item) => sum + item.quantity * item.unit_price,
+    0
+  );
   }, [cart]);
+
+const cartTotalUSD = cartTotalLBP / USD_TO_LBP_RATE;
 
   const totalBottles = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
 
-  const paidAmountNumber = Number(paidAmount) || 0;
+const paidAmountNumber = Number(paidAmount) || 0; // LBP
 
-  const changeUSD =
-    paidAmountNumber > cartTotal ? paidAmountNumber - cartTotal : 0;
+const changeLBP =
+  paidAmountNumber > cartTotalLBP ? paidAmountNumber - cartTotalLBP : 0;
 
-  const remainingUSD =
-    paidAmountNumber < cartTotal ? cartTotal - paidAmountNumber : 0;
+const remainingLBP =
+  paidAmountNumber < cartTotalLBP ? cartTotalLBP - paidAmountNumber : 0;
 
-  const changeLBP =
-    changeUSD > 0
-      ? Math.round((changeUSD * USD_TO_LBP_RATE) / 10000) * 10000
-      : 0;
+const changeUSD = changeLBP / USD_TO_LBP_RATE;
 
-  const remainingLBP =
-    remainingUSD > 0 ? Math.round(remainingUSD * USD_TO_LBP_RATE) : 0;
+const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
   const todaySalesTotal = useMemo(() => {
     const today = new Date().toDateString();
@@ -367,7 +365,7 @@ export default function POSPage() {
       return;
     }
 
-    setPaidAmount(cartTotal.toFixed(2));
+    setPaidAmount(String(Math.round(cartTotalLBP)));
     setShowPaymentPopup(true);
   };
 
@@ -377,10 +375,10 @@ export default function POSPage() {
       return;
     }
 
-    if (paidAmountNumber < cartTotal) {
-      alert("Paid amount is less than the total amount.");
-      return;
-    }
+    if (paidAmountNumber < cartTotalLBP) {
+    alert("Paid amount is less than the total amount.");
+    return;
+  }
 
     const salesRows = cart.map((item) => ({
       juice_name: item.juice_name,
@@ -502,8 +500,8 @@ export default function POSPage() {
             <td>${sale.transaction_type || "SALE"}</td>
             <td>${sale.juice_name}</td>
             <td>${sale.quantity}</td>
-            <td>$${Number(sale.unit_price || 0).toFixed(2)}</td>
-            <td>$${Number(sale.total_price || 0).toFixed(2)}</td>
+            {Number(sale.unit_price || 0).toLocaleString()} LBP
+            {Number(sale.total_price || 0).toLocaleString()} LBP
             <td>${sale.payment_method || "-"}</td>
             <td>${
               sale.created_at ? new Date(sale.created_at).toLocaleString() : ""
@@ -719,7 +717,7 @@ export default function POSPage() {
                           {formatProductName(product)}
                         </h3>
                         <p style={productPriceStyle}>
-                          ${Number(product.price || 0).toFixed(2)}
+                          {Number(product.price || 0).toLocaleString()} LBP
                         </p>
                       </div>
                     </button>
@@ -752,11 +750,11 @@ export default function POSPage() {
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
                         <p style={smallTextStyle}>
-                          Price: ${Number(item.unit_price || 0).toFixed(2)}
+                          Price: {Number(item.unit_price || 0).toLocaleString()} LBP
                         </p>
 
                         <p style={smallTextStyle}>
-                          Total: ${(item.quantity * item.unit_price).toFixed(2)}
+                          Total: {(item.quantity * item.unit_price).toLocaleString()} LBP
                         </p>
                       </div>
 
@@ -793,7 +791,7 @@ export default function POSPage() {
 
                 <div style={totalBoxStyle}>
                   <span>Grand Total</span>
-                  <strong>${cartTotal.toFixed(2)}</strong>
+                  <strong>{cartTotalLBP.toLocaleString()} LBP</strong>
                 </div>
 
                 <div style={posActionGridStyle} className="posActionsMobile">
@@ -910,7 +908,7 @@ export default function POSPage() {
 
                         <td style={tdStyle}>
                           {sale.paid_amount !== undefined && sale.paid_amount !== null
-                            ? `$${Number(sale.paid_amount || 0).toFixed(2)}`
+                            ? `${Number(sale.paid_amount || 0).toLocaleString()} LBP`
                             : "-"}
                         </td>
 
@@ -965,12 +963,12 @@ export default function POSPage() {
               </div>
 
               <div style={{ marginBottom: "18px" }}>
-                <label style={labelStyle}>Price</label>
+                <label style={labelStyle}>Price in LBP</label>
                 <input
                   type="number"
                   value={newProductPrice}
                   onChange={(e) => setNewProductPrice(e.target.value)}
-                  placeholder="Example: 5"
+                  placeholder="Example: 700000"
                   style={inputStyle}
                 />
               </div>
@@ -1059,7 +1057,10 @@ export default function POSPage() {
 
               <div style={paymentSummaryStyle}>
                 <span>Total Amount</span>
-                <strong>${cartTotal.toFixed(2)}</strong>
+                <strong>{cartTotalLBP.toLocaleString()} LBP</strong>
+                <p style={smallTextStyle}>
+                Around ${cartTotalUSD.toFixed(2)}
+              </p>
               </div>
 
               <div style={{ marginBottom: "18px" }}>
@@ -1078,44 +1079,44 @@ export default function POSPage() {
               </div>
 
               <div style={{ marginBottom: "18px" }}>
-                <label style={labelStyle}>Paid Amount</label>
+                <label style={labelStyle}>Paid Amount in LBP</label>
                 <input
                   type="number"
                   value={paidAmount}
                   onChange={(e) => setPaidAmount(e.target.value)}
-                  placeholder="Example: 20"
+                  placeholder="Example: 1000000"
                   style={inputStyle}
                 />
               </div>
 
               <div style={changeBoxStyle}>
-                {paidAmountNumber >= cartTotal ? (
-                  <>
-                    <p style={changeTextStyle}>
-                      Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
-                    </p>
+  {paidAmountNumber >= cartTotalLBP ? (
+    <>
+      <p style={changeTextStyle}>
+        Change in LBP:{" "}
+        <strong>{changeLBP.toLocaleString()} LBP</strong>
+      </p>
 
-                    <p style={changeTextStyle}>
-                      Change in LBP:{" "}
-                      <strong>{changeLBP.toLocaleString()} LBP</strong>
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p style={errorTextStyle}>
-                      Remaining in USD:{" "}
-                      <strong>${remainingUSD.toFixed(2)}</strong>
-                    </p>
+      <p style={changeTextStyle}>
+        Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
+      </p>
+    </>
+  ) : (
+    <>
+      <p style={errorTextStyle}>
+        Remaining in LBP:{" "}
+        <strong>{remainingLBP.toLocaleString()} LBP</strong>
+      </p>
 
-                    <p style={errorTextStyle}>
-                      Remaining in LBP:{" "}
-                      <strong>{remainingLBP.toLocaleString()} LBP</strong>
-                    </p>
-                  </>
-                )}
+      <p style={errorTextStyle}>
+        Remaining in USD:{" "}
+        <strong>${remainingUSD.toFixed(2)}</strong>
+      </p>
+    </>
+  )}
 
-                <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
-              </div>
+  <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
+</div>
 
               <div style={popupButtonsStyle}>
                 <button
@@ -1127,12 +1128,11 @@ export default function POSPage() {
 
                 <button
                   onClick={completeSale}
-                  disabled={paidAmountNumber < cartTotal}
+                  disabled={paidAmountNumber < cartTotalLBP}
                   style={{
                     ...confirmButtonStyle,
-                    opacity: paidAmountNumber < cartTotal ? 0.5 : 1,
-                    cursor:
-                      paidAmountNumber < cartTotal ? "not-allowed" : "pointer",
+                    opacity: paidAmountNumber < cartTotalLBP ? 0.5 : 1,
+                    cursor: paidAmountNumber < cartTotalLBP ? "not-allowed" : "pointer",
                   }}
                 >
                   Complete Sale
