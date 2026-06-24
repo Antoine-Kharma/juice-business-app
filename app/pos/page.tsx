@@ -18,6 +18,10 @@ const parseLBPInput = (value: string) => {
   return Number(value.replace(/,/g, "")) || 0;
 };
 
+const formatLBP = (value: number) => {
+  return `${Number(value || 0).toLocaleString()} LBP`;
+};
+
 type CartItem = {
   juice_name: string;
   quantity: number;
@@ -90,29 +94,28 @@ export default function POSPage() {
   });
 
   const cartTotalLBP = useMemo(() => {
-  return cart.reduce(
-    (sum, item) => sum + item.quantity * item.unit_price,
-    0
-  );
+    return cart.reduce(
+      (sum, item) => sum + item.quantity * item.unit_price,
+      0
+    );
   }, [cart]);
 
-const cartTotalUSD = cartTotalLBP / USD_TO_LBP_RATE;
+  const cartTotalUSD = cartTotalLBP / USD_TO_LBP_RATE;
 
-  const totalBottles = useMemo(() => {
+  const totalItems = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
 
-const paidAmountNumber = parseLBPInput(paidAmount); // LBP
+  const paidAmountNumber = parseLBPInput(paidAmount);
 
-const changeLBP =
-  paidAmountNumber > cartTotalLBP ? paidAmountNumber - cartTotalLBP : 0;
+  const changeLBP =
+    paidAmountNumber > cartTotalLBP ? paidAmountNumber - cartTotalLBP : 0;
 
-const remainingLBP =
-  paidAmountNumber < cartTotalLBP ? cartTotalLBP - paidAmountNumber : 0;
+  const remainingLBP =
+    paidAmountNumber < cartTotalLBP ? cartTotalLBP - paidAmountNumber : 0;
 
-const changeUSD = changeLBP / USD_TO_LBP_RATE;
-
-const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
+  const changeUSD = changeLBP / USD_TO_LBP_RATE;
+  const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
   const todaySalesTotal = useMemo(() => {
     const today = new Date().toDateString();
@@ -125,7 +128,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
       .reduce((sum, sale) => sum + Number(sale.total_price || 0), 0);
   }, [sales]);
 
-  const todayBottlesSold = useMemo(() => {
+  const todayItemsSold = useMemo(() => {
     const today = new Date().toDateString();
 
     return sales
@@ -167,7 +170,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
     const priceMap: Record<number, string> = {};
     productData.forEach((product) => {
-      priceMap[product.id] = String(Number(product.price || 0));
+      priceMap[product.id] = formatLBPInput(String(Number(product.price || 0)));
     });
 
     setProductPriceEdits(priceMap);
@@ -302,7 +305,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
   };
 
   const updateProductPrice = async (product: POSProduct) => {
-    const newPrice = Number(productPriceEdits[product.id]);
+    const newPrice = parseLBPInput(productPriceEdits[product.id] || "");
 
     if (newPrice <= 0) {
       alert("Please enter a valid price.");
@@ -388,9 +391,9 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
     }
 
     if (paidAmountNumber < cartTotalLBP) {
-    alert("Paid amount is less than the total amount.");
-    return;
-  }
+      alert("Paid amount is less than the total amount.");
+      return;
+    }
 
     const salesRows = cart.map((item) => ({
       juice_name: item.juice_name,
@@ -401,7 +404,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
       paid_amount: paidAmountNumber,
       change_usd: changeUSD,
       change_lbp: changeLBP,
-      transaction_type: "SALE",
+      transaction_type: "SALE" as const,
     }));
 
     const { error } = await supabase.from("pos_sales").insert(salesRows);
@@ -437,8 +440,8 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
     }
 
     const confirmRefund = confirm(
-      `Refund ${sale.juice_name} for $${Number(sale.total_price || 0).toFixed(
-        2
+      `Refund ${sale.juice_name} for ${formatLBP(
+        Math.abs(Number(sale.total_price || 0))
       )}?`
     );
 
@@ -456,7 +459,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
         paid_amount: 0,
         change_usd: 0,
         change_lbp: 0,
-        transaction_type: "REFUND",
+        transaction_type: "REFUND" as const,
         refunded_sale_id: sale.id,
       },
     ]);
@@ -500,7 +503,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
     const netTotal = totalSalesAmount - totalRefunds;
 
-    const totalBottlesSold = allSales.reduce(
+    const totalItemsSold = allSales.reduce(
       (sum, sale) => sum + Number(sale.quantity || 0),
       0
     );
@@ -512,8 +515,8 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
             <td>${sale.transaction_type || "SALE"}</td>
             <td>${sale.juice_name}</td>
             <td>${sale.quantity}</td>
-            {Number(sale.unit_price || 0).toLocaleString()} LBP
-            {Number(sale.total_price || 0).toLocaleString()} LBP
+            <td>${formatLBP(Number(sale.unit_price || 0))}</td>
+            <td>${formatLBP(Number(sale.total_price || 0))}</td>
             <td>${sale.payment_method || "-"}</td>
             <td>${
               sale.created_at ? new Date(sale.created_at).toLocaleString() : ""
@@ -572,16 +575,16 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
           <h1>SPLASH Juice POS Festival Report</h1>
 
           <div class="summary">
-            <div class="box"><strong>Total Sales</strong><br/>$${totalSalesAmount.toFixed(
-              2
+            <div class="box"><strong>Total Sales</strong><br/>${formatLBP(
+              totalSalesAmount
             )}</div>
-            <div class="box"><strong>Total Refunds</strong><br/>$${totalRefunds.toFixed(
-              2
+            <div class="box"><strong>Total Refunds</strong><br/>${formatLBP(
+              totalRefunds
             )}</div>
-            <div class="box"><strong>Net Total</strong><br/>$${netTotal.toFixed(
-              2
+            <div class="box"><strong>Net Total</strong><br/>${formatLBP(
+              netTotal
             )}</div>
-            <div class="box"><strong>Items Sold</strong><br/>${totalBottlesSold}</div>
+            <div class="box"><strong>Items Sold</strong><br/>${totalItemsSold}</div>
           </div>
 
           <h2>Transactions</h2>
@@ -641,12 +644,12 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
             <div style={summaryGridStyle} className="summaryGridMobile">
               <div style={smallInfoCardStyle}>
                 <p style={smallTitleStyle}>Today Sales</p>
-                <h3 style={infoValueStyle}>${todaySalesTotal.toFixed(2)}</h3>
+                <h3 style={infoValueStyle}>{formatLBP(todaySalesTotal)}</h3>
               </div>
 
               <div style={smallInfoCardStyle}>
                 <p style={smallTitleStyle}>Items Sold</p>
-                <h3 style={infoValueStyle}>{todayBottlesSold}</h3>
+                <h3 style={infoValueStyle}>{todayItemsSold}</h3>
               </div>
             </div>
           </section>
@@ -729,7 +732,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                           {formatProductName(product)}
                         </h3>
                         <p style={productPriceStyle}>
-                          {Number(product.price || 0).toLocaleString()} LBP
+                          {formatLBP(Number(product.price || 0))}
                         </p>
                       </div>
                     </button>
@@ -740,17 +743,19 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
             <div style={cardStyle}>
               <div style={sectionHeaderStyle}>
-              <div>
-                <p style={smallTitleStyle}>CURRENT CART</p>
-                <h2 style={sectionTitleStyle}>Order</h2>
-              </div>
+                <div>
+                  <p style={smallTitleStyle}>CURRENT CART</p>
+                  <h2 style={sectionTitleStyle}>Order</h2>
+                </div>
 
-              <div style={cartCountStyle}>{totalBottles} Items</div>
-            </div>
+                <div style={cartCountStyle}>
+                  {totalItems} {totalItems === 1 ? "item" : "items"}
+                </div>
+              </div>
 
               <div style={{ display: "grid", gap: "14px" }}>
                 {cart.length === 0 ? (
-                  <p style={emptyTextStyle}>No items added yet.</p>
+                  <p style={emptyTextStyle}>No products added yet.</p>
                 ) : (
                   cart.map((item) => (
                     <div
@@ -762,11 +767,15 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
                         <p style={smallTextStyle}>
-                          Price: {Number(item.unit_price || 0).toLocaleString()} LBP
+                          Price: {formatLBP(Number(item.unit_price || 0))}
                         </p>
 
                         <p style={smallTextStyle}>
-                          Total: {(item.quantity * item.unit_price).toLocaleString()} LBP
+                          Total:{" "}
+                          {formatLBP(
+                            Number(item.quantity || 0) *
+                              Number(item.unit_price || 0)
+                          )}
                         </p>
                       </div>
 
@@ -803,7 +812,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
                 <div style={totalBoxStyle}>
                   <span>Grand Total</span>
-                  <strong>{cartTotalLBP.toLocaleString()} LBP</strong>
+                  <strong>{formatLBP(cartTotalLBP)}</strong>
                 </div>
 
                 <div style={posActionGridStyle} className="posActionsMobile">
@@ -836,110 +845,109 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
             style={{ ...cardStyle, marginTop: "30px" }}
           >
             <div style={sectionHeaderStyle}>
-            <div>
-              <p style={smallTitleStyle}>RECENT POS SALES</p>
-              <h2 style={sectionTitleStyle}>Latest Sales</h2>
-            </div>
+              <div>
+                <p style={smallTitleStyle}>RECENT POS SALES</p>
+                <h2 style={sectionTitleStyle}>Latest Sales</h2>
+              </div>
 
-            <button
-              onClick={exportFestivalReport}
-              style={exportButtonStyle}
-            >
-              Export Report
-            </button>
-          </div>
+              <button onClick={exportFestivalReport} style={exportButtonStyle}>
+                Export Report
+              </button>
+            </div>
 
             {sales.length === 0 ? (
               <p style={emptyTextStyle}>No sales added yet.</p>
             ) : (
               <div className="latestSalesTableWrap" style={tableWrapperStyle}>
                 <table style={tableStyle}>
-                <thead>
-                  <tr>
-                    {[
-                      "Type",
-                      "Action",
-                      "Product",
-                      "Quantity",
-                      "Unit Price",
-                      "Total",
-                      "Payment",
-                      "Paid",
-                      "Change USD",
-                      "Date & Time",
-                    ].map((head) => (
-                      <th key={head} style={thStyle}>
-                        {head}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+                  <thead>
+                    <tr>
+                      {[
+                        "Type",
+                        "Action",
+                        "Product",
+                        "Quantity",
+                        "Unit Price",
+                        "Total",
+                        "Payment",
+                        "Paid",
+                        "Change USD",
+                        "Date & Time",
+                      ].map((head) => (
+                        <th key={head} style={thStyle}>
+                          {head}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {sales.map((sale) => {
-                    const alreadyRefunded = sales.some(
-                      (item) =>
-                        item.transaction_type === "REFUND" &&
-                        Number(item.refunded_sale_id) === Number(sale.id)
-                    );
+                  <tbody>
+                    {sales.map((sale) => {
+                      const alreadyRefunded = sales.some(
+                        (item) =>
+                          item.transaction_type === "REFUND" &&
+                          Number(item.refunded_sale_id) === Number(sale.id)
+                      );
 
-                    return (
-                      <tr key={sale.id}>
-                        <td style={tdStyle}>
-                          {sale.transaction_type || "SALE"}
-                        </td>
+                      return (
+                        <tr key={sale.id}>
+                          <td style={tdStyle}>
+                            {sale.transaction_type || "SALE"}
+                          </td>
 
-                        <td style={actionTdStyle}>
-                          {sale.transaction_type === "REFUND" ? (
-                            <span style={refundLabelStyle}>Refund Row</span>
-                          ) : alreadyRefunded ? (
-                            <span style={refundLabelStyle}>Refunded</span>
-                          ) : (
-                            <button
-                              onClick={() => refundSale(sale)}
-                              style={refundButtonStyle}
-                            >
-                              Refund
-                            </button>
-                          )}
-                        </td>
+                          <td style={actionTdStyle}>
+                            {sale.transaction_type === "REFUND" ? (
+                              <span style={refundLabelStyle}>Refund Row</span>
+                            ) : alreadyRefunded ? (
+                              <span style={refundLabelStyle}>Refunded</span>
+                            ) : (
+                              <button
+                                onClick={() => refundSale(sale)}
+                                style={refundButtonStyle}
+                              >
+                                Refund
+                              </button>
+                            )}
+                          </td>
 
-                        <td style={tdStyle}>{sale.juice_name}</td>
+                          <td style={tdStyle}>{sale.juice_name}</td>
 
-                        <td style={tdStyle}>{sale.quantity}</td>
+                          <td style={tdStyle}>{sale.quantity}</td>
 
-                        <td style={tdStyle}>
-                          ${Number(sale.unit_price || 0).toFixed(2)}
-                        </td>
+                          <td style={tdStyle}>
+                            {formatLBP(Number(sale.unit_price || 0))}
+                          </td>
 
-                        <td style={tdStyle}>
-                          ${Number(sale.total_price || 0).toFixed(2)}
-                        </td>
+                          <td style={tdStyle}>
+                            {formatLBP(Number(sale.total_price || 0))}
+                          </td>
 
-                        <td style={tdStyle}>{sale.payment_method || "-"}</td>
+                          <td style={tdStyle}>{sale.payment_method || "-"}</td>
 
-                        <td style={tdStyle}>
-                          {sale.paid_amount !== undefined && sale.paid_amount !== null
-                            ? `${Number(sale.paid_amount || 0).toLocaleString()} LBP`
-                            : "-"}
-                        </td>
+                          <td style={tdStyle}>
+                            {sale.paid_amount !== undefined &&
+                            sale.paid_amount !== null
+                              ? formatLBP(Number(sale.paid_amount || 0))
+                              : "-"}
+                          </td>
 
-                        <td style={tdStyle}>
-                          {sale.change_usd !== undefined && sale.change_usd !== null
-                            ? `$${Number(sale.change_usd || 0).toFixed(2)}`
-                            : "-"}
-                        </td>
+                          <td style={tdStyle}>
+                            {sale.change_usd !== undefined &&
+                            sale.change_usd !== null
+                              ? `$${Number(sale.change_usd || 0).toFixed(2)}`
+                              : "-"}
+                          </td>
 
-                        <td style={tdStyle}>
-                          {sale.created_at
-                            ? new Date(sale.created_at).toLocaleString()
-                            : ""}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          <td style={tdStyle}>
+                            {sale.created_at
+                              ? new Date(sale.created_at).toLocaleString()
+                              : ""}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
           </section>
@@ -980,7 +988,9 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                   type="text"
                   inputMode="numeric"
                   value={newProductPrice}
-                  onChange={(e) => setNewProductPrice(formatLBPInput(e.target.value))}
+                  onChange={(e) =>
+                    setNewProductPrice(formatLBPInput(e.target.value))
+                  }
                   placeholder="Example: 250,000"
                   style={inputStyle}
                 />
@@ -1016,15 +1026,16 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                       <div style={{ flex: 1 }}>
                         <strong>{formatProductName(product)}</strong>
 
-                        <label style={editPriceLabelStyle}>Price</label>
+                        <label style={editPriceLabelStyle}>Price in LBP</label>
 
                         <input
-                          type="number"
+                          type="text"
+                          inputMode="numeric"
                           value={productPriceEdits[product.id] || ""}
                           onChange={(e) =>
                             setProductPriceEdits((current) => ({
                               ...current,
-                              [product.id]: e.target.value,
+                              [product.id]: formatLBPInput(e.target.value),
                             }))
                           }
                           style={editPriceInputStyle}
@@ -1069,11 +1080,12 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
               <h2 style={popupTitleStyle}>Confirm Payment</h2>
 
               <div style={paymentSummaryStyle}>
-                <span>Total Amount</span>
-                <strong>{cartTotalLBP.toLocaleString()} LBP</strong>
-                <p style={smallTextStyle}>
-                Around ${cartTotalUSD.toFixed(2)}
-              </p>
+                <div>
+                  <span>Total Amount</span>
+                  <p style={smallTextStyle}>Around ${cartTotalUSD.toFixed(2)}</p>
+                </div>
+
+                <strong>{formatLBP(cartTotalLBP)}</strong>
               </div>
 
               <div style={{ marginBottom: "18px" }}>
@@ -1104,33 +1116,32 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
               </div>
 
               <div style={changeBoxStyle}>
-  {paidAmountNumber >= cartTotalLBP ? (
-    <>
-      <p style={changeTextStyle}>
-        Change in LBP:{" "}
-        <strong>{changeLBP.toLocaleString()} LBP</strong>
-      </p>
+                {paidAmountNumber >= cartTotalLBP ? (
+                  <>
+                    <p style={changeTextStyle}>
+                      Change in LBP: <strong>{formatLBP(changeLBP)}</strong>
+                    </p>
 
-      <p style={changeTextStyle}>
-        Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
-      </p>
-    </>
-  ) : (
-    <>
-      <p style={errorTextStyle}>
-        Remaining in LBP:{" "}
-        <strong>{remainingLBP.toLocaleString()} LBP</strong>
-      </p>
+                    <p style={changeTextStyle}>
+                      Change in USD: <strong>${changeUSD.toFixed(2)}</strong>
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p style={errorTextStyle}>
+                      Remaining in LBP:{" "}
+                      <strong>{formatLBP(remainingLBP)}</strong>
+                    </p>
 
-      <p style={errorTextStyle}>
-        Remaining in USD:{" "}
-        <strong>${remainingUSD.toFixed(2)}</strong>
-      </p>
-    </>
-  )}
+                    <p style={errorTextStyle}>
+                      Remaining in USD:{" "}
+                      <strong>${remainingUSD.toFixed(2)}</strong>
+                    </p>
+                  </>
+                )}
 
-  <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
-</div>
+                <p style={smallTextStyle}>Rate used: 1 USD = 90,000 LBP</p>
+              </div>
 
               <div style={popupButtonsStyle}>
                 <button
@@ -1146,7 +1157,10 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                   style={{
                     ...confirmButtonStyle,
                     opacity: paidAmountNumber < cartTotalLBP ? 0.5 : 1,
-                    cursor: paidAmountNumber < cartTotalLBP ? "not-allowed" : "pointer",
+                    cursor:
+                      paidAmountNumber < cartTotalLBP
+                        ? "not-allowed"
+                        : "pointer",
                   }}
                 >
                   Complete Sale
@@ -1287,44 +1301,44 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
                 grid-template-columns: 1fr !important;
               }
             }
+
+            .latestSalesTableWrap {
+              margin-left: -18px;
+              width: calc(100% + 36px);
+            }
+
+            @media (max-width: 850px) {
               .latestSalesTableWrap {
-  margin-left: -18px;
-  width: calc(100% + 36px);
-}
+                margin-left: -20px !important;
+                width: calc(100% + 40px) !important;
+              }
 
-@media (max-width: 850px) {
-  .latestSalesTableWrap {
-    margin-left: -20px !important;
-    width: calc(100% + 40px) !important;
-  }
+              .latestSalesTableWrap table {
+                font-size: 13px !important;
+              }
 
-  .latestSalesTableWrap table {
-    font-size: 13px !important;
-  }
+              .latestSalesTableWrap th,
+              .latestSalesTableWrap td {
+                padding: 10px !important;
+              }
+            }
 
-  .latestSalesTableWrap th,
-  .latestSalesTableWrap td {
-    padding: 10px !important;
-  }
-}
+            @media (max-width: 600px) {
+              .latestSalesTableWrap {
+                margin-left: -16px !important;
+                width: calc(100% + 32px) !important;
+              }
 
-@media (max-width: 600px) {
-  .latestSalesTableWrap {
-    margin-left: -16px !important;
-    width: calc(100% + 32px) !important;
-  }
+              .latestSalesTableWrap table {
+                font-size: 12px !important;
+              }
 
-  .latestSalesTableWrap table {
-    font-size: 12px !important;
-  }
-
-  .latestSalesTableWrap th,
-  .latestSalesTableWrap td {
-    padding: 8px !important;
-  }
-}
+              .latestSalesTableWrap th,
+              .latestSalesTableWrap td {
+                padding: 8px !important;
+              }
+            }
           `}
-          
         </style>
       </main>
     </ProtectedPage>
@@ -1768,6 +1782,8 @@ const paymentSummaryStyle = {
   borderRadius: "20px",
   display: "flex",
   justifyContent: "space-between",
+  gap: "14px",
+  alignItems: "center",
   color: "#2e4732",
   fontWeight: 900,
   fontSize: "20px",
