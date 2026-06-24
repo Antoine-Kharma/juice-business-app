@@ -6,6 +6,18 @@ import ProtectedPage from "../components/ProtectedPage";
 
 const USD_TO_LBP_RATE = 90000;
 
+const formatLBPInput = (value: string) => {
+  const onlyNumbers = value.replace(/[^\d]/g, "");
+
+  if (!onlyNumbers) return "";
+
+  return Number(onlyNumbers).toLocaleString();
+};
+
+const parseLBPInput = (value: string) => {
+  return Number(value.replace(/,/g, "")) || 0;
+};
+
 type CartItem = {
   juice_name: string;
   quantity: number;
@@ -90,7 +102,7 @@ const cartTotalUSD = cartTotalLBP / USD_TO_LBP_RATE;
     return cart.reduce((sum, item) => sum + item.quantity, 0);
   }, [cart]);
 
-const paidAmountNumber = Number(paidAmount) || 0; // LBP
+const paidAmountNumber = parseLBPInput(paidAmount); // LBP
 
 const changeLBP =
   paidAmountNumber > cartTotalLBP ? paidAmountNumber - cartTotalLBP : 0;
@@ -251,7 +263,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
   const handleAddProduct = async () => {
     const trimmedName = newProductName.trim();
-    const priceNumber = Number(newProductPrice);
+    const priceNumber = parseLBPInput(newProductPrice);
 
     if (!trimmedName) {
       alert("Please enter the product name.");
@@ -365,7 +377,7 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
       return;
     }
 
-    setPaidAmount(String(Math.round(cartTotalLBP)));
+    setPaidAmount(Math.round(cartTotalLBP).toLocaleString());
     setShowPaymentPopup(true);
   };
 
@@ -965,10 +977,11 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
               <div style={{ marginBottom: "18px" }}>
                 <label style={labelStyle}>Price in LBP</label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={newProductPrice}
-                  onChange={(e) => setNewProductPrice(e.target.value)}
-                  placeholder="Example: 700000"
+                  onChange={(e) => setNewProductPrice(formatLBPInput(e.target.value))}
+                  placeholder="Example: 250,000"
                   style={inputStyle}
                 />
               </div>
@@ -1081,10 +1094,11 @@ const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
               <div style={{ marginBottom: "18px" }}>
                 <label style={labelStyle}>Paid Amount in LBP</label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   value={paidAmount}
-                  onChange={(e) => setPaidAmount(e.target.value)}
-                  placeholder="Example: 1000000"
+                  onChange={(e) => setPaidAmount(formatLBPInput(e.target.value))}
+                  placeholder="Example: 1,050,000"
                   style={inputStyle}
                 />
               </div>
