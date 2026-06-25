@@ -1922,13 +1922,16 @@ const popupOverlayStyle = {
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  zIndex: 999,
+  zIndex: 9999999,
   padding: "20px",
+  overflowY: "auto" as const,
 };
 
 const popupCardStyle = {
   width: "100%",
   maxWidth: "580px",
+  maxHeight: "90vh",
+  overflowY: "auto" as const,
   background: "#f6f3e8",
   borderRadius: "34px",
   padding: "34px",
