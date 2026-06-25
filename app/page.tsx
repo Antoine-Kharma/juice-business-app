@@ -23,7 +23,7 @@ const bottles = [
   "/bottles/strawberry-lemonade.png",
   "/bottles/strawberry-banana.png",
   "/bottles/straw-mango.png",
-  "/bottles/straw-mango-passion.png",
+  "/bottles/mango-passion.png",
 ];
 
 const SLIDE_TIME_SECONDS = 3;
