@@ -989,7 +989,6 @@ export default function POSPage() {
                         "Total",
                         "Payment",
                         "Paid",
-                        "Change USD",
                         "Date & Time",
                       ].map((head) => (
                         <th key={head} style={thStyle}>

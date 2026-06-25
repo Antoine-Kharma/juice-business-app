@@ -16,22 +16,22 @@ type Expense = {
 };
 
 const expenseOptions = [
-  { title: "Orange", category: "Fruits", unit: "kg" },
-  { title: "Strawberry", category: "Fruits", unit: "kg" },
-  { title: "Banana", category: "Fruits", unit: "kg" },
-  { title: "Lemon", category: "Fruits", unit: "kg" },
-  { title: "Pomegranate", category: "Fruits", unit: "kg" },
-  { title: "Frozen Pomegranate", category: "Fruits", unit: "kg" },
-  { title: "Mango", category: "Fruits", unit: "kg" },
-  { title: "Carrot", category: "Fruits", unit: "kg" },
-  { title: "Passion Fruit", category: "Fruits", unit: "kg" },
-  { title: "Mint", category: "Fruits", unit: "pc" },
-  { title: "Sugar", category: "Ingredients", unit: "kg" },
+  { title: "Orange", category: "Fruits", unit: "Kg" },
+  { title: "Strawberry", category: "Fruits", unit: "Kg" },
+  { title: "Banana", category: "Fruits", unit: "Kg" },
+  { title: "Lemon", category: "Fruits", unit: "Kg" },
+  { title: "Pomegranate", category: "Fruits", unit: "Kg" },
+  { title: "Frozen Pomegranate", category: "Fruits", unit: "Kg" },
+  { title: "Mango", category: "Fruits", unit: "Kg" },
+  { title: "Carrot", category: "Fruits", unit: "Kg" },
+  { title: "Passion Fruit", category: "Fruits", unit: "Kg" },
+  { title: "Mint", category: "Fruits", unit: "Pc" },
+  { title: "Sugar", category: "Ingredients", unit: "Kg" },
   { title: "Water", category: "Ingredients", unit: "liter" },
-  { title: "Bottles 250 ml", category: "Packaging", unit: "piece" },
-  { title: "Bottles 1 Liter", category: "Packaging", unit: "piece" },
-  { title: "Caps", category: "Packaging", unit: "piece" },
-  { title: "Others", category: "Other", unit: "item" },
+  { title: "Bottles 250 ml", category: "Packaging", unit: "Pc" },
+  { title: "Bottles 1 Liter", category: "Packaging", unit: "Pc" },
+  { title: "Caps", category: "Packaging", unit: "Pc" },
+  { title: "Others", category: "Other", unit: "Item" },
 ];
 
 export default function ExpensesPage() {
