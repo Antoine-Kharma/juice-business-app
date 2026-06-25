@@ -6,6 +6,8 @@ import ProtectedPage from "../components/ProtectedPage";
 
 const USD_TO_LBP_RATE = 90000;
 
+type ProductCategory = "Juices" | "Cocktails";
+
 const formatLBPInput = (value: string) => {
   const onlyNumbers = value.replace(/[^\d]/g, "");
 
@@ -22,8 +24,13 @@ const formatLBP = (value: number) => {
   return `${Number(value || 0).toLocaleString()} LBP`;
 };
 
+const normalizeCategory = (category?: string): ProductCategory => {
+  return category === "Cocktails" ? "Cocktails" : "Juices";
+};
+
 type CartItem = {
   juice_name: string;
+  product_category: ProductCategory;
   quantity: number;
   unit_price: number;
 };
@@ -31,6 +38,7 @@ type CartItem = {
 type POSSale = {
   id?: number;
   juice_name: string;
+  product_category?: ProductCategory | string;
   quantity: number;
   unit_price: number;
   total_price: number;
@@ -46,12 +54,11 @@ type POSSale = {
 type POSProduct = {
   id: number;
   name: string;
+  category?: ProductCategory | string;
   size: string;
   price: number;
   created_at?: string;
 };
-
-type CategoryFilter = "All" | "250 ml" | "330 ml" | "1 Liter";
 
 export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -61,8 +68,12 @@ export default function POSPage() {
   const [productPriceEdits, setProductPriceEdits] = useState<
     Record<number, string>
   >({});
+  const [productCategoryEdits, setProductCategoryEdits] = useState<
+    Record<number, ProductCategory>
+  >({});
 
-  const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("All");
+  const [activeCategory, setActiveCategory] =
+    useState<ProductCategory>("Juices");
   const [searchText, setSearchText] = useState("");
 
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
@@ -73,6 +84,8 @@ export default function POSPage() {
   const [paidAmount, setPaidAmount] = useState("");
 
   const [newProductName, setNewProductName] = useState("");
+  const [newProductCategory, setNewProductCategory] =
+    useState<ProductCategory>("Juices");
   const [newProductSize, setNewProductSize] = useState("330 ml");
   const [newProductPrice, setNewProductPrice] = useState("");
 
@@ -82,9 +95,9 @@ export default function POSPage() {
 
   const filteredProducts = products.filter((product) => {
     const fullName = formatProductName(product);
+    const productCategory = normalizeCategory(product.category);
 
-    const matchesCategory =
-      categoryFilter === "All" || product.size === categoryFilter;
+    const matchesCategory = productCategory === activeCategory;
 
     const matchesSearch = fullName
       .toLowerCase()
@@ -165,15 +178,19 @@ export default function POSPage() {
       return;
     }
 
-    const productData = data || [];
+    const productData = (data || []) as POSProduct[];
     setProducts(productData);
 
     const priceMap: Record<number, string> = {};
+    const categoryMap: Record<number, ProductCategory> = {};
+
     productData.forEach((product) => {
       priceMap[product.id] = formatLBPInput(String(Number(product.price || 0)));
+      categoryMap[product.id] = normalizeCategory(product.category);
     });
 
     setProductPriceEdits(priceMap);
+    setProductCategoryEdits(categoryMap);
   };
 
   useEffect(() => {
@@ -183,16 +200,20 @@ export default function POSPage() {
 
   const addToCart = (product: POSProduct) => {
     const productName = formatProductName(product);
+    const productCategory = normalizeCategory(product.category);
     const price = Number(product.price || 0);
 
     setCart((currentCart) => {
       const existingItem = currentCart.find(
-        (item) => item.juice_name === productName
+        (item) =>
+          item.juice_name === productName &&
+          item.product_category === productCategory
       );
 
       if (existingItem) {
         return currentCart.map((item) =>
-          item.juice_name === productName
+          item.juice_name === productName &&
+          item.product_category === productCategory
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -202,6 +223,7 @@ export default function POSPage() {
         ...currentCart,
         {
           juice_name: productName,
+          product_category: productCategory,
           quantity: 1,
           unit_price: price,
         },
@@ -209,21 +231,29 @@ export default function POSPage() {
     });
   };
 
-  const increaseQuantity = (productName: string) => {
+  const increaseQuantity = (
+    productName: string,
+    productCategory: ProductCategory
+  ) => {
     setCart((currentCart) =>
       currentCart.map((item) =>
-        item.juice_name === productName
+        item.juice_name === productName &&
+        item.product_category === productCategory
           ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
   };
 
-  const decreaseQuantity = (productName: string) => {
+  const decreaseQuantity = (
+    productName: string,
+    productCategory: ProductCategory
+  ) => {
     setCart((currentCart) =>
       currentCart
         .map((item) =>
-          item.juice_name === productName
+          item.juice_name === productName &&
+          item.product_category === productCategory
             ? { ...item, quantity: item.quantity - 1 }
             : item
         )
@@ -231,9 +261,18 @@ export default function POSPage() {
     );
   };
 
-  const removeFromCart = (productName: string) => {
+  const removeFromCart = (
+    productName: string,
+    productCategory: ProductCategory
+  ) => {
     setCart((currentCart) =>
-      currentCart.filter((item) => item.juice_name !== productName)
+      currentCart.filter(
+        (item) =>
+          !(
+            item.juice_name === productName &&
+            item.product_category === productCategory
+          )
+      )
     );
   };
 
@@ -273,6 +312,11 @@ export default function POSPage() {
       return;
     }
 
+    if (!newProductCategory) {
+      alert("Please select the product category.");
+      return;
+    }
+
     if (!newProductSize) {
       alert("Please select the size.");
       return;
@@ -286,6 +330,7 @@ export default function POSPage() {
     const { error } = await supabase.from("pos_products").insert([
       {
         name: trimmedName,
+        category: newProductCategory,
         size: newProductSize,
         price: priceNumber,
       },
@@ -297,6 +342,7 @@ export default function POSPage() {
     }
 
     setNewProductName("");
+    setNewProductCategory("Juices");
     setNewProductSize("330 ml");
     setNewProductPrice("");
     setShowAddProductPopup(false);
@@ -304,8 +350,10 @@ export default function POSPage() {
     fetchProducts();
   };
 
-  const updateProductPrice = async (product: POSProduct) => {
+  const updateProduct = async (product: POSProduct) => {
     const newPrice = parseLBPInput(productPriceEdits[product.id] || "");
+    const newCategory =
+      productCategoryEdits[product.id] || normalizeCategory(product.category);
 
     if (newPrice <= 0) {
       alert("Please enter a valid price.");
@@ -313,10 +361,14 @@ export default function POSPage() {
     }
 
     const oldProductName = formatProductName(product);
+    const oldCategory = normalizeCategory(product.category);
 
     const { error } = await supabase
       .from("pos_products")
-      .update({ price: newPrice })
+      .update({
+        price: newPrice,
+        category: newCategory,
+      })
       .eq("id", product.id);
 
     if (error) {
@@ -326,26 +378,37 @@ export default function POSPage() {
 
     setCart((currentCart) =>
       currentCart.map((item) =>
-        item.juice_name === oldProductName
-          ? { ...item, unit_price: newPrice }
+        item.juice_name === oldProductName &&
+        item.product_category === oldCategory
+          ? {
+              ...item,
+              unit_price: newPrice,
+              product_category: newCategory,
+            }
           : item
       )
     );
 
     setHeldCart((currentHeldCart) =>
       currentHeldCart.map((item) =>
-        item.juice_name === oldProductName
-          ? { ...item, unit_price: newPrice }
+        item.juice_name === oldProductName &&
+        item.product_category === oldCategory
+          ? {
+              ...item,
+              unit_price: newPrice,
+              product_category: newCategory,
+            }
           : item
       )
     );
 
-    alert("Price updated successfully.");
+    alert("Product updated successfully.");
     fetchProducts();
   };
 
   const deleteProduct = async (product: POSProduct) => {
     const productName = formatProductName(product);
+    const productCategory = normalizeCategory(product.category);
 
     const confirmDelete = confirm(`Delete ${productName} from POS?`);
 
@@ -364,11 +427,23 @@ export default function POSPage() {
     }
 
     setCart((currentCart) =>
-      currentCart.filter((item) => item.juice_name !== productName)
+      currentCart.filter(
+        (item) =>
+          !(
+            item.juice_name === productName &&
+            item.product_category === productCategory
+          )
+      )
     );
 
     setHeldCart((currentHeldCart) =>
-      currentHeldCart.filter((item) => item.juice_name !== productName)
+      currentHeldCart.filter(
+        (item) =>
+          !(
+            item.juice_name === productName &&
+            item.product_category === productCategory
+          )
+      )
     );
 
     fetchProducts();
@@ -397,6 +472,7 @@ export default function POSPage() {
 
     const salesRows = cart.map((item) => ({
       juice_name: item.juice_name,
+      product_category: item.product_category,
       quantity: item.quantity,
       unit_price: item.unit_price,
       total_price: item.quantity * item.unit_price,
@@ -452,6 +528,7 @@ export default function POSPage() {
     const { error } = await supabase.from("pos_sales").insert([
       {
         juice_name: sale.juice_name,
+        product_category: normalizeCategory(sale.product_category),
         quantity: -Math.abs(Number(sale.quantity || 0)),
         unit_price: Number(sale.unit_price || 0),
         total_price: -Math.abs(Number(sale.total_price || 0)),
@@ -508,11 +585,22 @@ export default function POSPage() {
       0
     );
 
+    const juiceItemsSold = allSales
+      .filter((sale) => normalizeCategory(sale.product_category) === "Juices")
+      .reduce((sum, sale) => sum + Number(sale.quantity || 0), 0);
+
+    const cocktailItemsSold = allSales
+      .filter(
+        (sale) => normalizeCategory(sale.product_category) === "Cocktails"
+      )
+      .reduce((sum, sale) => sum + Number(sale.quantity || 0), 0);
+
     const rows = allSales
       .map(
         (sale) => `
           <tr>
             <td>${sale.transaction_type || "SALE"}</td>
+            <td>${normalizeCategory(sale.product_category)}</td>
             <td>${sale.juice_name}</td>
             <td>${sale.quantity}</td>
             <td>${formatLBP(Number(sale.unit_price || 0))}</td>
@@ -585,6 +673,8 @@ export default function POSPage() {
               netTotal
             )}</div>
             <div class="box"><strong>Items Sold</strong><br/>${totalItemsSold}</div>
+            <div class="box"><strong>Juice Items</strong><br/>${juiceItemsSold}</div>
+            <div class="box"><strong>Cocktail Items</strong><br/>${cocktailItemsSold}</div>
           </div>
 
           <h2>Transactions</h2>
@@ -593,6 +683,7 @@ export default function POSPage() {
             <thead>
               <tr>
                 <th>Type</th>
+                <th>Category</th>
                 <th>Product</th>
                 <th>Quantity</th>
                 <th>Unit Price</th>
@@ -659,7 +750,7 @@ export default function POSPage() {
               <div style={productsHeaderBlockStyle}>
                 <div>
                   <p style={smallTitleStyle}>PRODUCTS</p>
-                  <h2 style={sectionTitleStyle}>Choose Juice</h2>
+                  <h2 style={sectionTitleStyle}>Choose Product</h2>
                 </div>
 
                 <div
@@ -691,18 +782,18 @@ export default function POSPage() {
                 </div>
 
                 <div style={filterButtonsStyle}>
-                  {(["All", "250 ml", "330 ml", "1 Liter"] as CategoryFilter[]).map(
-                    (filter) => (
+                  {(["Juices", "Cocktails"] as ProductCategory[]).map(
+                    (category) => (
                       <button
-                        key={filter}
-                        onClick={() => setCategoryFilter(filter)}
+                        key={category}
+                        onClick={() => setActiveCategory(category)}
                         style={
-                          categoryFilter === filter
+                          activeCategory === category
                             ? activeFilterButtonStyle
                             : filterButtonStyle
                         }
                       >
-                        {filter}
+                        {category}
                       </button>
                     )
                   )}
@@ -712,8 +803,8 @@ export default function POSPage() {
               <div style={productsGridStyle} className="productsGridMobile">
                 {filteredProducts.length === 0 ? (
                   <p style={emptyTextStyle}>
-                    No products yet. Press Add Product to create your festival
-                    menu.
+                    No {activeCategory.toLowerCase()} yet. Press Add Product to
+                    create your festival menu.
                   </p>
                 ) : (
                   filteredProducts.map((product) => (
@@ -724,13 +815,20 @@ export default function POSPage() {
                       className="productCardMobile"
                     >
                       <div style={bottleIconStyle} className="bottleIconMobile">
-                        🍹
+                        {normalizeCategory(product.category) === "Cocktails"
+                          ? "🍸"
+                          : "🍹"}
                       </div>
 
                       <div style={{ textAlign: "left" }}>
+                        <p style={productCategoryTextStyle}>
+                          {normalizeCategory(product.category)}
+                        </p>
+
                         <h3 style={productNameStyle}>
                           {formatProductName(product)}
                         </h3>
+
                         <p style={productPriceStyle}>
                           {formatLBP(Number(product.price || 0))}
                         </p>
@@ -759,11 +857,15 @@ export default function POSPage() {
                 ) : (
                   cart.map((item) => (
                     <div
-                      key={item.juice_name}
+                      key={`${item.product_category}-${item.juice_name}`}
                       style={cartItemStyle}
                       className="cartItemMobile"
                     >
                       <div>
+                        <p style={productCategoryTextStyle}>
+                          {item.product_category}
+                        </p>
+
                         <h3 style={cartItemTitleStyle}>{item.juice_name}</h3>
 
                         <p style={smallTextStyle}>
@@ -784,7 +886,12 @@ export default function POSPage() {
                         className="quantityMobile"
                       >
                         <button
-                          onClick={() => decreaseQuantity(item.juice_name)}
+                          onClick={() =>
+                            decreaseQuantity(
+                              item.juice_name,
+                              item.product_category
+                            )
+                          }
                           style={qtyButtonStyle}
                         >
                           -
@@ -793,14 +900,24 @@ export default function POSPage() {
                         <span style={qtyTextStyle}>{item.quantity}</span>
 
                         <button
-                          onClick={() => increaseQuantity(item.juice_name)}
+                          onClick={() =>
+                            increaseQuantity(
+                              item.juice_name,
+                              item.product_category
+                            )
+                          }
                           style={qtyButtonStyle}
                         >
                           +
                         </button>
 
                         <button
-                          onClick={() => removeFromCart(item.juice_name)}
+                          onClick={() =>
+                            removeFromCart(
+                              item.juice_name,
+                              item.product_category
+                            )
+                          }
                           style={removeButtonStyle}
                         >
                           ×
@@ -865,6 +982,7 @@ export default function POSPage() {
                       {[
                         "Type",
                         "Action",
+                        "Category",
                         "Product",
                         "Quantity",
                         "Unit Price",
@@ -908,6 +1026,10 @@ export default function POSPage() {
                                 Refund
                               </button>
                             )}
+                          </td>
+
+                          <td style={tdStyle}>
+                            {normalizeCategory(sale.product_category)}
                           </td>
 
                           <td style={tdStyle}>{sale.juice_name}</td>
@@ -970,6 +1092,20 @@ export default function POSPage() {
               </div>
 
               <div style={{ marginBottom: "18px" }}>
+                <label style={labelStyle}>Category</label>
+                <select
+                  value={newProductCategory}
+                  onChange={(e) =>
+                    setNewProductCategory(e.target.value as ProductCategory)
+                  }
+                  style={inputStyle}
+                >
+                  <option value="Juices">Juices</option>
+                  <option value="Cocktails">Cocktails</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: "18px" }}>
                 <label style={labelStyle}>Size</label>
                 <select
                   value={newProductSize}
@@ -1026,6 +1162,24 @@ export default function POSPage() {
                       <div style={{ flex: 1 }}>
                         <strong>{formatProductName(product)}</strong>
 
+                        <label style={editPriceLabelStyle}>Category</label>
+                        <select
+                          value={
+                            productCategoryEdits[product.id] ||
+                            normalizeCategory(product.category)
+                          }
+                          onChange={(e) =>
+                            setProductCategoryEdits((current) => ({
+                              ...current,
+                              [product.id]: e.target.value as ProductCategory,
+                            }))
+                          }
+                          style={editSelectStyle}
+                        >
+                          <option value="Juices">Juices</option>
+                          <option value="Cocktails">Cocktails</option>
+                        </select>
+
                         <label style={editPriceLabelStyle}>Price in LBP</label>
 
                         <input
@@ -1044,7 +1198,7 @@ export default function POSPage() {
 
                       <div style={editProductActionsStyle}>
                         <button
-                          onClick={() => updateProductPrice(product)}
+                          onClick={() => updateProduct(product)}
                           style={savePriceButtonStyle}
                         >
                           Save
@@ -1082,7 +1236,9 @@ export default function POSPage() {
               <div style={paymentSummaryStyle}>
                 <div>
                   <span>Total Amount</span>
-                  <p style={smallTextStyle}>Around ${cartTotalUSD.toFixed(2)}</p>
+                  <p style={smallTextStyle}>
+                    Around ${cartTotalUSD.toFixed(2)}
+                  </p>
                 </div>
 
                 <strong>{formatLBP(cartTotalLBP)}</strong>
@@ -1584,6 +1740,16 @@ const bottleIconStyle = {
   fontSize: "28px",
 };
 
+const productCategoryTextStyle = {
+  margin: "0 0 6px",
+  color: "#7aa85a",
+  fontSize: "12px",
+  fontWeight: 900,
+  letterSpacing: "1px",
+  textTransform: "uppercase" as const,
+  fontFamily: "Arial, sans-serif",
+};
+
 const productNameStyle = {
   margin: 0,
   color: "#2e4732",
@@ -1869,7 +2035,17 @@ const editPriceLabelStyle = {
 };
 
 const editPriceInputStyle = {
-  width: "120px",
+  width: "140px",
+  padding: "10px",
+  borderRadius: "12px",
+  border: "1px solid #d6d6d6",
+  outline: "none",
+  background: "rgba(255,255,255,0.9)",
+  fontFamily: "Arial, sans-serif",
+};
+
+const editSelectStyle = {
+  width: "160px",
   padding: "10px",
   borderRadius: "12px",
   border: "1px solid #d6d6d6",
