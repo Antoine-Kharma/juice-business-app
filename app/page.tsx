@@ -11,7 +11,6 @@ const products = [
   "Strawberry Banana",
   "Straw Mango",
   "Mango Passion",
-   "Mango Passion1",
 ];
 
 const bottles = [
