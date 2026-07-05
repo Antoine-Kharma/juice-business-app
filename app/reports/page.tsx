@@ -188,10 +188,29 @@ export default function ReportsPage() {
     setExpensesReport(expenses);
     setReturns(returnsDataRows);
 
-    const revenue = sales.reduce(
-      (sum, sale) => sum + Number(sale.total_price || 0),
-      0
-    );
+    const grossRevenue = sales.reduce(
+  (sum, sale) => sum + Number(sale.total_price || 0),
+  0
+);
+
+const priceByProduct: Record<string, number> = {};
+
+sales.forEach((sale) => {
+  if (!priceByProduct[sale.juice_name]) {
+    priceByProduct[sale.juice_name] = Number(sale.unit_price || 0);
+  }
+});
+
+const returnsValue = returnsDataRows.reduce((sum, returnedItem) => {
+  const unitPrice = priceByProduct[returnedItem.juice_name] || 0;
+
+  return (
+    sum +
+    Number(returnedItem.quantity_returned || 0) * Number(unitPrice || 0)
+  );
+}, 0);
+
+const revenue = grossRevenue - returnsValue;
 
     const expensesTotal = expenses.reduce(
       (sum, expense) => sum + Number(expense.paid_amount || 0),
