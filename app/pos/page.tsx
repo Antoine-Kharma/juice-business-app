@@ -36,6 +36,16 @@ const normalizeCategory = (category?: string): ProductCategory => {
   return category === "Cocktails" ? "Cocktails" : "Juices";
 };
 
+const getLocalDateRange = (startDate: string, endDate: string) => {
+  const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
+  const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
+
+  const start = new Date(startYear, startMonth - 1, startDay, 0, 0, 0, 0);
+  const end = new Date(endYear, endMonth - 1, endDay, 23, 59, 59, 999);
+
+  return { start, end };
+};
+
 type CartItem = {
   juice_name: string;
   product_category: ProductCategory;
@@ -197,25 +207,65 @@ export default function POSPage() {
       return;
     }
 
-    const start = new Date(reportStartDate);
-    start.setHours(0, 0, 0, 0);
+    if (reportStartDate > reportEndDate) {
+      alert("Start date cannot be after end date.");
+      return;
+    }
 
-    const end = new Date(reportEndDate);
-    end.setHours(23, 59, 59, 999);
+    const { start, end } = getLocalDateRange(
+      reportStartDate,
+      reportEndDate
+    );
 
-    const { data, error } = await supabase
+    const { data: dateRangeRows, error: dateRangeError } = await supabase
       .from("pos_sales")
       .select("*")
       .gte("created_at", start.toISOString())
       .lte("created_at", end.toISOString())
       .order("id", { ascending: false });
 
-    if (error) {
-      alert(error.message);
+    if (dateRangeError) {
+      alert(dateRangeError.message);
       return;
     }
 
-    setReportSales(data || []);
+    const filteredRows = (dateRangeRows || []) as POSSale[];
+    const saleIds = filteredRows
+      .filter((row) => row.transaction_type !== "REFUND" && row.id)
+      .map((row) => Number(row.id));
+
+    let linkedRefundRows: POSSale[] = [];
+
+    if (saleIds.length > 0) {
+      const { data: refundData, error: refundError } = await supabase
+        .from("pos_sales")
+        .select("*")
+        .eq("transaction_type", "REFUND")
+        .in("refunded_sale_id", saleIds);
+
+      if (refundError) {
+        alert(refundError.message);
+        return;
+      }
+
+      linkedRefundRows = (refundData || []) as POSSale[];
+    }
+
+    const rowsById = new Map<number, POSSale>();
+
+    [...filteredRows, ...linkedRefundRows].forEach((row) => {
+      if (row.id !== undefined && row.id !== null) {
+        rowsById.set(Number(row.id), row);
+      }
+    });
+
+    const mergedRows = Array.from(rowsById.values()).sort((a, b) => {
+      const aTime = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const bTime = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    setReportSales(mergedRows);
     setReportLoaded(true);
   };
 
@@ -591,7 +641,8 @@ export default function POSPage() {
       .from("pos_sales")
       .select("id")
       .eq("transaction_type", "REFUND")
-      .eq("refunded_sale_id", sale.id);
+      .eq("refunded_sale_id", sale.id)
+      .limit(1);
 
     if (checkError) {
       alert(checkError.message);
