@@ -24,6 +24,14 @@ const formatLBP = (value: number) => {
   return `${Number(value || 0).toLocaleString()} LBP`;
 };
 
+const formatDateForInput = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
+
 const normalizeCategory = (category?: string): ProductCategory => {
   return category === "Cocktails" ? "Cocktails" : "Juices";
 };
@@ -64,6 +72,13 @@ export default function POSPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [heldCart, setHeldCart] = useState<CartItem[]>([]);
   const [sales, setSales] = useState<POSSale[]>([]);
+  const [todaySalesTotal, setTodaySalesTotal] = useState(0);
+  const [todayItemsSold, setTodayItemsSold] = useState(0);
+  const [reportSales, setReportSales] = useState<POSSale[]>([]);
+  const [reportStartDate, setReportStartDate] = useState("");
+  const [reportEndDate, setReportEndDate] = useState("");
+  const [reportLoaded, setReportLoaded] = useState(false);
+  const [festivalName, setFestivalName] = useState("");
   const [products, setProducts] = useState<POSProduct[]>([]);
   const [productPriceEdits, setProductPriceEdits] = useState<
     Record<number, string>
@@ -130,28 +145,6 @@ export default function POSPage() {
   const changeUSD = changeLBP / USD_TO_LBP_RATE;
   const remainingUSD = remainingLBP / USD_TO_LBP_RATE;
 
-  const todaySalesTotal = useMemo(() => {
-    const today = new Date().toDateString();
-
-    return sales
-      .filter((sale) => {
-        if (!sale.created_at) return false;
-        return new Date(sale.created_at).toDateString() === today;
-      })
-      .reduce((sum, sale) => sum + Number(sale.total_price || 0), 0);
-  }, [sales]);
-
-  const todayItemsSold = useMemo(() => {
-    const today = new Date().toDateString();
-
-    return sales
-      .filter((sale) => {
-        if (!sale.created_at) return false;
-        return new Date(sale.created_at).toDateString() === today;
-      })
-      .reduce((sum, sale) => sum + Number(sale.quantity || 0), 0);
-  }, [sales]);
-
   const fetchSales = async () => {
     const { data, error } = await supabase
       .from("pos_sales")
@@ -165,6 +158,85 @@ export default function POSPage() {
     }
 
     setSales(data || []);
+  };
+
+
+  const fetchTodayStats = async () => {
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    end.setHours(23, 59, 59, 999);
+
+    const { data, error } = await supabase
+      .from("pos_sales")
+      .select("*")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString());
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    const todayRows = (data || []) as POSSale[];
+
+    setTodaySalesTotal(
+      todayRows.reduce((sum, sale) => sum + Number(sale.total_price || 0), 0)
+    );
+
+    setTodayItemsSold(
+      todayRows.reduce((sum, sale) => sum + Number(sale.quantity || 0), 0)
+    );
+  };
+
+  const fetchReportSales = async () => {
+    if (!reportStartDate || !reportEndDate) {
+      alert("Please select start date and end date.");
+      return;
+    }
+
+    const start = new Date(reportStartDate);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(reportEndDate);
+    end.setHours(23, 59, 59, 999);
+
+    const { data, error } = await supabase
+      .from("pos_sales")
+      .select("*")
+      .gte("created_at", start.toISOString())
+      .lte("created_at", end.toISOString())
+      .order("id", { ascending: false });
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setReportSales(data || []);
+    setReportLoaded(true);
+  };
+
+  const applyReportQuickDate = (type: "today" | "month") => {
+    const today = new Date();
+
+    let start = new Date(today);
+    let end = new Date(today);
+
+    if (type === "today") {
+      start = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      end = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    }
+
+    if (type === "month") {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+      end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+
+    setReportStartDate(formatDateForInput(start));
+    setReportEndDate(formatDateForInput(end));
   };
 
   const fetchProducts = async () => {
@@ -195,6 +267,7 @@ export default function POSPage() {
 
   useEffect(() => {
     fetchSales();
+    fetchTodayStats();
     fetchProducts();
   }, []);
 
@@ -496,6 +569,11 @@ export default function POSPage() {
     setPaidAmount("");
     setShowPaymentPopup(false);
     fetchSales();
+    fetchTodayStats();
+
+    if (reportLoaded) {
+      fetchReportSales();
+    }
   };
 
   const refundSale = async (sale: POSSale) => {
@@ -504,7 +582,7 @@ export default function POSPage() {
       return;
     }
 
-    const alreadyRefunded = sales.some(
+    const alreadyRefunded = (reportLoaded ? reportSales : sales).some(
       (item) =>
         item.transaction_type === "REFUND" &&
         Number(item.refunded_sale_id) === Number(sale.id)
@@ -548,20 +626,24 @@ export default function POSPage() {
 
     alert("Refund added successfully.");
     fetchSales();
+    fetchTodayStats();
+
+    if (reportLoaded) {
+      fetchReportSales();
+    }
   };
 
   const exportFestivalReport = async () => {
-    const { data, error } = await supabase
-      .from("pos_sales")
-      .select("*")
-      .order("id", { ascending: false });
-
-    if (error) {
-      alert(error.message);
+    if (!reportLoaded) {
+      alert("Please select a date range and press Search Report before exporting.");
       return;
     }
 
-    const allSales: POSSale[] = data || [];
+    const allSales: POSSale[] = reportSales;
+    const cleanFestivalName = festivalName.trim();
+    const reportTitle = cleanFestivalName
+      ? `${cleanFestivalName} - POS Festival Report`
+      : "SPLASH Juice POS Festival Report";
 
     const reportWindow = window.open("", "_blank");
 
@@ -660,7 +742,8 @@ export default function POSPage() {
         </head>
 
         <body>
-          <h1>SPLASH Juice POS Festival Report</h1>
+          <h1>${reportTitle}</h1>
+          <p><strong>Date Range:</strong> ${reportStartDate} to ${reportEndDate}</p>
 
           <div class="summary">
             <div class="box"><strong>Total Sales</strong><br/>${formatLBP(
@@ -963,7 +1046,7 @@ export default function POSPage() {
           >
             <div style={sectionHeaderStyle}>
               <div>
-                <p style={smallTitleStyle}>RECENT POS SALES</p>
+                <p style={smallTitleStyle}>POS REPORT</p>
                 <h2 style={sectionTitleStyle}>Latest Sales</h2>
               </div>
 
@@ -972,8 +1055,67 @@ export default function POSPage() {
               </button>
             </div>
 
-            {sales.length === 0 ? (
-              <p style={emptyTextStyle}>No sales added yet.</p>
+            <div style={reportFilterBoxStyle}>
+              <div style={{ marginBottom: "16px" }}>
+                <label style={smallTitleStyle}>Festival Name</label>
+                <input
+                  type="text"
+                  value={festivalName}
+                  onChange={(e) => setFestivalName(e.target.value)}
+                  placeholder="Example: Broummana Street Festival"
+                  style={inputStyle}
+                />
+              </div>
+
+              <div style={quickReportButtonsStyle}>
+                <button
+                  onClick={() => applyReportQuickDate("today")}
+                  style={filterButtonStyle}
+                >
+                  Today
+                </button>
+
+                <button
+                  onClick={() => applyReportQuickDate("month")}
+                  style={filterButtonStyle}
+                >
+                  This Month
+                </button>
+              </div>
+
+              <div style={reportDateGridStyle} className="reportDateGridMobile">
+                <div>
+                  <label style={smallTitleStyle}>Start Date</label>
+                  <input
+                    type="date"
+                    value={reportStartDate}
+                    onChange={(e) => setReportStartDate(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <div>
+                  <label style={smallTitleStyle}>End Date</label>
+                  <input
+                    type="date"
+                    value={reportEndDate}
+                    onChange={(e) => setReportEndDate(e.target.value)}
+                    style={inputStyle}
+                  />
+                </div>
+
+                <button onClick={fetchReportSales} style={addProductButtonStyle}>
+                  Search Report
+                </button>
+              </div>
+            </div>
+
+            {!reportLoaded ? (
+              <p style={emptyTextStyle}>
+                Select a date range and press Search Report to view POS sales.
+              </p>
+            ) : reportSales.length === 0 ? (
+              <p style={emptyTextStyle}>No POS sales found for this date range.</p>
             ) : (
               <div className="latestSalesTableWrap" style={tableWrapperStyle}>
                 <table style={tableStyle}>
@@ -999,8 +1141,8 @@ export default function POSPage() {
                   </thead>
 
                   <tbody>
-                    {sales.map((sale) => {
-                      const alreadyRefunded = sales.some(
+                    {reportSales.map((sale) => {
+                      const alreadyRefunded = reportSales.some(
                         (item) =>
                           item.transaction_type === "REFUND" &&
                           Number(item.refunded_sale_id) === Number(sale.id)
@@ -1049,13 +1191,6 @@ export default function POSPage() {
                             {sale.paid_amount !== undefined &&
                             sale.paid_amount !== null
                               ? formatLBP(Number(sale.paid_amount || 0))
-                              : "-"}
-                          </td>
-
-                          <td style={tdStyle}>
-                            {sale.change_usd !== undefined &&
-                            sale.change_usd !== null
-                              ? `$${Number(sale.change_usd || 0).toFixed(2)}`
                               : "-"}
                           </td>
 
@@ -1447,6 +1582,12 @@ export default function POSPage() {
               }
             }
 
+            @media (max-width: 700px) {
+              .reportDateGridMobile {
+                grid-template-columns: 1fr !important;
+              }
+            }
+
             @media (max-width: 420px) {
               h1 {
                 font-size: 30px !important;
@@ -1499,6 +1640,29 @@ export default function POSPage() {
     </ProtectedPage>
   );
 }
+
+
+const reportFilterBoxStyle = {
+  background: "rgba(255,255,255,0.65)",
+  border: "1px solid rgba(48,70,56,0.1)",
+  borderRadius: "24px",
+  padding: "18px",
+  marginBottom: "24px",
+};
+
+const quickReportButtonsStyle = {
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap" as const,
+  marginBottom: "16px",
+};
+
+const reportDateGridStyle = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr auto",
+  gap: "14px",
+  alignItems: "end",
+};
 
 const mainStyle = {
   minHeight: "100vh",
