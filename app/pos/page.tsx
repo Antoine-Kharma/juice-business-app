@@ -582,13 +582,23 @@ export default function POSPage() {
       return;
     }
 
-    const alreadyRefunded = (reportLoaded ? reportSales : sales).some(
-      (item) =>
-        item.transaction_type === "REFUND" &&
-        Number(item.refunded_sale_id) === Number(sale.id)
-    );
+    if (!sale.id) {
+      alert("Cannot refund this sale because the sale ID is missing.");
+      return;
+    }
 
-    if (alreadyRefunded) {
+    const { data: existingRefunds, error: checkError } = await supabase
+      .from("pos_sales")
+      .select("id")
+      .eq("transaction_type", "REFUND")
+      .eq("refunded_sale_id", sale.id);
+
+    if (checkError) {
+      alert(checkError.message);
+      return;
+    }
+
+    if (existingRefunds && existingRefunds.length > 0) {
       alert("This sale was already refunded.");
       return;
     }
@@ -625,11 +635,12 @@ export default function POSPage() {
     }
 
     alert("Refund added successfully.");
-    fetchSales();
-    fetchTodayStats();
+
+    await fetchSales();
+    await fetchTodayStats();
 
     if (reportLoaded) {
-      fetchReportSales();
+      await fetchReportSales();
     }
   };
 
