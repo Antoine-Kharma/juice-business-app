@@ -2128,4 +2128,4 @@ const actionTdStyle = {
 const tableWrapperStyle = {
   width: "100%",
   overflowX: "auto" as const,
-}
+};
